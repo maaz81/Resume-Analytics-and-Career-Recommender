@@ -1,0 +1,374 @@
+# Career AI Backend - Setup & Run Guide
+
+## 📋 Prerequisites
+
+- **Node.js**: v18+ (LTS recommended)
+- **PostgreSQL**: v14+
+- **Redis**: v6+ (optional but recommended)
+- **npm** or **yarn**
+
+---
+
+## 🚀 Quick Start
+
+### 1. Clone & Install
+
+```bash
+# Create project directory
+mkdir career-ai-backend
+cd career-ai-backend
+
+# Initialize npm
+npm init -y
+
+# Install dependencies
+npm install express pg dotenv bcryptjs jsonwebtoken cors helmet express-rate-limit express-validator multer uuid winston redis axios passport passport-google-oauth20 passport-jwt compression morgan
+
+# Install dev dependencies
+npm install -D nodemon jest supertest eslint @babel/preset-env
+```
+
+### 2. Create Folder Structure
+
+```bash
+mkdir -p src/{config,routes,controllers,services,models,middleware,utils,tests}
+mkdir -p logs uploads
+```
+
+### 3. Database Setup
+
+```bash
+# Connect to PostgreSQL
+psql -U postgres
+
+# Create database
+CREATE DATABASE career_ai_db;
+
+# Connect to database
+\c career_ai_db
+
+# Run the SQL schema from artifacts (db_schema)
+# Copy and paste the entire schema file
+```
+
+### 4. Environment Configuration
+
+Create `.env` file in root:
+
+```env
+# Server
+NODE_ENV=development
+PORT=5000
+API_VERSION=v1
+
+# Database
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=career_ai_db
+DB_USER=postgres
+DB_PASSWORD=your_password
+DB_SSL=false
+
+# JWT
+JWT_SECRET=your-super-secret-jwt-key-min-32-chars
+JWT_EXPIRE=7d
+JWT_REFRESH_SECRET=your-refresh-token-secret-min-32-chars
+JWT_REFRESH_EXPIRE=30d
+
+# Redis
+REDIS_HOST=localhost
+REDIS_PORT=6379
+REDIS_PASSWORD=
+REDIS_DB=0
+
+# File Upload
+UPLOAD_DIR=./uploads
+MAX_FILE_SIZE=5242880
+ALLOWED_FILE_TYPES=.pdf,.doc,.docx
+
+# AI Services (Python microservices - set when ready)
+AI_PARSER_URL=http://localhost:8001
+AI_ATS_URL=http://localhost:8002
+AI_SKILLS_URL=http://localhost:8003
+AI_CHAT_URL=http://localhost:8004
+AI_TIMEOUT=30000
+
+# OAuth
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_CALLBACK_URL=http://localhost:5000/api/v1/auth/google/callback
+
+# Frontend
+FRONTEND_URL=http://localhost:3000
+
+# Rate Limiting
+RATE_LIMIT_WINDOW=15
+RATE_LIMIT_MAX=100
+
+# Logging
+LOG_LEVEL=debug
+LOG_FILE=./logs/app.log
+```
+
+### 5. Create All Files
+
+Copy all artifacts into their respective locations:
+
+**Config Files:**
+- `src/config/env.js`
+- `src/config/db.js`
+- `src/config/redis.js`
+- `src/config/logger.js`
+
+**Middleware:**
+- `src/middleware/errorHandler.js`
+- `src/middleware/auth.js`
+- `src/middleware/rateLimiter.js`
+- `src/middleware/validator.js`
+
+**Utils:**
+- `src/utils/jwt.js`
+- `src/utils/response.js`
+- `src/utils/fileUpload.js`
+
+**Models:**
+- `src/models/User.js`
+- `src/models/Resume.js`
+
+**Controllers:**
+- `src/controllers/auth.controller.js`
+- `src/controllers/resume.controller.js`
+
+**Routes:**
+- `src/routes/auth.routes.js`
+- `src/routes/resume.routes.js`
+- `src/routes/skills.routes.js`
+- `src/routes/ats.routes.js`
+- `src/routes/roadmap.routes.js`
+- `src/routes/ai.routes.js`
+
+**Services:**
+- `src/services/ai.service.js`
+
+**Core:**
+- `src/app.js`
+- `src/server.js`
+
+**Root:**
+- `package.json`
+- `.env`
+- `.gitignore`
+
+### 6. Create .gitignore
+
+```
+node_modules/
+.env
+logs/
+uploads/
+*.log
+.DS_Store
+coverage/
+```
+
+---
+
+## ▶️ Run the Server
+
+### Development Mode
+
+```bash
+npm run dev
+```
+
+### Production Mode
+
+```bash
+npm start
+```
+
+---
+
+## 🧪 Test the API
+
+### 1. Health Check
+
+```bash
+curl http://localhost:5000/health
+```
+
+### 2. Register User
+
+```bash
+curl -X POST http://localhost:5000/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "password": "Test@1234",
+    "fullName": "Test User",
+    "targetRole": "Software Engineer"
+  }'
+```
+
+### 3. Login
+
+```bash
+curl -X POST http://localhost:5000/api/v1/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "password": "Test@1234"
+  }'
+```
+
+Copy the `accessToken` from response.
+
+### 4. Upload Resume
+
+```bash
+curl -X POST http://localhost:5000/api/v1/resumes/upload \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN" \
+  -F "resume=@/path/to/your/resume.pdf"
+```
+
+### 5. Get Profile
+
+```bash
+curl http://localhost:5000/api/v1/auth/me \
+  -H "Authorization: Bearer YOUR_ACCESS_TOKEN"
+```
+
+---
+
+## 🔧 Redis Setup (Optional but Recommended)
+
+### Install Redis
+
+**macOS:**
+```bash
+brew install redis
+brew services start redis
+```
+
+**Ubuntu:**
+```bash
+sudo apt update
+sudo apt install redis-server
+sudo systemctl start redis
+```
+
+**Windows:**
+Download from [Redis Windows](https://github.com/microsoftarchive/redis/releases)
+
+### Test Redis
+
+```bash
+redis-cli ping
+# Should return: PONG
+```
+
+---
+
+## 📊 Database Migrations
+
+Future migrations can be added to `src/scripts/migrate.js`:
+
+```javascript
+import { query } from '../config/db.js';
+
+export const runMigrations = async () => {
+  // Add new columns, tables, etc.
+};
+```
+
+---
+
+## 🐛 Troubleshooting
+
+### Port Already in Use
+
+```bash
+# Find process
+lsof -i :5000
+
+# Kill process
+kill -9 <PID>
+```
+
+### Database Connection Failed
+
+- Check PostgreSQL is running: `pg_isready`
+- Verify credentials in `.env`
+- Check firewall settings
+
+### Redis Connection Failed
+
+- Check Redis is running: `redis-cli ping`
+- Verify REDIS_HOST and REDIS_PORT in `.env`
+
+---
+
+## 📚 Next Steps
+
+1. **Implement Python AI Services** (Parser, ATS, Skills, Chat)
+2. **Add More Models** (Skill, Job, Score, Roadmap)
+3. **Complete Controllers** (Skills, Roadmap)
+4. **Add Tests** (Jest + Supertest)
+5. **Setup CI/CD**
+6. **Dockerize Application**
+
+---
+
+## 🔐 Security Checklist
+
+- [ ] Change all default secrets in `.env`
+- [ ] Enable HTTPS in production
+- [ ] Set up rate limiting
+- [ ] Configure CORS properly
+- [ ] Add input sanitization
+- [ ] Enable helmet security headers
+- [ ] Set up monitoring & alerts
+
+---
+
+## 📝 API Documentation
+
+Full API docs will be at: `http://localhost:5000/api/v1/docs` (TODO: Add Swagger)
+
+---
+
+## 🎯 Current Status
+
+✅ **Completed:**
+- Database Schema
+- Project Structure
+- Authentication (Register/Login/Logout)
+- Resume Upload & Management
+- Error Handling
+- Logging
+- Caching (Redis)
+- Rate Limiting
+- File Upload
+- AI Service Integration Layer
+
+⏳ **Pending:**
+- Skill Gap Analysis Implementation
+- Learning Roadmap Generation
+- Dashboard Aggregation
+- Python AI Microservices
+- Testing Suite
+- API Documentation
+
+---
+
+## 💡 Tips
+
+1. **Always use environment variables** for sensitive data
+2. **Log everything** for debugging
+3. **Cache aggressively** for performance
+4. **Validate inputs** at route level
+5. **Use transactions** for multi-step operations
+
+---
+
+**Happy Coding! 🚀**
