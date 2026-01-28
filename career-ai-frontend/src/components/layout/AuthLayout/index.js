@@ -1,1 +1,1 @@
-export { default } from '../AppLayout/AuthLayout';
+export { default } from './AuthLayout';

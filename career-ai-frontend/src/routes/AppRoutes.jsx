@@ -6,8 +6,8 @@ import ProtectedRoute from './ProtectedRoute';
 import PublicRoute from './PublicRoute';
 
 // Layouts
-import AuthLayout from 'components/layout/AuthLayout';
-import AppLayout from 'components/layout/AppLayout';
+import AuthLayout from '@components/layout/AuthLayout';
+import AppLayout from '@components/layout/AppLayout';
 
 // Pages
 import LoginPage from '@pages/Auth/LoginPage';
