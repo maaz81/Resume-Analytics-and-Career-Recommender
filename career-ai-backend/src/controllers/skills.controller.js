@@ -3,7 +3,7 @@
 // ============================================
 
 import Skill from '../models/Skill.js';
-import SkillsService from '../services/skills.service.js';
+import SkillsService from '../services/skill.service.js';
 import { successResponse, createdResponse } from '../utils/response.js';
 import { catchAsync, errors } from '../middleware/errorHandler.js';
 import { cache, cacheKeys } from '../config/redis.js';
