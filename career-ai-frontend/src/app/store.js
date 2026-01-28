@@ -1,12 +1,12 @@
 import { configureStore } from '@reduxjs/toolkit';
-import authReducer from '@features/auth/slices/authSlice';
-import onboardingReducer from '@features/onboarding/slices/onboardingSlice';
-import resumeReducer from '@features/resume/slices/resumeSlice';
-import skillsReducer from '@features/skills/slices/skillsSlice';
-import roadmapReducer from '@features/roadmap/slices/roadmapSlice';
-import dashboardReducer from '@features/dashboard/slices/dashboardSlice';
-import chatReducer from '@features/chat/slices/chatSlice';
-import profileReducer from '@features/profile/slices/profileSlice';
+import authReducer from '../features/auth/slices/authSlice';
+import onboardingReducer from '../features/onboarding/slices/onboardingSlice';
+import resumeReducer from '../features/resume/slices/resumeSlice';
+import skillsReducer from '../features/skills/slices/skillsSlice';
+import roadmapReducer from '../features/roadmap/slices/roadmapSlice';
+import dashboardReducer from '../features/dashboard/slices/dashboardSlice';
+import chatReducer from '../features/chat/slices/chatSlice';
+import profileReducer from '../features/profile/slices/profileSlice';
 
 /**
  * Redux Store Configuration
