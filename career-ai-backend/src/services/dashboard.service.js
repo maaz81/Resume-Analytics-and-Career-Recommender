@@ -5,6 +5,7 @@
 
 import { query } from '../config/db.js';
 import Resume from '../models/Resume.js';
+import AtsScore from '../models/AtsScore.js';
 import logger from '../config/logger.js';
 
 export default class DashboardService {
@@ -112,15 +113,7 @@ export default class DashboardService {
    * Get latest ATS score
    */
   static async getLatestATSScore(userId) {
-    const result = await query(
-      `SELECT * FROM ats_scores 
-       WHERE user_id = $1 
-       ORDER BY scored_at DESC 
-       LIMIT 1`,
-      [userId]
-    );
-
-    return result.rows[0] || null;
+    return await AtsScore.findLatestByUserId(userId);
   }
 
   /**

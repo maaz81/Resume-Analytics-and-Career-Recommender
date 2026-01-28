@@ -3,10 +3,10 @@
 // ============================================
 import express from 'express';
 import { body } from 'express-validator';
-import * as skillsController from '../controllers/skills.controller.js';
-import { protect } from '../middleware/auth.js';
-import { aiLimiter } from '../middleware/rateLimiter.js';
-import { validate } from '../middleware/validator.js';
+import * as skillsController from '../../controllers/skills.controller.js';
+import { protect } from '../../middleware/auth.js';
+import { aiLimiter } from '../../middleware/rateLimiter.js';
+import { validate } from '../../middleware/validator.js';
 
 const router = express.Router();
 router.use(protect);

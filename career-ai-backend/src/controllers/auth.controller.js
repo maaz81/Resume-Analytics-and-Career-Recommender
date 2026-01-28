@@ -3,11 +3,11 @@
 // ============================================
 
 import User from '../models/User.js';
+import AuditLog from '../models/AuditLog.js';
 import { generateTokens, verifyRefreshToken } from '../utils/jwt.js';
 import { successResponse, createdResponse } from '../utils/response.js';
 import { errors, catchAsync } from '../middleware/errorHandler.js';
 import { cache, cacheKeys } from '../config/redis.js';
-import { query } from '../config/db.js';
 import logger from '../config/logger.js';
 
 /**
@@ -37,11 +37,13 @@ export const register = catchAsync(async (req, res) => {
     const tokens = generateTokens(user);
 
     // Log audit
-    await query(
-        `INSERT INTO audit_logs (user_id, action, entity_type, entity_id, metadata)
-     VALUES ($1, $2, $3, $4, $5)`,
-        [user.id, 'user.registered', 'user', user.id, JSON.stringify({ email: user.email })]
-    );
+    await AuditLog.create({
+        userId: user.id,
+        action: 'user.registered',
+        entityType: 'user',
+        entityId: user.id,
+        metadata: { email: user.email }
+    });
 
     logger.info('User registered', { userId: user.id, email: user.email });
 
@@ -97,11 +99,12 @@ export const login = catchAsync(async (req, res) => {
     }, 3600); // 1 hour
 
     // Log audit
-    await query(
-        `INSERT INTO audit_logs (user_id, action, ip_address, user_agent)
-     VALUES ($1, $2, $3, $4)`,
-        [user.id, 'user.login', req.ip, req.get('user-agent')]
-    );
+    await AuditLog.create({
+        userId: user.id,
+        action: 'user.login',
+        ipAddress: req.ip,
+        userAgent: req.get('user-agent')
+    });
 
     logger.info('User logged in', { userId: user.id, email: user.email });
 
@@ -237,11 +240,10 @@ export const logout = catchAsync(async (req, res) => {
     await cache.del(cacheKeys.userContext(req.user.id));
 
     // Log audit
-    await query(
-        `INSERT INTO audit_logs (user_id, action)
-     VALUES ($1, $2)`,
-        [req.user.id, 'user.logout']
-    );
+    await AuditLog.create({
+        userId: req.user.id,
+        action: 'user.logout'
+    });
 
     logger.info('User logged out', { userId: req.user.id });
 

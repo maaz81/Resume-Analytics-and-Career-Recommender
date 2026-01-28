@@ -63,7 +63,7 @@ if (fs.existsSync('.env')) {
   success('.env file exists');
   
   // Check required env vars
-  const required = ['JWT_SECRET', 'DB_NAME', 'DB_USER'];
+  const required = ['JWT_SECRET', 'DB_NAME', 'DB_USER', 'AI_PARSER_URL', 'AI_ATS_URL'];
   required.forEach(key => {
     if (process.env[key]) {
       success(`${key} is set`);
@@ -141,6 +141,7 @@ const testRedis = async () => {
       host: process.env.REDIS_HOST || 'localhost',
       port: process.env.REDIS_PORT || 6379,
     },
+    password: process.env.REDIS_PASSWORD || undefined,
   });
 
   client.on('error', () => {
