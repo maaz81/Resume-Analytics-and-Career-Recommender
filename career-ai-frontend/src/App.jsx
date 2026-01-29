@@ -1,14 +1,17 @@
-import AppRoutes from './routes/AppRoutes';
+import AppRoutes from '@routes/AppRoutes';
+import { ErrorBoundary } from '@components/ui';
 
 /**
  * Root App Component
- * Renders the main routing structure
+ * Renders the main routing structure with error boundary
  */
 function App() {
   return (
-    <div className="min-h-screen bg-surface-background">
-      <AppRoutes />
-    </div>
+    <ErrorBoundary>
+      <div className="min-h-screen bg-surface-background">
+        <AppRoutes />
+      </div>
+    </ErrorBoundary>
   );
 }
 
