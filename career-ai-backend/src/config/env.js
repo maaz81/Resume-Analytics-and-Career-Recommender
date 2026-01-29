@@ -42,6 +42,7 @@ const config = {
         password: process.env.REDIS_PASSWORD || undefined,
         db: parseInt(process.env.REDIS_DB, 10) || 0,
         retryStrategy: (times) => Math.min(times * 50, 2000),
+        enabled: process.env.REDIS_ENABLED !== 'false',
     },
 
     // File Upload

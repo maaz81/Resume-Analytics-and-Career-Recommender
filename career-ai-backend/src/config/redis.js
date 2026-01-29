@@ -1,5 +1,5 @@
 // ============================================
-// config/redis.js - Redis Client for Caching
+// config/redis.js - Redis Client for Caching (UPDATED - Optional Redis)
 // ============================================
 
 import { createClient } from 'redis';
@@ -25,11 +25,11 @@ const createRedisClient = () => {
     });
 
     client.on('ready', () => {
-        logger.info('Redis client connected successfully');
+        logger.info('✅ Redis client connected successfully');
     });
 
     client.on('error', (err) => {
-        logger.error('Redis client error', err);
+        logger.error('Redis client error', err.message);
     });
 
     client.on('end', () => {
@@ -39,27 +39,39 @@ const createRedisClient = () => {
     return client;
 };
 
-// Initialize Redis connection
+// Initialize Redis connection (NOW OPTIONAL)
 export const connectRedis = async () => {
     try {
+        // Check if Redis is enabled in config
+        if (config.redis.enabled === false || config.redis.enabled === 'false') {
+            logger.warn('⚠️ Redis is disabled in configuration');
+            return null;
+        }
+
         redisClient = createRedisClient();
         await redisClient.connect();
+        logger.info('✅ Redis connected successfully');
         return redisClient;
     } catch (error) {
-        logger.error('Failed to connect to Redis', error);
-        throw error;
+        logger.error('❌ Failed to connect to Redis:', error.message);
+
+        // In development, continue without Redis
+        if (config.env === 'development') {
+            logger.warn('⚠️ Redis unavailable - continuing without cache in development mode');
+            redisClient = null;
+            return null;
+        }
+
+        throw error; // In production, throw error
     }
 };
 
-// Get Redis client
+// Get Redis client (NOW RETURNS NULL IF NOT CONNECTED)
 export const getRedisClient = () => {
-    if (!redisClient) {
-        throw new Error('Redis client not initialized. Call connectRedis first.');
-    }
     return redisClient;
 };
 
-// Cache helper functions
+// Cache helper functions (NOW HANDLE NULL CLIENT GRACEFULLY)
 export const cache = {
     /**
      * Set cache with expiration
@@ -67,12 +79,17 @@ export const cache = {
     set: async (key, value, expirationInSeconds = 3600) => {
         try {
             const client = getRedisClient();
+            if (!client) {
+                logger.debug('⚠️ Redis not available, skipping cache set', { key });
+                return;
+            }
+
             const serializedValue = JSON.stringify(value);
             await client.setEx(key, expirationInSeconds, serializedValue);
-            logger.debug('Cache set', { key, expiration: expirationInSeconds });
+            logger.debug('✅ Cache set', { key, expiration: expirationInSeconds });
         } catch (error) {
-            logger.error('Cache set failed', { key, error: error.message });
-            throw error;
+            logger.error('❌ Cache set failed', { key, error: error.message });
+            // Don't throw - gracefully degrade
         }
     },
 
@@ -82,17 +99,22 @@ export const cache = {
     get: async (key) => {
         try {
             const client = getRedisClient();
+            if (!client) {
+                logger.debug('⚠️ Redis not available, cache miss', { key });
+                return null;
+            }
+
             const cachedValue = await client.get(key);
 
             if (cachedValue) {
-                logger.debug('Cache hit', { key });
+                logger.debug('✅ Cache hit', { key });
                 return JSON.parse(cachedValue);
             }
 
             logger.debug('Cache miss', { key });
             return null;
         } catch (error) {
-            logger.error('Cache get failed', { key, error: error.message });
+            logger.error('❌ Cache get failed', { key, error: error.message });
             return null; // Return null on error, don't throw
         }
     },
@@ -103,10 +125,15 @@ export const cache = {
     del: async (key) => {
         try {
             const client = getRedisClient();
+            if (!client) {
+                logger.debug('⚠️ Redis not available, skipping cache delete', { key });
+                return;
+            }
+
             await client.del(key);
-            logger.debug('Cache deleted', { key });
+            logger.debug('✅ Cache deleted', { key });
         } catch (error) {
-            logger.error('Cache delete failed', { key, error: error.message });
+            logger.error('❌ Cache delete failed', { key, error: error.message });
         }
     },
 
@@ -116,14 +143,19 @@ export const cache = {
     delPattern: async (pattern) => {
         try {
             const client = getRedisClient();
+            if (!client) {
+                logger.debug('⚠️ Redis not available, skipping pattern delete', { pattern });
+                return;
+            }
+
             const keys = await client.keys(pattern);
 
             if (keys.length > 0) {
                 await client.del(keys);
-                logger.debug('Cache pattern deleted', { pattern, count: keys.length });
+                logger.debug('✅ Cache pattern deleted', { pattern, count: keys.length });
             }
         } catch (error) {
-            logger.error('Cache pattern delete failed', { pattern, error: error.message });
+            logger.error('❌ Cache pattern delete failed', { pattern, error: error.message });
         }
     },
 
@@ -133,10 +165,14 @@ export const cache = {
     exists: async (key) => {
         try {
             const client = getRedisClient();
+            if (!client) {
+                return false;
+            }
+
             const exists = await client.exists(key);
             return exists === 1;
         } catch (error) {
-            logger.error('Cache exists check failed', { key, error: error.message });
+            logger.error('❌ Cache exists check failed', { key, error: error.message });
             return false;
         }
     },
@@ -147,10 +183,15 @@ export const cache = {
     expire: async (key, seconds) => {
         try {
             const client = getRedisClient();
+            if (!client) {
+                logger.debug('⚠️ Redis not available, skipping expire', { key });
+                return;
+            }
+
             await client.expire(key, seconds);
-            logger.debug('Cache expiration set', { key, seconds });
+            logger.debug('✅ Cache expiration set', { key, seconds });
         } catch (error) {
-            logger.error('Cache expire failed', { key, error: error.message });
+            logger.error('❌ Cache expire failed', { key, error: error.message });
         }
     },
 };
@@ -171,8 +212,13 @@ export const cacheKeys = {
 // Close Redis connection
 export const closeRedis = async () => {
     if (redisClient) {
-        await redisClient.quit();
-        logger.info('Redis connection closed');
+        try {
+            await redisClient.quit();
+            logger.info('✅ Redis connection closed');
+        } catch (error) {
+            logger.error('❌ Error closing Redis connection:', error.message);
+        }
+        redisClient = null;
     }
 };
 
