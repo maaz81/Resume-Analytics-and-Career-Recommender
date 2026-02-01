@@ -1,6 +1,10 @@
+
+// ===== src/components/layout/AppLayout/AppLayout.jsx =====
 import { useState } from 'react';
 import Sidebar from '../Sidebar';
 import Header from '../Header';
+import AIChatPanel from '@features/chat/components/AIChatPanel';
+import ChatFAB from '@features/chat/components/ChatFAB';
 
 /**
  * AppLayout - Main application layout with sidebar and header
@@ -26,6 +30,10 @@ const AppLayout = ({ children }) => {
           </div>
         </main>
       </div>
+
+      {/* AI Chat Assistant */}
+      <AIChatPanel />
+      <ChatFAB />
     </div>
   );
 };

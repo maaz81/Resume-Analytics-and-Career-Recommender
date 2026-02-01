@@ -1,3 +1,4 @@
+// ===== src/components/layout/Header/Header.jsx =====
 import { useDispatch, useSelector } from 'react-redux';
 import { Menu, Bell, LogOut } from 'lucide-react';
 import { logout, selectUser } from '@features/auth/slices/authSlice';

@@ -1,3 +1,5 @@
+
+// ===== src/components/layout/Sidebar/Sidebar.jsx =====
 import { Link, useLocation } from 'react-router-dom';
 import { X, LayoutDashboard, FileText, Target, Map, User } from 'lucide-react';
 import { ROUTES } from '@constants/routes';

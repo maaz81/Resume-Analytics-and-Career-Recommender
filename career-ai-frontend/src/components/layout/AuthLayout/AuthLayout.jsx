@@ -1,3 +1,4 @@
+// ===== src/components/layout/AuthLayout/AuthLayout.jsx =====
 /**
  * AuthLayout - Layout for authentication pages
  * Centered content with minimal UI
