@@ -1,5 +1,9 @@
+import forms from '@tailwindcss/forms';
+import typography from '@tailwindcss/typography';
+import aspectRatio from '@tailwindcss/aspect-ratio';
+
 /** @type {import('tailwindcss').Config} */
-module.exports = {
+export default {
   darkMode: 'class', // Use 'class' strategy for dark mode
   content: [
     "./src/**/*.{js,ts,jsx,tsx,vue,html}",
@@ -226,8 +230,8 @@ module.exports = {
     },
   },
   plugins: [
-    require('@tailwindcss/forms'), // Better default form styling
-    require('@tailwindcss/typography'), // Prose for readable text content
-    require('@tailwindcss/aspect-ratio'), // Useful for media/content layouts
+    forms,
+    typography,
+    aspectRatio,
   ],
 };
