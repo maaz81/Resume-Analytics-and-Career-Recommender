@@ -98,10 +98,10 @@ const config = {
 };
 
 // Validation
-const requiredEnvVars = ['JWT_SECRET', 'DB_PASSWORD'];
+const requiredEnvVars = ['JWT_SECRET'];
 
 if (config.env === 'production') {
-    requiredEnvVars.push('JWT_REFRESH_SECRET', 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET');
+    requiredEnvVars.push('DB_PASSWORD', 'JWT_REFRESH_SECRET', 'GOOGLE_CLIENT_ID', 'GOOGLE_CLIENT_SECRET');
 }
 
 const missingVars = requiredEnvVars.filter((varName) => !process.env[varName]);
