@@ -25,7 +25,7 @@ def analyze(resume_text, jd_text):
 
     # Calculate scores
     match_score = job_match_score(jd_skills, resume_skills)
-    ats = ats_score(resume_text)
+    ats = ats_score(resume_text, jd_skills)
 
     # Generate recommendations
     courses = recommend_courses(missing_skills)

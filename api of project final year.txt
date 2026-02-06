@@ -1,0 +1,243 @@
+Bilkul 👍
+Abhi tak jitni bhi APIs nikli hain (Auth + Chat + Dashboard) — main sab ek jagah, clean & backend-ready de raha hoon.
+________________________________________
+📦 COMPLETE API LIST (SO FAR)
+🔐 AUTHENTICATION APIs
+1️⃣ Login
+POST /api/auth/login
+Body
+{ "email": "user@email.com", "password": "password" }
+Response
+{ "token": "JWT", "user": { ... } }
+________________________________________
+2️⃣ Signup
+POST /api/auth/signup
+Body
+{ "name": "John", "email": "user@email.com", "password": "password" }
+________________________________________
+3️⃣ OAuth Login
+POST /api/auth/oauth
+Body
+{ "provider": "google" }
+________________________________________
+4️⃣ Logout
+POST /api/auth/logout
+🔑 Auth required
+________________________________________
+5️⃣ Get Current User (Token validation)
+GET /api/auth/me
+🔑 Auth required
+________________________________________
+6️⃣ Update User Profile
+PUT /api/users/me
+🔑 Auth required
+(used for careerGoal, profile updates)
+________________________________________
+🤖 CHAT / AI APIs
+7️⃣ Send Chat Message (AI)
+POST /api/chat/message
+🔑 Auth required
+Body
+{
+  "message": "How can I improve my resume?",
+  "context": { "currentPage": "resume" }
+}
+________________________________________
+8️⃣ Get Chat Suggestions
+GET /api/chat/suggestions?currentPage=resume
+🔑 Auth required
+________________________________________
+9️⃣ Get Chat History (Optional but recommended)
+GET /api/chat/history
+🔑 Auth required
+________________________________________
+🔟 Clear Chat History (Optional)
+DELETE /api/chat/history
+🔑 Auth required
+________________________________________
+📊 DASHBOARD APIs
+1️⃣1️⃣ Full Dashboard Data
+GET /api/dashboard
+🔑 Auth required
+Returns:
+•	resumeHealth
+•	skillGap
+•	learningProgress
+•	nextAction
+•	stats
+•	recentActivity
+•	jobMatchesPreview
+________________________________________
+1️⃣2️⃣ Quick Stats (Lightweight)
+GET /api/dashboard/quick-stats
+🔑 Auth required
+Used for:
+•	navbar
+•	summary cards
+________________________________________
+🔑 COMMON RULES (IMPORTANT)
+Authentication
+All protected APIs use:
+Authorization: Bearer <auth_token>
+Error Format (Frontend expects this)
+{ "message": "Error message here" }
+Token Storage (Frontend)
+localStorage → auth_token
+________________________________________
+🧠 TOTAL COUNT (ABHI TAK)
+Category	APIs
+Auth	6
+Chat / AI	4
+Dashboard	2
+TOTAL	12 APIs
+________________________________________
+🚀 NEXT BEST STEP (Strong Recommendation)
+Now you’re at a perfect backend starting point.
+I can next:
+1.	✅ Generate Express.js folder structure
+2.	✅ Write JWT middleware
+3.	✅ Create Swagger / OpenAPI docs
+4.	✅ Convert dummy chat → OpenAI / Gemini
+5.	✅ MongoDB schemas for all data
+Bas ek word bolo 👇
+“Express” or “FastAPI” 💪
+
+Perfect 👍
+Ab Onboarding slice + services bhi clear ho gaye.
+Main pehle onboarding ki APIs bata raha hoon, phir UPDATED COMPLETE API LIST (sab ek saath) de dunga.
+________________________________________
+🧭 ONBOARDING APIs (NEW)
+1️⃣ Save Career Goal
+Frontend:
+saveCareerGoalService(careerGoalData)
+✅ Backend API
+Endpoint
+POST /api/onboarding/career-goal
+Headers
+Authorization: Bearer <auth_token>
+Content-Type: application/json
+Request Body
+{
+  "targetRole": "senior-software-engineer",
+  "experienceLevel": "mid",
+  "targetCompanies": ["Google", "Microsoft"],
+  "location": "India",
+  "remotePreference": "flexible"
+}
+Response (200)
+{
+  "careerGoal": {
+    "targetRole": "senior-software-engineer",
+    "experienceLevel": "mid",
+    "targetCompanies": ["Google", "Microsoft"],
+    "location": "India",
+    "remotePreference": "flexible"
+  },
+  "message": "Career goal saved successfully"
+}
+📌 Notes:
+•	targetRole & experienceLevel required
+•	Ye data baad me dashboard, roadmap, job-matching me use hoga
+________________________________________
+2️⃣ Upload Resume (PDF)
+Frontend:
+uploadResumeService(file)
+✅ Backend API
+Endpoint
+POST /api/onboarding/resume
+Headers
+Authorization: Bearer <auth_token>
+Content-Type: multipart/form-data
+Form Data
+file: resume.pdf
+Validation (backend must enforce)
+•	Only PDF
+•	Max size: 5MB
+Response
+{
+  "resume": {
+    "id": "resume_1700000000000",
+    "fileName": "resume.pdf",
+    "fileSize": 234567,
+    "fileType": "application/pdf",
+    "uploadedAt": "2026-02-03T10:40:00.000Z",
+    "version": 1
+  },
+  "message": "Resume uploaded successfully"
+}
+________________________________________
+3️⃣ Get Career Roles (Dropdown data)
+Frontend:
+getCareerRolesService()
+✅ Backend API
+Endpoint
+GET /api/onboarding/career-roles
+Response
+{
+  "roles": [
+    { "value": "software-engineer", "label": "Software Engineer" },
+    { "value": "senior-software-engineer", "label": "Senior Software Engineer" }
+  ]
+}
+📌 Mostly static data → cache kar sakte ho
+________________________________________
+4️⃣ Get Top Companies
+Frontend:
+getTopCompaniesService()
+✅ Backend API
+Endpoint
+GET /api/onboarding/top-companies
+Response
+{
+  "companies": ["Google", "Microsoft", "Amazon", "Meta"]
+}
+________________________________________
+📦 UPDATED COMPLETE API LIST (AUTH + CHAT + DASHBOARD + ONBOARDING)
+🔐 AUTH (6)
+1.	POST /api/auth/login
+2.	POST /api/auth/signup
+3.	POST /api/auth/oauth
+4.	POST /api/auth/logout
+5.	GET /api/auth/me
+6.	PUT /api/users/me
+________________________________________
+🧭 ONBOARDING (4) ✅ NEW
+7.	POST /api/onboarding/career-goal
+8.	POST /api/onboarding/resume
+9.	GET /api/onboarding/career-roles
+10.	GET /api/onboarding/top-companies
+________________________________________
+🤖 CHAT / AI (4)
+11.	POST /api/chat/message
+12.	GET /api/chat/suggestions
+13.	GET /api/chat/history (optional)
+14.	DELETE /api/chat/history (optional)
+________________________________________
+📊 DASHBOARD (2)
+15.	GET /api/dashboard
+16.	GET /api/dashboard/quick-stats
+________________________________________
+🔢 TOTAL APIs (ABHI TAK)
+Module	Count
+Auth	6
+Onboarding	4
+Chat	4
+Dashboard	2
+TOTAL	16 APIs 🚀
+________________________________________
+🧠 Reality Check (You’re doing this right)
+At this point you have:
+•	✅ Clear frontend → backend contract
+•	✅ Proper auth flow
+•	✅ Onboarding → dashboard → chat journey
+•	✅ Production-ready API design
+________________________________________
+Next logical step (strongly recommended):
+1.	Backend folder structure
+2.	JWT middleware
+3.	Resume upload (Multer / FastAPI UploadFile)
+4.	Swagger / OpenAPI doc
+5.	Replace dummy logic with real AI
+Bas bolo 👇
+Express ya FastAPI — main next step likh deta hoon 💪
+
