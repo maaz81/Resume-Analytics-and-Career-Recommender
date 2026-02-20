@@ -24,18 +24,18 @@ export default class AiConversation {
         return await transaction(async (client) => {
             // Insert messages
             await client.query(
-                `INSERT INTO ai_messages (conversation_id, user_id, role, content)
+                `INSERT INTO "ai_messages" ("conversation_id", "user_id", "role", "content")
                  VALUES ($1, $2, 'user', $3), ($1, $2, 'assistant', $4)`,
                 [conversationId, userId, userMessage, assistantMessage]
             );
 
             // Update conversation stats
             await client.query(
-                `UPDATE ai_conversations 
-                 SET message_count = message_count + 2, 
-                     last_message_at = NOW(),
-                     updated_at = NOW()
-                 WHERE id = $1`,
+                `UPDATE "ai_conversations" 
+                 SET "message_count" = "message_count" + 2, 
+                     "last_message_at" = NOW(),
+                     "updated_at" = NOW()
+                 WHERE "id" = $1`,
                 [conversationId]
             );
         });
@@ -43,7 +43,7 @@ export default class AiConversation {
 
     static async getHistory(conversationId, limit = 10) {
         const result = await query(
-            `SELECT role, content FROM ai_messages WHERE conversation_id = $1 ORDER BY created_at DESC LIMIT $2`,
+            `SELECT "role", "content" FROM "ai_messages" WHERE "conversation_id" = $1 ORDER BY "created_at" DESC LIMIT $2`,
             [conversationId, limit]
         );
         return result.rows.reverse();
