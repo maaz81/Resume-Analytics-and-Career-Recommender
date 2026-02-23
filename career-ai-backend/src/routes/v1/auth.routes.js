@@ -8,6 +8,7 @@ import * as authController from '../../controllers/auth.controller.js';
 import { protect } from '../../middleware/auth.js';
 import { authLimiter } from '../../middleware/rateLimiter.js';
 import { validate } from '../../middleware/validator.js';
+import passport from 'passport';
 
 const router = express.Router();
 
@@ -101,5 +102,25 @@ router.post(
 );
 
 router.post('/logout', protect, authController.logout);
+
+// Google
+router.get('/google',
+    passport.authenticate('google', { scope: ['profile', 'email'] })
+);
+
+router.get('/google/callback',
+    passport.authenticate('google', { session: false }),
+    authController.oauthSuccess
+);
+
+// GitHub
+router.get('/github',
+    passport.authenticate('github', { scope: ['user:email'] })
+);
+
+router.get('/github/callback',
+    passport.authenticate('github', { session: false }),
+    authController.oauthSuccess
+);
 
 export default router;

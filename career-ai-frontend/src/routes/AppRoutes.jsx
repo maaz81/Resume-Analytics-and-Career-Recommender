@@ -24,6 +24,7 @@ import RoadmapOverviewPage from '@pages/Roadmap/RoadmapOverviewPage';
 import RoadmapDetailPage from '@pages/Roadmap/RoadmapDetailPage';
 import ProfilePage from '@pages/Profile/ProfilePage';
 import NotFoundPage from '@pages/NotFound/NotFoundPage';
+import OAuthSuccess from './OAuthSuccess';
 
 /**
  * Application Routes Configuration
@@ -53,6 +54,7 @@ const AppRoutes = () => {
           </PublicRoute>
         }
       />
+      <Route path="/oauth-success" element={<OAuthSuccess />} />
 
       {/* Onboarding Routes - Protected */}
       <Route

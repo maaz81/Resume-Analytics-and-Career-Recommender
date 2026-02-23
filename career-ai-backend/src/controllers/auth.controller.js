@@ -249,3 +249,16 @@ export const logout = catchAsync(async (req, res) => {
 
     return successResponse(res, null, 'Logged out successfully');
 });
+
+export const oauthSuccess = catchAsync(async (req, res) => {
+    const user = req.user;
+
+    const tokens = generateTokens(user);
+
+    await User.updateLastLogin(user.id);
+
+    // Redirect to frontend with token — JSON won't work here since
+    // the browser navigated away from the SPA during the OAuth flow
+    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    res.redirect(`${frontendUrl}/oauth-success?token=${tokens.accessToken}`);
+});

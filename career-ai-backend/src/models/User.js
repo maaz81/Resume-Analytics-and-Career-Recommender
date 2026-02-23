@@ -188,4 +188,15 @@ export default class User {
 
         return result.rows[0] || null;
     }
+
+    static async attachOAuth(userId, provider, oauthId) {
+        await query(
+            `UPDATE "users"
+         SET "oauth_provider" = $1,
+             "oauth_id" = $2,
+             "updated_at" = NOW()
+         WHERE "id" = $3`,
+            [provider, oauthId, userId]
+        );
+    }
 }

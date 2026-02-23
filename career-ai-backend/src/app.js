@@ -22,6 +22,9 @@ import atsRoutes from './routes/v1/ats.routes.js';
 import roadmapRoutes from './routes/v1/roadmap.routes.js';
 import aiRoutes from './routes/v1/ai.routes.js';
 
+// Import Oauth
+import passport from './config/passport.js'
+
 // Create Express app
 const app = express();
 
@@ -48,6 +51,12 @@ app.use(
 
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+
+// ============================================
+// PASSPORT & OAUTH
+// ============================================
+
+app.use(passport.initialize());
 
 // ============================================
 // COMPRESSION & LOGGING

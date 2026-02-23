@@ -44,14 +44,14 @@ export const useAuth = () => {
       dispatch(loginStart());
       const response = await loginService(credentials.email, credentials.password);
       dispatch(loginSuccess(response));
-      
+
       // Navigate to dashboard or onboarding based on user state
       if (response.user.careerGoal) {
         navigate(ROUTES.DASHBOARD);
       } else {
         navigate(ROUTES.ONBOARDING_CAREER_GOAL);
       }
-      
+
       return { success: true };
     } catch (err) {
       dispatch(loginFailure(err.message));
@@ -67,10 +67,10 @@ export const useAuth = () => {
       dispatch(signupStart());
       const response = await signupService(userData);
       dispatch(signupSuccess(response));
-      
+
       // Navigate to onboarding after signup
       navigate(ROUTES.ONBOARDING_CAREER_GOAL);
-      
+
       return { success: true };
     } catch (err) {
       dispatch(signupFailure(err.message));
@@ -80,25 +80,11 @@ export const useAuth = () => {
 
   /**
    * OAuth login function
+   * Redirects to backend OAuth endpoint — page navigates away,
+   * so no Redux dispatch needed here. Token handling happens in OAuthSuccess.
    */
-  const oauthLogin = async (provider) => {
-    try {
-      dispatch(loginStart());
-      const response = await oauthLoginService(provider);
-      dispatch(loginSuccess(response));
-      
-      // Navigate to dashboard or onboarding
-      if (response.user.careerGoal) {
-        navigate(ROUTES.DASHBOARD);
-      } else {
-        navigate(ROUTES.ONBOARDING_CAREER_GOAL);
-      }
-      
-      return { success: true };
-    } catch (err) {
-      dispatch(loginFailure(err.message));
-      return { success: false, error: err.message };
-    }
+  const oauthLogin = (provider) => {
+    oauthLoginService(provider);
   };
 
   /**
@@ -124,7 +110,7 @@ export const useAuth = () => {
     isAuthenticated,
     isLoading,
     error,
-    
+
     // Actions
     login,
     signup,
