@@ -21,7 +21,7 @@ if (!fs.existsSync(uploadDir)) {
 // Storage configuration
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
-        const userUploadDir = path.join(uploadDir, req.user.id);
+        const userUploadDir = path.join(uploadDir, String(req.user.id));
 
         // Create user-specific directory
         if (!fs.existsSync(userUploadDir)) {

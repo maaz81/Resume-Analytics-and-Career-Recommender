@@ -5,37 +5,6 @@
 import { query, transaction } from '../config/db.js';
 
 export default class Resume {
-    /**
-     * Create new resume
-     */
-    static async create(resumeData) {
-        const {
-            userId,
-            originalFilename,
-            filePath,
-            fileSize,
-            mimeType,
-        } = resumeData;
-
-        // Get next version number
-        const versionResult = await query(
-            'SELECT COALESCE(MAX(version), 0) + 1 as next_version FROM resumes WHERE user_id = $1',
-            [userId]
-        );
-
-        const nextVersion = versionResult.rows[0].next_version;
-
-        const result = await query(
-            `INSERT INTO resumes (
-        user_id, version, original_filename, file_path, 
-        file_size, mime_type, parsing_status
-      ) VALUES ($1, $2, $3, $4, $5, $6, $7)
-      RETURNING *`,
-            [userId, nextVersion, originalFilename, filePath, fileSize, mimeType, 'pending']
-        );
-
-        return result.rows[0];
-    }
 
     /**
      * Find resume by ID
@@ -158,5 +127,47 @@ export default class Resume {
         );
 
         return result.rows[0] || null;
+    }
+
+    /**
+     * Create new resume
+     */
+
+    static async create(resumeData) {
+        const {
+            userId,
+            originalFilename,
+            filePath,
+            fileSize,
+            mimeType,
+            rawText
+        } = resumeData;
+
+        const versionResult = await query(
+            'SELECT COALESCE(MAX(version), 0) + 1 as next_version FROM resumes WHERE user_id = $1',
+            [userId]
+        );
+
+        const nextVersion = versionResult.rows[0].next_version;
+
+        const result = await query(
+            `INSERT INTO resumes (
+            user_id, version, original_filename, file_path,
+            file_size, mime_type, parsing_status, raw_text
+        ) VALUES ($1,$2,$3,$4,$5,$6,$7,$8)
+        RETURNING *`,
+            [
+                userId,
+                nextVersion,
+                originalFilename,
+                filePath,
+                fileSize,
+                mimeType,
+                'completed',
+                rawText
+            ]
+        );
+
+        return result.rows[0];
     }
 }

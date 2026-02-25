@@ -39,4 +39,6 @@ router.get('/:id/status', resumeController.getParsingStatus);
 // Delete resume
 router.delete('/:id', resumeController.deleteResume);
 
+router.post('/:id/score', resumeController.scoreResume);
+
 export default router;

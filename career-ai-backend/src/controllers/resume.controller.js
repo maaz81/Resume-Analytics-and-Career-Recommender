@@ -10,6 +10,11 @@ import { callAIService } from '../services/ai.service.js';
 import logger from '../config/logger.js';
 import { query } from '../config/db.js';
 import { deleteFile } from '../utils/fileUpload.js';
+import { analyzeResume } from '../services/ai.service.js';
+import fs from 'fs';
+import { createRequire } from 'module';
+const require = createRequire(import.meta.url);
+const pdf = require('pdf-parse');
 
 /**
  * Upload new resume
@@ -20,52 +25,45 @@ export const uploadResume = catchAsync(async (req, res) => {
         throw errors.badRequest('No file uploaded');
     }
 
-    // Create resume record
+    // Extract PDF text
+    const buffer = fs.readFileSync(req.file.path);
+    const pdfData = await pdf(buffer);
+    const rawText = pdfData.text;
+
+    // Create resume record (make sure Resume.create supports rawText)
     const resume = await Resume.create({
         userId: req.user.id,
         originalFilename: req.file.originalname,
         filePath: req.file.path,
         fileSize: req.file.size,
         mimeType: req.file.mimetype,
-    });
-
-    // Trigger async parsing (don't wait)
-    parseResumeAsync(resume.id, req.file.path).catch((error) => {
-        logger.error('Resume parsing failed', { resumeId: resume.id, error: error.message });
+        rawText
     });
 
     // Log audit
     await query(
         `INSERT INTO audit_logs (user_id, action, entity_type, entity_id, metadata)
-     VALUES ($1, $2, $3, $4, $5)`,
-        [req.user.id, 'resume.uploaded', 'resume', resume.id, JSON.stringify({ filename: req.file.originalname })]
+         VALUES ($1, $2, $3, $4, $5)`,
+        [
+            req.user.id,
+            'resume.uploaded',
+            'resume',
+            resume.id,
+            JSON.stringify({ filename: req.file.originalname })
+        ]
     );
 
-    logger.info('Resume uploaded', { userId: req.user.id, resumeId: resume.id });
+    logger.info('Resume uploaded', {
+        userId: req.user.id,
+        resumeId: resume.id
+    });
 
-    return createdResponse(res, { resume }, 'Resume uploaded successfully. Parsing in progress...');
+    return createdResponse(
+        res,
+        { resume },
+        'Resume uploaded successfully'
+    );
 });
-
-/**
- * Async resume parsing function
- */
-const parseResumeAsync = async (resumeId, filePath) => {
-    try {
-        // Call AI parser service
-        const parsedData = await callAIService('parser', {
-            resumeId,
-            filePath,
-        });
-
-        // Update resume with parsed data
-        await Resume.updateParsing(resumeId, parsedData);
-
-        logger.info('Resume parsed successfully', { resumeId });
-    } catch (error) {
-        await Resume.setParsingError(resumeId, error.message);
-        throw error;
-    }
-};
 
 /**
  * Get all resumes for current user
@@ -218,4 +216,42 @@ export const getParsingStatus = catchAsync(async (req, res) => {
         parsedAt: resume.parsed_at,
         error: resume.parsing_error,
     }, 'Parsing status retrieved successfully');
+});
+
+
+
+
+export const scoreResume = catchAsync(async (req, res) => {
+    const resume = await Resume.findById(req.params.id);
+
+    if (!resume) {
+        throw errors.notFound('Resume not found');
+    }
+
+    if (resume.user_id !== req.user.id) {
+        throw errors.forbidden('Unauthorized');
+    }
+
+    const jdText = req.body.jdText;
+
+    if (!jdText) {
+        throw errors.badRequest('Job description required');
+    }
+
+    const aiResult = await analyzeResume(resume.raw_text, jdText);
+
+    await query(
+        `INSERT INTO ats_scores 
+         (resume_id, user_id, overall_score, keyword_score, missing_keywords)
+         VALUES ($1,$2,$3,$4,$5)`,
+        [
+            resume.id,
+            req.user.id,
+            aiResult.job_match_score,
+            aiResult.ats_score,
+            JSON.stringify(aiResult.missing_skills)
+        ]
+    );
+
+    return successResponse(res, { analysis: aiResult }, 'Resume analyzed successfully');
 });
