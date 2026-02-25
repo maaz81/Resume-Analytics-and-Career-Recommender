@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { User, Mail, Briefcase, MapPin, Building2 } from 'lucide-react';
 import Input from '@common/Input';
 import Dropdown from '@common/Dropdown';
@@ -9,7 +9,7 @@ import Alert from '@common/Alert';
  * ProfileForm Component
  * Form for updating user profile and career goals
  */
-const ProfileForm = ({ user, onSave }) => {
+const ProfileForm = ({ user, onSave, isUpdating = false, updateSuccess = false }) => {
     const [formData, setFormData] = useState({
         name: user?.name || '',
         email: user?.email || '',
@@ -19,9 +19,21 @@ const ProfileForm = ({ user, onSave }) => {
         targetCompanies: user?.careerGoal?.targetCompanies || [],
     });
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [success, setSuccess] = useState(false);
     const [errors, setErrors] = useState({});
+
+    // Re-initialize form when user data loads asynchronously
+    useEffect(() => {
+        if (user) {
+            setFormData({
+                name: user.name || '',
+                email: user.email || '',
+                targetRole: user.careerGoal?.targetRole || '',
+                experienceLevel: user.careerGoal?.experience || '',
+                location: user.careerGoal?.location || '',
+                targetCompanies: user.careerGoal?.targetCompanies || [],
+            });
+        }
+    }, [user]);
 
     const experienceLevels = [
         { value: 'entry', label: 'Entry Level (0-2 years)' },
@@ -53,11 +65,6 @@ const ProfileForm = ({ user, onSave }) => {
                 [field]: null,
             }));
         }
-
-        // Clear success message
-        if (success) {
-            setSuccess(false);
-        }
     };
 
     const handleSubmit = async (e) => {
@@ -77,23 +84,13 @@ const ProfileForm = ({ user, onSave }) => {
             return;
         }
 
-        setIsLoading(true);
-
-        // Simulate save delay
-        setTimeout(() => {
-            onSave(formData);
-            setIsLoading(false);
-            setSuccess(true);
-
-            // Clear success message after 3 seconds
-            setTimeout(() => setSuccess(false), 3000);
-        }, 1000);
+        onSave(formData);
     };
 
     return (
         <form onSubmit={handleSubmit} className="space-y-6">
             {/* Success Alert */}
-            {success && (
+            {updateSuccess && (
                 <Alert variant="success">
                     Profile updated successfully!
                 </Alert>
@@ -112,7 +109,7 @@ const ProfileForm = ({ user, onSave }) => {
                         leftIcon={<User className="w-5 h-5" />}
                         error={errors.name}
                         required
-                        disabled={isLoading}
+                        disabled={isUpdating}
                     />
 
                     <Input
@@ -123,8 +120,8 @@ const ProfileForm = ({ user, onSave }) => {
                         leftIcon={<Mail className="w-5 h-5" />}
                         error={errors.email}
                         required
-                        disabled={isLoading}
-                        helperText="Used for account login and notifications"
+                        disabled
+                        helperText="Email cannot be changed"
                     />
                 </div>
             </div>
@@ -142,7 +139,7 @@ const ProfileForm = ({ user, onSave }) => {
                         onChange={(value) => handleChange('targetRole', value)}
                         placeholder="Select your target role"
                         searchable
-                        disabled={isLoading}
+                        disabled={isUpdating}
                     />
 
                     <Dropdown
@@ -151,7 +148,7 @@ const ProfileForm = ({ user, onSave }) => {
                         value={formData.experienceLevel}
                         onChange={(value) => handleChange('experienceLevel', value)}
                         placeholder="Select your experience level"
-                        disabled={isLoading}
+                        disabled={isUpdating}
                     />
 
                     <Input
@@ -160,7 +157,7 @@ const ProfileForm = ({ user, onSave }) => {
                         onChange={(e) => handleChange('location', e.target.value)}
                         leftIcon={<MapPin className="w-5 h-5" />}
                         placeholder="e.g., San Francisco, CA"
-                        disabled={isLoading}
+                        disabled={isUpdating}
                         helperText="Optional"
                     />
                 </div>
@@ -172,8 +169,8 @@ const ProfileForm = ({ user, onSave }) => {
                     type="submit"
                     variant="primary"
                     size="lg"
-                    isLoading={isLoading}
-                    disabled={isLoading}
+                    isLoading={isUpdating}
+                    disabled={isUpdating}
                 >
                     Save Changes
                 </Button>
@@ -182,7 +179,7 @@ const ProfileForm = ({ user, onSave }) => {
                     type="button"
                     variant="outline"
                     size="lg"
-                    disabled={isLoading}
+                    disabled={isUpdating}
                     onClick={() => window.location.reload()}
                 >
                     Cancel

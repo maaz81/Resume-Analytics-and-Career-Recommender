@@ -199,4 +199,20 @@ export default class User {
             [provider, oauthId, userId]
         );
     }
+
+    static async getPersonalInfo(id) {
+        const result = await query(
+            `SELECT 
+            "full_name",
+            "email",
+            "target_role",
+            "years_of_experience",
+            "location"
+         FROM "users"
+         WHERE "id" = $1`,
+            [id]
+        );
+
+        return result.rows[0] || null;
+    }
 }

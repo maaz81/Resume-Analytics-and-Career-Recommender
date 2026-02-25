@@ -1,5 +1,5 @@
 // ===== src/pages/Profile/ProfilePage.jsx =====
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Shield, Bell, Palette, LogOut, Trash2 } from 'lucide-react';
 import ProfileForm from '@features/profile/components/ProfileForm';
@@ -7,7 +7,8 @@ import Card, { CardHeader, CardTitle, CardContent } from '@common/Card';
 import Button from '@common/Button';
 import Badge from '@common/Badge';
 import Modal from '@common/Modal';
-import { updateUser, logout } from '@features/auth/slices/authSlice';
+import { logout } from '@features/auth/slices/authSlice';
+import { loadProfile, updateProfile } from '@features/profile/slices/profileSlice';
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@constants/routes';
 import { formatDate, getInitials } from '@utils/helpers';
@@ -15,7 +16,17 @@ import { formatDate, getInitials } from '@utils/helpers';
 const ProfilePage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state) => state.auth.user);
+
+  const { isAuthenticated } = useSelector((state) => state.auth);
+  const { profile, isLoading, isUpdating, updateSuccess } = useSelector((state) => state.profile);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      dispatch(loadProfile());
+    }
+  }, [dispatch, isAuthenticated]);
+
+  const user = profile;
 
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [notifications, setNotifications] = useState({
@@ -25,8 +36,16 @@ const ProfilePage = () => {
     learningReminders: true,
   });
 
-  const handleSaveProfile = (updatedData) => {
-    dispatch(updateUser(updatedData));
+  const handleSaveProfile = (formData) => {
+    // Map frontend form fields to backend snake_case fields
+    const mappedData = {
+      fullName: formData.name,
+      targetRole: formData.targetRole,
+      yearsOfExperience: formData.experienceLevel,
+      location: formData.location,
+    };
+
+    dispatch(updateProfile(mappedData));
   };
 
   const handleNotificationToggle = (key) => {
@@ -47,6 +66,25 @@ const ProfilePage = () => {
     setShowDeleteModal(false);
   };
 
+  // Map backend snake_case fields to the format ProfileForm expects
+  const mappedUser = user && {
+    name: user.full_name,
+    email: user.email,
+    careerGoal: {
+      targetRole: user.target_role,
+      experience: user.years_of_experience,
+      location: user.location,
+    },
+  };
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-[400px]">
+        <div className="text-text-secondary">Loading profile...</div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -63,19 +101,19 @@ const ProfilePage = () => {
           <div className="flex items-center gap-6">
             {/* Avatar */}
             <div className="w-20 h-20 rounded-full bg-brand-primary text-white flex items-center justify-center text-2xl font-bold flex-shrink-0">
-              {getInitials(user?.name || 'User')}
+              {getInitials(user?.full_name || 'User')}
             </div>
 
             {/* Info */}
             <div className="flex-1">
-              <h2 className="text-2xl font-bold text-text-primary">{user?.name}</h2>
+              <h2 className="text-2xl font-bold text-text-primary">{user?.full_name}</h2>
               <p className="text-text-secondary">{user?.email}</p>
               <div className="flex items-center gap-2 mt-2">
                 <Badge variant="primary">
-                  {user?.careerGoal?.targetRole || 'No target role set'}
+                  {user?.target_role || 'No target role set'}
                 </Badge>
                 <Badge variant="default">
-                  {user?.careerGoal?.experience || 'Experience not set'}
+                  {user?.years_of_experience ? `${user.years_of_experience} years` : 'Experience not set'}
                 </Badge>
               </div>
             </div>
@@ -84,7 +122,7 @@ const ProfilePage = () => {
             <div className="text-right">
               <p className="text-sm text-text-muted">Member since</p>
               <p className="text-sm font-semibold text-text-primary">
-                {formatDate(user?.createdAt || new Date())}
+                {formatDate(user?.created_at || new Date())}
               </p>
             </div>
           </div>
@@ -97,7 +135,12 @@ const ProfilePage = () => {
           <CardTitle>Personal Information & Career Goals</CardTitle>
         </CardHeader>
         <CardContent>
-          <ProfileForm user={user} onSave={handleSaveProfile} />
+          <ProfileForm
+            user={mappedUser}
+            onSave={handleSaveProfile}
+            isUpdating={isUpdating}
+            updateSuccess={updateSuccess}
+          />
         </CardContent>
       </Card>
 
