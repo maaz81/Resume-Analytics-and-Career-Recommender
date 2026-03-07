@@ -22,6 +22,7 @@ import atsRoutes from './routes/v1/ats.routes.js';
 import roadmapRoutes from './routes/v1/roadmap.routes.js';
 import aiRoutes from './routes/v1/ai.routes.js';
 import profileRoutes from './routes/v1/profile.route.js'
+import dashboardRoutes from './routes/v1/dashboard.routes.js'
 
 // Import Oauth
 import passport from './config/passport.js'
@@ -109,6 +110,7 @@ app.get('/api', (req, res) => {
 const API_PREFIX = `/api/${config.apiVersion}`;
 
 app.use(`${API_PREFIX}/auth`, authRoutes);
+app.use(`${API_PREFIX}/dashboard`, dashboardRoutes);
 app.use(`${API_PREFIX}/resumes`, resumeRoutes);
 app.use(`${API_PREFIX}/skills`, skillsRoutes);
 app.use(`${API_PREFIX}/ats`, atsRoutes);
