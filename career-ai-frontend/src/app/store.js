@@ -6,6 +6,7 @@ import skillsReducer from '../features/skills/slices/skillsSlice';
 import dashboardReducer from '../features/dashboard/slices/dashboardSlice';
 import chatReducer from '../features/chat/slices/chatSlice';
 import profileReducer from '../features/profile/slices/profileSlice';
+import chatbotReducer from '../features/chatbot/slices/chatbotSlice';
 
 /**
  * Redux Store Configuration
@@ -20,6 +21,7 @@ export const store = configureStore({
     dashboard: dashboardReducer,
     chat: chatReducer,
     profile: profileReducer,
+    chatbot: chatbotReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
@@ -43,3 +45,4 @@ export const selectSkillsState = (state) => state.skills;
 export const selectDashboardState = (state) => state.dashboard;
 export const selectChatState = (state) => state.chat;
 export const selectProfileState = (state) => state.profile;
+export const selectChatbotState = (state) => state.chatbot;

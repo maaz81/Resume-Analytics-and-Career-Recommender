@@ -23,6 +23,7 @@ import SkillPriorityPage from '@pages/Skills/SkillPriorityPage';
 import ProfilePage from '@pages/Profile/ProfilePage';
 import NotFoundPage from '@pages/NotFound/NotFoundPage';
 import OAuthSuccess from './OAuthSuccess';
+import ChatBotPage from '@pages/ChatBot/ChatBotPage';
 
 /**
  * Application Routes Configuration
@@ -144,6 +145,17 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <AppLayout>
               <ProfilePage />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path={ROUTES.CHAT_BOT}
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <ChatBotPage />
             </AppLayout>
           </ProtectedRoute>
         }
