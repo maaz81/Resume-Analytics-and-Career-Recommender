@@ -1,4 +1,5 @@
 import { FileText, Target, Map, Briefcase } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import StatsCard from './StatsCard';
 import NextActionCard from './NextActionCard';
@@ -8,6 +9,7 @@ import LearningProgressWidget from './LearningProgressWidget';
 import Spinner from '@common/Spinner';
 import Alert from '@common/Alert';
 import { useDashboard } from '../hooks/useDashboard';
+import { ROUTES } from '@constants/routes';
 
 /**
  * DashboardOverview Component
@@ -16,6 +18,7 @@ import { useDashboard } from '../hooks/useDashboard';
 const DashboardOverview = () => {
   const { isLoading, error } = useDashboard();
   const user = useSelector((state) => state.auth.user);
+  const navigate = useNavigate();
 
   if (isLoading) {
     return (
@@ -101,7 +104,7 @@ const DashboardOverview = () => {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <button className="p-4 rounded-lg border border-border hover:border-brand-primary hover:bg-brand-primary/5 transition-all text-left group">
+        <button className="p-4 rounded-lg border border-border hover:border-brand-primary hover:bg-brand-primary/5 transition-all text-left group" onClick={() => navigate(ROUTES.ONBOARDING_RESUME_UPLOAD)}>
           <FileText className="w-6 h-6 text-brand-primary mb-2" />
           <h4 className="font-semibold text-text-primary group-hover:text-brand-primary transition-colors">
             Upload New Resume

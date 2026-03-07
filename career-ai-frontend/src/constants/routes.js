@@ -3,35 +3,39 @@
  * Centralized route definitions for maintainability
  */
 
+import { Routes } from "react-router-dom";
+
 export const ROUTES = {
   // Public Routes
   HOME: '/',
   LOGIN: '/login',
   SIGNUP: '/signup',
-  
+
   // Onboarding Flow
   ONBOARDING_CAREER_GOAL: '/onboarding/career-goal',
   ONBOARDING_RESUME_UPLOAD: '/onboarding/resume-upload',
-  
+
   // Dashboard
   DASHBOARD: '/dashboard',
-  
+
   // Resume Routes
   RESUME_ANALYSIS: '/resume/analysis',
   RESUME_ISSUES: '/resume/issues',
   RESUME_HISTORY: '/resume/history',
-  
+
   // Skills Routes
   SKILL_GAP: '/skills/gap-analysis',
   SKILL_PRIORITY: '/skills/priority',
-  
-  // Roadmap Routes
-  ROADMAP_OVERVIEW: '/roadmap',
-  ROADMAP_DETAIL: '/roadmap/:skillId',
-  
+
+  // Recomandations Routes
+  RECOMANDATION: '/recomadation',
+
+  // Chat Bot Routes
+  CHAT_BOT: '/chat-bot',
+
   // Profile Routes
   PROFILE: '/profile',
-  
+
   // Error Routes
   NOT_FOUND: '*',
 };
@@ -63,8 +67,10 @@ export const ROUTE_GROUPS = {
     ROUTES.RESUME_HISTORY,
     ROUTES.SKILL_GAP,
     ROUTES.SKILL_PRIORITY,
-    ROUTES.ROADMAP_OVERVIEW,
-    ROUTES.ROADMAP_DETAIL,
+    ROUTES.RECOMANDATION,
+    ROUTES.CHAT_BOT,
+    // ROUTES.ROADMAP_OVERVIEW,
+    // ROUTES.ROADMAP_DETAIL,
     ROUTES.PROFILE,
   ],
 };

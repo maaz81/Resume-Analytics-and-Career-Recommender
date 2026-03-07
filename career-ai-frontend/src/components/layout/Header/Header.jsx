@@ -39,17 +39,22 @@ const Header = ({ onMenuClick }) => {
           </button>
 
           {/* User Profile */}
-          <div className="flex items-center gap-3">
+          <button
+            onClick={() => navigate('/profile')}
+            className="flex items-center gap-3 hover:bg-surface-alt p-1 -m-1 rounded-lg transition-colors text-left"
+          >
             <div className="w-10 h-10 rounded-full bg-brand-primary text-white flex items-center justify-center font-semibold">
               {getInitials(user?.name || 'User')}
             </div>
-            <div className="hidden md:block">
-              <p className="text-sm font-medium text-text-primary">
-                {user?.name || 'User'}
-              </p>
-              <p className="text-xs text-text-muted">{user?.email || ''}</p>
-            </div>
+          </button>
+          <div className="hidden md:block">
+            <p className="text-sm font-medium text-text-primary">
+              {user?.name || 'User'}
+            </p>
+            <p className="text-xs text-text-muted">{user?.email || ''}</p>
           </div>
+
+
 
           {/* Logout Button */}
           <button

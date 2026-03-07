@@ -3,7 +3,6 @@ import authReducer from '../features/auth/slices/authSlice';
 import onboardingReducer from '../features/onboarding/slices/onboardingSlice';
 import resumeReducer from '../features/resume/slices/resumeSlice';
 import skillsReducer from '../features/skills/slices/skillsSlice';
-import roadmapReducer from '../features/roadmap/slices/roadmapSlice';
 import dashboardReducer from '../features/dashboard/slices/dashboardSlice';
 import chatReducer from '../features/chat/slices/chatSlice';
 import profileReducer from '../features/profile/slices/profileSlice';
@@ -18,7 +17,6 @@ export const store = configureStore({
     onboarding: onboardingReducer,
     resume: resumeReducer,
     skills: skillsReducer,
-    roadmap: roadmapReducer,
     dashboard: dashboardReducer,
     chat: chatReducer,
     profile: profileReducer,
@@ -42,7 +40,6 @@ export const selectAuthState = (state) => state.auth;
 export const selectOnboardingState = (state) => state.onboarding;
 export const selectResumeState = (state) => state.resume;
 export const selectSkillsState = (state) => state.skills;
-export const selectRoadmapState = (state) => state.roadmap;
 export const selectDashboardState = (state) => state.dashboard;
 export const selectChatState = (state) => state.chat;
 export const selectProfileState = (state) => state.profile;

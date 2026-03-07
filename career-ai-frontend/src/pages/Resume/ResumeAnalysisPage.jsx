@@ -147,12 +147,39 @@ const ResumeAnalysisPage = () => {
         </CardContent>
       </Card>
 
+      {/* Tips Card */}
+      <Card className="border-2 border-brand-primary/20 bg-brand-primary/5">
+        <CardContent className="p-6">
+          <h3 className="font-semibold text-text-primary mb-3">
+            💡 Resume Version Best Practices
+          </h3>
+          <ul className="space-y-2 text-sm text-text-secondary">
+            <li className="flex items-start gap-2">
+              <span className="text-brand-primary mt-1">•</span>
+              <span>Upload a new version after making significant changes</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-brand-primary mt-1">•</span>
+              <span>Keep 3-5 versions to track your improvement over time</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-brand-primary mt-1">•</span>
+              <span>Restore previous versions if you need to revert changes</span>
+            </li>
+            <li className="flex items-start gap-2">
+              <span className="text-brand-primary mt-1">•</span>
+              <span>Compare versions to see what improvements worked best</span>
+            </li>
+          </ul>
+        </CardContent>
+      </Card>
+
       {/* Action Buttons */}
       <div className="flex gap-4">
         <Button
           variant="primary"
           size="lg"
-          onClick={() => navigate(ROUTES.RESUME_ISSUES)}
+          onClick={() => navigate(ROUTES.SKILL_GAP)}
           rightIcon={<ArrowRight className="w-4 h-4" />}
           className="flex-1"
         >

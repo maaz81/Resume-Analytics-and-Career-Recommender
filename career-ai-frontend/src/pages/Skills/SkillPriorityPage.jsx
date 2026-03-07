@@ -1,4 +1,3 @@
-
 // ===== src/pages/Skills/SkillPriorityPage.jsx =====
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -65,7 +64,7 @@ const SkillPriorityPage = () => {
         >
           Back to Skill Gap
         </Button>
-        
+
         <h1 className="text-3xl font-bold text-text-primary">Learning Priority Queue</h1>
         <p className="text-text-secondary mt-1">
           Recommended order to learn skills for maximum impact
@@ -158,7 +157,7 @@ const SkillPriorityPage = () => {
       </Card>
 
       {/* Priority Skills List */}
-      <SkillPriorityList 
+      <SkillPriorityList
         prioritySkills={priorityData.priorityQueue}
         onStartLearning={handleStartLearning}
       />

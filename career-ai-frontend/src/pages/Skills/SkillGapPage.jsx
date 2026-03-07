@@ -52,8 +52,8 @@ const SkillGapPage = () => {
     {
       id: 'core',
       label: 'Core Skills',
-      badge: analysisData.skillsByCategory.core.filter(s => s.status === 'missing').length > 0 
-        ? analysisData.skillsByCategory.core.filter(s => s.status === 'missing').length 
+      badge: analysisData.skillsByCategory.core.filter(s => s.status === 'missing').length > 0
+        ? analysisData.skillsByCategory.core.filter(s => s.status === 'missing').length
         : null,
       content: (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -163,7 +163,7 @@ const SkillGapPage = () => {
       </div>
 
       {/* Skills Matrix */}
-      <SkillMatrix skillsByCategory={analysisData.skillsByCategory} />
+      {/* <SkillMatrix skillsByCategory={analysisData.skillsByCategory} /> */}
 
       {/* Skills by Category (Tabs) */}
       <Card>
@@ -179,7 +179,7 @@ const SkillGapPage = () => {
       </Card>
 
       {/* Market Insights */}
-      <Card>
+      {/* <Card>
         <CardHeader>
           <div className="flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-status-success" />
@@ -187,9 +187,9 @@ const SkillGapPage = () => {
           </div>
         </CardHeader>
         <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {/* Trending Skills */}
-            <div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6"> */}
+      {/* Trending Skills */}
+      {/* <div>
               <h4 className="text-sm font-semibold text-text-primary mb-3">
                 Top Trending Skills
               </h4>
@@ -201,10 +201,10 @@ const SkillGapPage = () => {
                   </li>
                 ))}
               </ul>
-            </div>
+            </div> */}
 
-            {/* Salary Impact */}
-            <div>
+      {/* Salary Impact */}
+      {/* <div>
               <h4 className="text-sm font-semibold text-text-primary mb-3">
                 Average Salary Impact
               </h4>
@@ -219,7 +219,7 @@ const SkillGapPage = () => {
             </div>
           </div>
         </CardContent>
-      </Card>
+      </Card> */}
     </div>
   );
 };

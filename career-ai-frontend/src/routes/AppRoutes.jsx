@@ -20,8 +20,6 @@ import ResumeIssuesPage from '@pages/Resume/ResumeIssuesPage';
 import ResumeHistoryPage from '@pages/Resume/ResumeHistoryPage';
 import SkillGapPage from '@pages/Skills/SkillGapPage';
 import SkillPriorityPage from '@pages/Skills/SkillPriorityPage';
-import RoadmapOverviewPage from '@pages/Roadmap/RoadmapOverviewPage';
-import RoadmapDetailPage from '@pages/Roadmap/RoadmapDetailPage';
 import ProfilePage from '@pages/Profile/ProfilePage';
 import NotFoundPage from '@pages/NotFound/NotFoundPage';
 import OAuthSuccess from './OAuthSuccess';
@@ -139,26 +137,7 @@ const AppRoutes = () => {
           </ProtectedRoute>
         }
       />
-      <Route
-        path={ROUTES.ROADMAP_OVERVIEW}
-        element={
-          <ProtectedRoute>
-            <AppLayout>
-              <RoadmapOverviewPage />
-            </AppLayout>
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path={ROUTES.ROADMAP_DETAIL}
-        element={
-          <ProtectedRoute>
-            <AppLayout>
-              <RoadmapDetailPage />
-            </AppLayout>
-          </ProtectedRoute>
-        }
-      />
+
       <Route
         path={ROUTES.PROFILE}
         element={
