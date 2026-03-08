@@ -1,4 +1,3 @@
-
 // ===== src/features/dashboard/slices/dashboardSlice.js =====
 import { createSlice } from '@reduxjs/toolkit';
 
@@ -7,6 +6,9 @@ const dashboardSlice = createSlice({
   initialState: {
     stats: null,
     nextAction: null,
+    profile: null,
+    resume: null,
+    atsScore: null,
     isLoading: false,
     error: null,
   },
@@ -15,11 +17,16 @@ const dashboardSlice = createSlice({
       state.isLoading = true;
       state.error = null;
     },
+
     loadDashboardSuccess: (state, action) => {
       state.isLoading = false;
       state.stats = action.payload.stats;
       state.nextAction = action.payload.nextAction;
+      state.profile = action.payload.profile;
+      state.resume = action.payload.resume;
+      state.atsScore = action.payload.atsScore;
     },
+
     loadDashboardFailure: (state, action) => {
       state.isLoading = false;
       state.error = action.payload;
@@ -32,5 +39,5 @@ export const {
   loadDashboardSuccess,
   loadDashboardFailure,
 } = dashboardSlice.actions;
-export default dashboardSlice.reducer;
 
+export default dashboardSlice.reducer;

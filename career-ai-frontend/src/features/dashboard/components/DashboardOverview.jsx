@@ -16,7 +16,7 @@ import { ROUTES } from '@constants/routes';
  * Main dashboard layout with all widgets
  */
 const DashboardOverview = () => {
-  const { isLoading, error } = useDashboard();
+  const { isLoading, error, atsScore, stats } = useDashboard();
   const user = useSelector((state) => state.auth.user);
   const navigate = useNavigate();
 
@@ -41,7 +41,7 @@ const DashboardOverview = () => {
       {/* Welcome Header */}
       <div>
         <h1 className="text-3xl font-bold text-text-primary">
-          Welcome back, {user?.name || 'User'}! 👋
+          Welcome back, {user?.full_name || 'User'}!
         </h1>
         <p className="text-text-secondary mt-1">
           Here's your career progress at a glance
@@ -52,26 +52,23 @@ const DashboardOverview = () => {
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <StatsCard
           title="ATS Score"
-          value={72}
+          value={atsScore?.overall ? Math.round(atsScore.overall) : 0}
           suffix="%"
           icon={FileText}
           variant="primary"
           trend={{ direction: 'up', value: 5 }}
         />
         <StatsCard
-          title="Skills Learning"
-          value={2}
-          suffix="/12"
-          icon={Target}
+          title="Total Resumes"
+          value={stats?.total_resumes || 0}
+          icon={FileText}
           variant="warning"
         />
         <StatsCard
-          title="Roadmap Progress"
-          value={17}
-          suffix="%"
-          icon={Map}
+          title="Total ATS Scans"
+          value={stats?.total_ats_scans || 0}
+          icon={Target}
           variant="success"
-          trend={{ direction: 'up', value: 12 }}
         />
         <StatsCard
           title="Job Matches"
@@ -114,7 +111,8 @@ const DashboardOverview = () => {
           </p>
         </button>
 
-        <button className="p-4 rounded-lg border border-border hover:border-brand-primary hover:bg-brand-primary/5 transition-all text-left group">
+        <button className="p-4 rounded-lg border border-border hover:border-brand-primary hover:bg-brand-primary/5 transition-all text-left group"
+          onClick={() => navigate(ROUTES.SKILL_GAP)}>
           <Target className="w-6 h-6 text-brand-primary mb-2" />
           <h4 className="font-semibold text-text-primary group-hover:text-brand-primary transition-colors">
             Explore Skills

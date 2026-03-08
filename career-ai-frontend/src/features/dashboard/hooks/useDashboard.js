@@ -1,11 +1,12 @@
-import { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import {
   loadDashboardStart,
   loadDashboardSuccess,
   loadDashboardFailure,
-} from '../slices/dashboardSlice';
-import { getDashboardDataService } from '../services/dashboardService';
+} from "../slices/dashboardSlice";
+
+import { getDashboardDataService } from "../services/dashboardApi";
 
 /**
  * useDashboard Hook
@@ -13,9 +14,9 @@ import { getDashboardDataService } from '../services/dashboardService';
  */
 export const useDashboard = () => {
   const dispatch = useDispatch();
-  const { stats, nextAction, isLoading, error } = useSelector(
-    (state) => state.dashboard
-  );
+
+  const { stats, nextAction, profile, resume, atsScore, isLoading, error } =
+    useSelector((state) => state.dashboard);
 
   /**
    * Load dashboard data
@@ -23,8 +24,18 @@ export const useDashboard = () => {
   const loadDashboard = async () => {
     try {
       dispatch(loadDashboardStart());
+
       const data = await getDashboardDataService();
-      dispatch(loadDashboardSuccess(data));
+
+      dispatch(
+        loadDashboardSuccess({
+          stats: data.stats,
+          nextAction: data.nextAction,
+          profile: data.profile,
+          resume: data.resume,
+          atsScore: data.atsScore,
+        })
+      );
     } catch (err) {
       dispatch(loadDashboardFailure(err.message));
     }
@@ -45,6 +56,9 @@ export const useDashboard = () => {
   return {
     stats,
     nextAction,
+    profile,
+    resume,
+    atsScore,
     isLoading,
     error,
     refreshDashboard,
