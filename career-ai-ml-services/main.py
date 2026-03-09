@@ -6,7 +6,6 @@ This file connects all modules and returns final analysis.
 from skill_extractor import extract_skills
 from scorer import skill_gap, job_match_score, ats_score
 from recommender import recommend_courses, recommend_projects
-from learning_path import generate_learning_path
 
 
 def analyze(resume_text, jd_text):
@@ -30,7 +29,6 @@ def analyze(resume_text, jd_text):
     # Generate recommendations
     courses = recommend_courses(missing_skills)
     projects = recommend_projects(missing_skills)
-    learning_path = generate_learning_path(missing_skills)
 
     return {
         "resume_skills": resume_skills,
@@ -40,7 +38,6 @@ def analyze(resume_text, jd_text):
         "ats_score": ats,
         "courses": courses,
         "projects": projects,
-        "learning_path": learning_path
     }
 
 
