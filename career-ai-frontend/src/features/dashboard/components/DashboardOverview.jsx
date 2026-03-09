@@ -1,6 +1,5 @@
 import { FileText, Target, Map, Briefcase } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux';
 import StatsCard from './StatsCard';
 import NextActionCard from './NextActionCard';
 import ResumeHealthWidget from './ResumeHealthWidget';
@@ -16,8 +15,8 @@ import { ROUTES } from '@constants/routes';
  * Main dashboard layout with all widgets
  */
 const DashboardOverview = () => {
-  const { isLoading, error, atsScore, stats } = useDashboard();
-  const user = useSelector((state) => state.auth.user);
+  const { isLoading, error, atsScore, stats, profile } = useDashboard();
+  const firstName = profile?.full_name ? profile.full_name.split(' ')[0] : 'User';
   const navigate = useNavigate();
 
   if (isLoading) {
@@ -41,7 +40,7 @@ const DashboardOverview = () => {
       {/* Welcome Header */}
       <div>
         <h1 className="text-3xl font-bold text-text-primary">
-          Welcome back, {user?.full_name || 'User'}!
+          Welcome back, {firstName}!
         </h1>
         <p className="text-text-secondary mt-1">
           Here's your career progress at a glance

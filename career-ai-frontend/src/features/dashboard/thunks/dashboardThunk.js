@@ -1,27 +1,51 @@
-import {
-    loadDashboardStart,
-    loadDashboardSuccess,
-    loadDashboardFailure,
-} from "../slices/dashboardSlice";
+/**
+ * Dashboard Thunks
+ * Redux async actions for dashboard
+ */
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import { getDashboardDataService, getQuickStatsService } from '../services/dashboardApi';
 
-import { getDashboardDataService } from "../services/dashboardApi";
-
-export const fetchDashboardData = () => async (dispatch) => {
-    try {
-        dispatch(loadDashboardStart());
-
-        const data = await getDashboardDataService();
-
-        dispatch(
-            loadDashboardSuccess({
-                stats: data.stats,
-                nextAction: data.nextAction,
-                profile: data.profile,
-                atsScore: data.atsScore,
-                resume: data.resume,
-            })
-        );
-    } catch (error) {
-        dispatch(loadDashboardFailure(error.message));
+/**
+ * Fetch Complete Dashboard Data
+ */
+export const fetchDashboardData = createAsyncThunk(
+    'dashboard/fetchDashboardData',
+    async (_, { rejectWithValue }) => {
+        try {
+            const data = await getDashboardDataService();
+            return data;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
     }
-};
+);
+
+/**
+ * Fetch Quick Stats Only
+ */
+export const fetchQuickStats = createAsyncThunk(
+    'dashboard/fetchQuickStats',
+    async (_, { rejectWithValue }) => {
+        try {
+            const data = await getQuickStatsService();
+            return data;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
+
+/**
+ * Refresh Dashboard (force reload)
+ */
+export const refreshDashboard = createAsyncThunk(
+    'dashboard/refreshDashboard',
+    async (_, { rejectWithValue }) => {
+        try {
+            const data = await getDashboardDataService();
+            return data;
+        } catch (error) {
+            return rejectWithValue(error.message);
+        }
+    }
+);
