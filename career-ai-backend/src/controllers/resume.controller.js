@@ -10,7 +10,7 @@ import { callAIService } from '../services/ai.service.js';
 import logger from '../config/logger.js';
 import { query } from '../config/db.js';
 import { deleteFile } from '../utils/fileUpload.js';
-import { analyzeResume } from '../services/ai.service.js';
+import { analyzeResume } from '../services/chatbot.service.js';
 import fs from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);

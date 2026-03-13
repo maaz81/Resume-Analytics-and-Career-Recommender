@@ -4,25 +4,38 @@ import Card from '@common/Card';
 import Button from '@common/Button';
 import Badge from '@common/Badge';
 import { cn } from '@utils/helpers';
+import { useDashboard } from '../hooks/useDashboard';
 
 /**
  * NextActionCard Component
  * Highlights the most important action for the user
  */
 const NextActionCard = () => {
+  const { atsScore, nextAction: apiNextAction } = useDashboard({ autoLoad: false });
   const navigate = useNavigate();
 
-  // Mock data
-  const nextAction = {
-    type: 'fix_resume',
-    priority: 'high',
-    title: 'Fix Critical Resume Issues',
-    description: 'Your ATS score is at 72%. Add missing keywords to reach 85%+',
-    actionLabel: 'Fix Issues Now',
-    actionRoute: '/resume/issues',
-    estimatedTime: '10 minutes',
-    impact: 'High - Improves interview chances by 40%',
-  };
+  // Use real backend data, fallback to sensible defaults
+  const nextAction = apiNextAction
+    ? {
+      type: apiNextAction.type,
+      priority: apiNextAction.priority,
+      title: apiNextAction.title,
+      description: apiNextAction.description,
+      actionLabel: 'Take Action',
+      actionRoute: apiNextAction.actionUrl || '/resume/issues',
+      estimatedTime: '10 minutes',
+      impact: 'High - Improves interview chances',
+    }
+    : {
+      type: 'fix_resume',
+      priority: 'high',
+      title: 'Fix Critical Resume Issues',
+      description: `Your ATS score is at ${atsScore?.overall ?? '--'}. Add missing keywords to reach 85%+`,
+      actionLabel: 'Fix Issues Now',
+      actionRoute: '/resume/issues',
+      estimatedTime: '10 minutes',
+      impact: 'High - Improves interview chances by 40%',
+    };
 
   const getPriorityIcon = (priority) => {
     return <Zap className="w-5 h-5" />;

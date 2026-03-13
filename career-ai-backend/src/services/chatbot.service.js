@@ -1,52 +1,69 @@
-// ============================================
-// services/ai.service.js
-// ============================================
-
-import OpenAI from 'openai'; // or your preferred AI SDK
+import { OpenRouter } from '@openrouter/sdk';
 import logger from '../config/logger.js';
 import { query } from '../config/db.js';
-import fs from 'fs';
+import PDFDocument from 'pdfkit';
 
-// Initialize OpenAI client
-const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+// ✅ OpenRouter client, not OpenAI
+const client = new OpenRouter({
+    apiKey: process.env.OPENROUTER_API_KEY,
+});
 
-/**
- * Send a message to AI and return the response
- * Supports optional streaming callback
- */
-export const sendMessageToAI = async ({ conversationId, userMessage, userId, onChunk }) => {
+export const getCareerAdvice = async (systemPrompt, userMessage, history = []) => {
     try {
-        // Optional: retrieve context from previous messages
-        const contextResult = await query(
-            `SELECT id, role, content FROM ai_messages WHERE conversation_id=$1 ORDER BY created_at ASC`,
-            [conversationId]
-        );
-        const contextMessages = contextResult.rows.map(msg => ({
-            role: msg.role,
-            content: msg.content
-        }));
+        const messages = [
+            { role: 'system', content: systemPrompt },
+            ...history.map(msg => ({ role: msg.role, content: msg.content })),
+            { role: 'user', content: userMessage },
+        ];
 
-        // Include the latest user message
-        contextMessages.push({ role: 'user', content: userMessage });
-
-        // Call OpenAI API (chat completion)
-        const response = await client.chat.completions.create({
-            model: 'gpt-4',
-            messages: contextMessages,
-            stream: Boolean(onChunk) // enable streaming if callback provided
+        const response = await client.chat.send({
+            model: 'openai/gpt-oss-120b:free', // ✅ free model
+            messages,
         });
 
+        return response.choices[0].message.content;
+
+    } catch (error) {
+        logger.error('getCareerAdvice failed', { error });
+        throw new Error('Failed to generate career advice');
+    }
+};
+
+export const sendMessageToAI = async ({ conversationId, userMessage, userId, onChunk }) => {
+    try {
+        const contextResult = await query(
+            `SELECT role, content FROM ai_messages 
+             WHERE conversation_id=$1 ORDER BY created_at ASC`,
+            [conversationId]
+        );
+
+        const messages = [
+            ...contextResult.rows.map(msg => ({ role: msg.role, content: msg.content })),
+            { role: 'user', content: userMessage },
+        ];
+
         if (onChunk) {
-            for await (const event of response) {
-                if (event.type === 'delta') {
-                    onChunk(event.delta.content);
-                }
+            // ✅ Streaming
+            const stream = await client.chat.send({
+                model: 'openai/gpt-oss-120b:free',
+                messages,
+                stream: true,
+            });
+
+            for await (const chunk of stream) {
+                const content = chunk.choices[0]?.delta?.content;
+                if (content) onChunk(content);
             }
-            return; // streaming handled via callback
+            return;
         }
 
-        const aiText = response.choices[0].message.content;
-        return aiText;
+        // ✅ Non-streaming
+        const response = await client.chat.send({
+            model: 'openai/gpt-oss-120b:free',
+            messages,
+        });
+
+        return response.choices[0].message.content;
 
     } catch (error) {
         logger.error('AI service error', { conversationId, error });
@@ -54,18 +71,12 @@ export const sendMessageToAI = async ({ conversationId, userMessage, userId, onC
     }
 };
 
-/**
- * Analyze resume against JD
- */
 export const analyzeResume = async (resumeText, jdText) => {
     try {
-        // Example AI prompt for scoring
         const prompt = `
         Evaluate the following resume against this job description.
-        Resume:
-        ${resumeText}
-        Job Description:
-        ${jdText}
+        Resume: ${resumeText}
+        Job Description: ${jdText}
 
         Provide:
         - Overall match score (0-100)
@@ -73,16 +84,18 @@ export const analyzeResume = async (resumeText, jdText) => {
         - Missing skills (list)
         - Weak action verbs
         - Recommendations
-        Return JSON only.
-        `;
+        Return JSON only.`;
 
-        const response = await client.chat.completions.create({
-            model: 'gpt-4',
-            messages: [{ role: 'user', content: prompt }]
+        const response = await client.chat.send({
+            model: 'openai/gpt-oss-120b:free',
+            messages: [{ role: 'user', content: prompt }],
         });
 
-        const resultText = response.choices[0].message.content;
-        return JSON.parse(resultText); // Expect AI to return JSON
+        const cleaned = response.choices[0].message.content
+            .replace(/```json|```/g, '')
+            .trim();
+
+        return JSON.parse(cleaned);
 
     } catch (err) {
         logger.error('Resume analysis failed', { error: err });
@@ -90,21 +103,34 @@ export const analyzeResume = async (resumeText, jdText) => {
     }
 };
 
-/**
- * Export conversation to PDF
- */
 export const exportConversationToPDF = async (conversationId) => {
     try {
         const messagesResult = await query(
-            `SELECT role, content, created_at FROM ai_messages WHERE conversation_id=$1 ORDER BY created_at ASC`,
+            `SELECT role, content, created_at FROM ai_messages 
+             WHERE conversation_id=$1 ORDER BY created_at ASC`,
             [conversationId]
         );
 
-        const messages = messagesResult.rows;
+        return new Promise((resolve, reject) => {
+            const doc = new PDFDocument();
+            const buffers = [];
 
-        const pdfContent = messages.map(m => `[${m.role}] ${m.created_at.toISOString()}: ${m.content}`).join('\n\n');
+            doc.on('data', (chunk) => buffers.push(chunk));
+            doc.on('end', () => resolve(Buffer.concat(buffers)));
+            doc.on('error', reject);
 
-        return new Blob([pdfContent], { type: 'application/pdf' });
+            doc.fontSize(16).text('Conversation Export', { underline: true }).moveDown();
+
+            messagesResult.rows.forEach((msg) => {
+                doc.fontSize(10)
+                    .text(`[${msg.role.toUpperCase()}] ${new Date(msg.created_at).toLocaleString()}`)
+                    .fontSize(12)
+                    .text(msg.content)
+                    .moveDown();
+            });
+
+            doc.end();
+        });
 
     } catch (err) {
         logger.error('PDF export failed', { conversationId, error: err });

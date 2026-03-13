@@ -7,7 +7,7 @@ import { catchAsync } from '../middleware/errorHandler.js';
 import { successResponse, createdResponse } from '../utils/response.js';
 import logger from '../config/logger.js';
 import { cache, cacheKeys } from '../config/redis.js';
-import { sendMessageToAI } from '../services/ai.service.js';
+import { getCareerAdvice } from '../services/chatbot.service.js';
 
 /**
  * Create a new conversation
@@ -134,8 +134,18 @@ export const sendMessage = catchAsync(async (req, res) => {
         [id]
     );
 
+    // Get conversation history for context
+    const historyResult = await query(
+        `SELECT role, content FROM ai_messages WHERE conversation_id=$1 ORDER BY created_at ASC`,
+        [id]
+    );
+
     // Call AI service to generate response (streaming handled in service)
-    const aiResponse = await sendMessageToAI({ conversationId: id, userMessage: content, userId });
+    const aiResponse = await getCareerAdvice(
+        "You are an expert career advisor and resume analyst. Help the user optimize their career path.",
+        content,
+        historyResult.rows
+    );
 
     // Insert AI message
     const aiMsgResult = await query(

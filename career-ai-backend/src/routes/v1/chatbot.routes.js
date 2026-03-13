@@ -1,6 +1,6 @@
 import express from 'express';
-import { createConversation, getAllConversations, sendMessage, deleteConversation } from '../../controllers/chatbot.controller.js';
-import { protect } from '../middleware/auth.js';
+import { createConversation, getAllConversations, getConversationById, sendMessage, deleteConversation } from '../../controllers/chatbot.controller.js';
+import { protect } from '../../middleware/auth.js';
 
 const router = express.Router();
 
