@@ -281,3 +281,44 @@ export const scoreResume = catchAsync(async (req, res) => {
 
     return successResponse(res, { analysis: aiResult }, 'Resume analyzed successfully');
 });
+
+
+export const getResumeHistory = catchAsync(async (req, res) => {
+    const userId = req.user.id;
+
+    // Get all resumes for the user
+    const resumes = await Resume.findAllByUserId(userId);
+
+    const resumeHistory = [];
+
+    for (const resume of resumes) {
+        // get latest ATS score for each resume
+        const scoreResult = await query(
+            `SELECT overall_score 
+       FROM ats_scores 
+       WHERE resume_id = $1
+       ORDER BY scored_at DESC
+       LIMIT 1`,
+            [resume.id]
+        );
+
+        const atsScore = scoreResult.rows[0]?.overall_score || null;
+
+        resumeHistory.push({
+            id: resume.id,
+            version: resume.version,
+            fileName: resume.original_filename,
+            uploadedAt: resume.uploaded_at,
+            atsScore,
+            status: resume.is_active ? "current" : "archived",
+        });
+    }
+
+    res.status(200).json({
+        status: "success",
+        results: resumeHistory.length,
+        data: {
+            resumes: resumeHistory,
+        },
+    });
+});

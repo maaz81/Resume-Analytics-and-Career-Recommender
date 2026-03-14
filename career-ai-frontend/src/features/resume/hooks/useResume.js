@@ -121,6 +121,7 @@ import {
     setATSScore,
     setAnalysis,
     setIssues,
+    setResumeHistory,
 } from '../slices/resumeSlice';
 import {
     getResumeAnalysisService,
@@ -128,25 +129,6 @@ import {
     getResumeIssuesService,
     getResumeHistoryService,
 } from '../services/resumeService';
-
-const getCurrentResume = async () => {
-    try {
-        setIsLoading(true);
-        setError(null);
-
-        const data = await getCurrentResumeService();
-
-        dispatch(uploadResumeSuccess(data));
-
-        setIsLoading(false);
-        return { success: true, data };
-
-    } catch (err) {
-        setError(err.message);
-        setIsLoading(false);
-        return { success: false, error: err.message };
-    }
-};
 
 /**
  * useResume Hook
@@ -158,6 +140,25 @@ export const useResume = () => {
 
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
+
+    const getCurrentResume = async () => {
+        try {
+            setIsLoading(true);
+            setError(null);
+
+            const data = await getCurrentResumeService();
+
+            dispatch(uploadResumeSuccess(data));
+
+            setIsLoading(false);
+            return { success: true, data };
+
+        } catch (err) {
+            setError(err.message);
+            setIsLoading(false);
+            return { success: false, error: err.message };
+        }
+    };
 
     /**
      * Get resume analysis
@@ -208,10 +209,13 @@ export const useResume = () => {
             setIsLoading(true);
             setError(null);
 
-            const data = await getResumeHistoryService();
+            const response = await getResumeHistoryService();
+            const resumes = response.data?.resumes || [];
+            
+            dispatch(setResumeHistory(resumes));
 
             setIsLoading(false);
-            return { success: true, data };
+            return { success: true, data: { resumes } };
         } catch (err) {
             setError(err.message);
             setIsLoading(false);

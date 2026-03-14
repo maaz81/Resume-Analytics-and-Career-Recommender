@@ -333,37 +333,6 @@ export const getResumeIssuesService = async () => {
  * @returns {Promise} - List of resume versions
  */
 export const getResumeHistoryService = async () => {
-  await delay(500);
-
-  return {
-    resumes: [
-      {
-        id: 'resume_003',
-        version: 3,
-        fileName: 'John_Doe_Resume_v3.pdf',
-        uploadedAt: new Date('2024-01-20').toISOString(),
-        atsScore: 72,
-        status: 'current',
-        changes: 'Added TypeScript, updated experience section',
-      },
-      {
-        id: 'resume_002',
-        version: 2,
-        fileName: 'John_Doe_Resume_v2.pdf',
-        uploadedAt: new Date('2024-01-10').toISOString(),
-        atsScore: 65,
-        status: 'archived',
-        changes: 'Fixed formatting issues',
-      },
-      {
-        id: 'resume_001',
-        version: 1,
-        fileName: 'John_Doe_Resume_v1.pdf',
-        uploadedAt: new Date('2024-01-05').toISOString(),
-        atsScore: 58,
-        status: 'archived',
-        changes: 'Initial upload',
-      },
-    ],
-  };
+  const response = await API.get('/resumes/history');
+  return response.data;
 };

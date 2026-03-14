@@ -36,11 +36,15 @@ const resumeSlice = createSlice({
     setIssues: (state, action) => {
       state.issues = action.payload;
     },
+    setResumeHistory: (state, action) => {
+      state.resumeHistory = action.payload;
+    },
     clearResume: (state) => {
       state.currentResume = null;
       state.atsScore = null;
       state.analysis = null;
       state.issues = [];
+      state.resumeHistory = [];
     },
   },
 });
@@ -52,6 +56,7 @@ export const {
   setATSScore,
   setAnalysis,
   setIssues,
+  setResumeHistory,
   clearResume,
 } = resumeSlice.actions;
 export default resumeSlice.reducer;
