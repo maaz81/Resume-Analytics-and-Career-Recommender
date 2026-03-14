@@ -1,9 +1,0 @@
-ai_nlp_engine/
-│── main.py
-│── skill_extractor.py
-│── scorer.py
-│── recommender.py
-│── learning_path.py
-│── requirements.txt
-│── README.md
-│── connect.txt

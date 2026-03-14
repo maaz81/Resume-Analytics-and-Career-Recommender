@@ -1,0 +1,35 @@
+{
+    "python": [
+        "python"
+    ],
+    "machine learning": [
+        "machine learning",
+        "ml"
+    ],
+    "nlp": [
+        "nlp",
+        "natural language processing"
+    ],
+    "deep learning": [
+        "deep learning"
+    ],
+    "sql": [
+        "sql"
+    ],
+    "react": [
+        "react",
+        "reactjs"
+    ],
+    "fastapi": [
+        "fastapi"
+    ],
+    "flask": [
+        "flask"
+    ],
+    "tensorflow": [
+        "tensorflow"
+    ],
+    "pytorch": [
+        "pytorch"
+    ]
+}
