@@ -1,3 +1,64 @@
+// src/features/resume/services/resumeService.js
+// import API from '../../auth/services/api';
+
+// /**
+//  * Get active resume (replaces getResumeAnalysisService)
+//  * GET /api/v1/resumes/active
+//  */
+// export const getResumeAnalysisService = async () => {
+//   const response = await API.get('/resumes/active');
+//   return response.data;
+// };
+
+// /**
+//  * Score resume against a job description (replaces getResumeIssuesService)
+//  * POST /api/v1/resumes/:id/score
+//  * @param {string} resumeId
+//  * @param {string} jdText - job description text
+//  */
+// export const getResumeIssuesService = async (resumeId, jdText) => {
+//   const response = await API.post(`/resumes/${resumeId}/score`, { jdText });
+//   return response.data;
+// };
+
+// /**
+//  * Get all resumes for user (replaces getResumeHistoryService)
+//  * GET /api/v1/resumes
+//  */
+// export const getResumeHistoryService = async () => {
+//   const response = await API.get('/resumes');
+//   return response.data;
+// };
+
+// /**
+//  * Upload a resume file
+//  * POST /api/v1/resumes/upload
+//  * @param {File} file
+//  */
+// export const uploadResumeService = async (file) => {
+//   const formData = new FormData();
+//   formData.append('resume', file);           // key must match upload.single('resume')
+
+//   const response = await API.post('/resumes/upload', formData, {
+//     headers: { 'Content-Type': 'multipart/form-data' },
+//   });
+//   return response.data;
+// };
+
+// 8888888888888888888888888888888888888888888888888888888888888888888888888888888888888
+
+import API from '../../auth/services/api';
+
+/**
+ * Get current resume (replaces getResumeAnalysisService)
+ * GET /api/v1/resumes/current
+ */
+export const getCurrentResumeService = async () => {
+  const response = await API.get('/resumes/current');
+  return response.data;
+};
+
+
 /**
  * Resume Service
  * Handles resume analysis and ATS scoring (DUMMY DATA FOR NOW)
@@ -17,7 +78,7 @@ export const getResumeAnalysisService = async () => {
     fileName: 'John_Doe_Resume.pdf',
     uploadedAt: new Date('2024-01-20').toISOString(),
     version: 1,
-    
+
     // ATS Score
     atsScore: {
       overall: 72,
@@ -38,7 +99,7 @@ export const getResumeAnalysisService = async () => {
       phone: '+1 (555) 123-4567',
       location: 'San Francisco, CA',
       summary: 'Experienced software engineer with 5+ years building scalable web applications.',
-      
+
       experience: [
         {
           title: 'Senior Software Engineer',
@@ -96,7 +157,7 @@ export const getResumeIssuesService = async () => {
   return {
     totalIssues: 15,
     criticalIssues: 5,
-    
+
     issues: [
       // Keywords Issues
       {
@@ -272,37 +333,6 @@ export const getResumeIssuesService = async () => {
  * @returns {Promise} - List of resume versions
  */
 export const getResumeHistoryService = async () => {
-  await delay(500);
-
-  return {
-    resumes: [
-      {
-        id: 'resume_003',
-        version: 3,
-        fileName: 'John_Doe_Resume_v3.pdf',
-        uploadedAt: new Date('2024-01-20').toISOString(),
-        atsScore: 72,
-        status: 'current',
-        changes: 'Added TypeScript, updated experience section',
-      },
-      {
-        id: 'resume_002',
-        version: 2,
-        fileName: 'John_Doe_Resume_v2.pdf',
-        uploadedAt: new Date('2024-01-10').toISOString(),
-        atsScore: 65,
-        status: 'archived',
-        changes: 'Fixed formatting issues',
-      },
-      {
-        id: 'resume_001',
-        version: 1,
-        fileName: 'John_Doe_Resume_v1.pdf',
-        uploadedAt: new Date('2024-01-05').toISOString(),
-        atsScore: 58,
-        status: 'archived',
-        changes: 'Initial upload',
-      },
-    ],
-  };
+  const response = await API.get('/resumes/history');
+  return response.data;
 };

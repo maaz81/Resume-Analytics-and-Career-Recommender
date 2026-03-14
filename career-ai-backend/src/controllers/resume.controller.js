@@ -10,7 +10,7 @@ import { callAIService } from '../services/ai.service.js';
 import logger from '../config/logger.js';
 import { query } from '../config/db.js';
 import { deleteFile } from '../utils/fileUpload.js';
-import { analyzeResume } from '../services/chatbot.service.js';
+import { analyzeResume } from '../services/ai.service.js';
 import fs from 'fs';
 import { createRequire } from 'module';
 const require = createRequire(import.meta.url);
@@ -120,6 +120,32 @@ export const getResumeById = catchAsync(async (req, res) => {
     const resumeWithScore = await Resume.findWithLatestScore(resume.id);
 
     return successResponse(res, { resume: resumeWithScore }, 'Resume retrieved successfully');
+});
+
+/**
+ * Get current resume
+ * GET /api/v1/resumes/current
+ */
+export const getCurrentResume = catchAsync(async (req, res) => {
+    const userId = req.user.id;
+
+    const resume = await Resume.findActiveByUserId(userId);
+
+    if (!resume) {
+        return res.status(404).json({
+            status: 'fail',
+            message: 'No active resume found'
+        });
+    }
+
+    res.status(200).json({
+        status: 'success',
+        data: {
+            name: resume.original_filename,
+            version: resume.version,
+            uploadedAt: resume.uploaded_at
+        }
+    });
 });
 
 /**
@@ -254,4 +280,45 @@ export const scoreResume = catchAsync(async (req, res) => {
     );
 
     return successResponse(res, { analysis: aiResult }, 'Resume analyzed successfully');
+});
+
+
+export const getResumeHistory = catchAsync(async (req, res) => {
+    const userId = req.user.id;
+
+    // Get all resumes for the user
+    const resumes = await Resume.findAllByUserId(userId);
+
+    const resumeHistory = [];
+
+    for (const resume of resumes) {
+        // get latest ATS score for each resume
+        const scoreResult = await query(
+            `SELECT overall_score 
+       FROM ats_scores 
+       WHERE resume_id = $1
+       ORDER BY scored_at DESC
+       LIMIT 1`,
+            [resume.id]
+        );
+
+        const atsScore = scoreResult.rows[0]?.overall_score || null;
+
+        resumeHistory.push({
+            id: resume.id,
+            version: resume.version,
+            fileName: resume.original_filename,
+            uploadedAt: resume.uploaded_at,
+            atsScore,
+            status: resume.is_active ? "current" : "archived",
+        });
+    }
+
+    res.status(200).json({
+        status: "success",
+        results: resumeHistory.length,
+        data: {
+            resumes: resumeHistory,
+        },
+    });
 });

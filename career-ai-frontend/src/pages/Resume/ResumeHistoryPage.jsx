@@ -63,6 +63,25 @@ const ResumeHistoryPage = () => {
     return null;
   }
 
+  if (!historyData.resumes || historyData.resumes.length === 0) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
+        <History className="w-12 h-12 text-text-muted mb-4" />
+        <h2 className="text-xl font-semibold text-text-primary mb-2">No Resume History</h2>
+        <p className="text-text-secondary mb-6 max-w-md">
+          You haven't uploaded any resumes yet. Upload your first resume to start tracking improvements.
+        </p>
+        <Button
+          variant="primary"
+          leftIcon={<Upload className="w-4 h-4" />}
+          onClick={() => navigate(ROUTES.ONBOARDING_RESUME_UPLOAD)}
+        >
+          Upload Resume
+        </Button>
+      </div>
+    );
+  }
+
   // Calculate score improvement
   const oldestResume = historyData.resumes[historyData.resumes.length - 1];
   const currentResume = historyData.resumes[0];
