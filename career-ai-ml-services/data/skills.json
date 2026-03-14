@@ -2,34 +2,1072 @@
     "python": [
         "python"
     ],
-    "machine learning": [
-        "machine learning",
-        "ml"
+    "java": [
+        "java"
     ],
-    "nlp": [
-        "nlp",
-        "natural language processing"
+    "javascript": [
+        "javascript"
+    ],
+    "typescript": [
+        "typescript"
+    ],
+    "c": [
+        "c"
+    ],
+    "c++": [
+        "c++"
+    ],
+    "c#": [
+        "c#"
+    ],
+    "go": [
+        "go"
+    ],
+    "rust": [
+        "rust"
+    ],
+    "kotlin": [
+        "kotlin"
+    ],
+    "swift": [
+        "swift"
+    ],
+    "objective-c": [
+        "objective-c"
+    ],
+    "dart": [
+        "dart"
+    ],
+    "php": [
+        "php"
+    ],
+    "ruby": [
+        "ruby"
+    ],
+    "scala": [
+        "scala"
+    ],
+    "groovy": [
+        "groovy"
+    ],
+    "haskell": [
+        "haskell"
+    ],
+    "elixir": [
+        "elixir"
+    ],
+    "erlang": [
+        "erlang"
+    ],
+    "julia": [
+        "julia"
+    ],
+    "fortran": [
+        "fortran"
+    ],
+    "cobol": [
+        "cobol"
+    ],
+    "matlab": [
+        "matlab"
+    ],
+    "r": [
+        "r"
+    ],
+    "bash": [
+        "bash"
+    ],
+    "powershell": [
+        "powershell"
+    ],
+    "solidity": [
+        "solidity"
+    ],
+    "zig": [
+        "zig"
+    ],
+    "nim": [
+        "nim"
+    ],
+    "crystal": [
+        "crystal"
+    ],
+    "ocaml": [
+        "ocaml"
+    ],
+    "f#": [
+        "f#"
+    ],
+    "lisp": [
+        "lisp"
+    ],
+    "scheme": [
+        "scheme"
+    ],
+    "prolog": [
+        "prolog"
+    ],
+    "ada": [
+        "ada"
+    ],
+    "machine learning": [
+        "machine learning"
     ],
     "deep learning": [
         "deep learning"
     ],
-    "sql": [
-        "sql"
+    "natural language processing": [
+        "natural language processing"
     ],
-    "react": [
-        "react",
-        "reactjs"
+    "computer vision": [
+        "computer vision"
     ],
-    "fastapi": [
-        "fastapi"
+    "reinforcement learning": [
+        "reinforcement learning"
     ],
-    "flask": [
-        "flask"
+    "predictive modeling": [
+        "predictive modeling"
+    ],
+    "feature engineering": [
+        "feature engineering"
+    ],
+    "model deployment": [
+        "model deployment"
+    ],
+    "model evaluation": [
+        "model evaluation"
+    ],
+    "mlops": [
+        "mlops"
+    ],
+    "data mining": [
+        "data mining"
+    ],
+    "pattern recognition": [
+        "pattern recognition"
+    ],
+    "time series forecasting": [
+        "time series forecasting"
+    ],
+    "anomaly detection": [
+        "anomaly detection"
+    ],
+    "recommendation systems": [
+        "recommendation systems"
+    ],
+    "speech recognition": [
+        "speech recognition"
+    ],
+    "sentiment analysis": [
+        "sentiment analysis"
+    ],
+    "text classification": [
+        "text classification"
+    ],
+    "entity recognition": [
+        "entity recognition"
+    ],
+    "knowledge graphs": [
+        "knowledge graphs"
+    ],
+    "transformer models": [
+        "transformer models"
+    ],
+    "generative ai": [
+        "generative ai"
+    ],
+    "prompt engineering": [
+        "prompt engineering"
+    ],
+    "large language models": [
+        "large language models"
+    ],
+    "transfer learning": [
+        "transfer learning"
+    ],
+    "autoencoders": [
+        "autoencoders"
+    ],
+    "bayesian modeling": [
+        "bayesian modeling"
+    ],
+    "graph neural networks": [
+        "graph neural networks"
+    ],
+    "ensemble learning": [
+        "ensemble learning"
+    ],
+    "dimensionality reduction": [
+        "dimensionality reduction"
+    ],
+    "numpy": [
+        "numpy"
+    ],
+    "pandas": [
+        "pandas"
+    ],
+    "scikit-learn": [
+        "scikit-learn"
     ],
     "tensorflow": [
         "tensorflow"
     ],
     "pytorch": [
         "pytorch"
+    ],
+    "keras": [
+        "keras"
+    ],
+    "xgboost": [
+        "xgboost"
+    ],
+    "lightgbm": [
+        "lightgbm"
+    ],
+    "catboost": [
+        "catboost"
+    ],
+    "statsmodels": [
+        "statsmodels"
+    ],
+    "opencv": [
+        "opencv"
+    ],
+    "nltk": [
+        "nltk"
+    ],
+    "spacy": [
+        "spacy"
+    ],
+    "gensim": [
+        "gensim"
+    ],
+    "huggingface transformers": [
+        "huggingface transformers"
+    ],
+    "fastai": [
+        "fastai"
+    ],
+    "dask": [
+        "dask"
+    ],
+    "ray": [
+        "ray"
+    ],
+    "mlflow": [
+        "mlflow"
+    ],
+    "onnx": [
+        "onnx"
+    ],
+    "detectron2": [
+        "detectron2"
+    ],
+    "stable diffusion": [
+        "stable diffusion"
+    ],
+    "langchain": [
+        "langchain"
+    ],
+    "llamaindex": [
+        "llamaindex"
+    ],
+    "mysql": [
+        "mysql"
+    ],
+    "postgresql": [
+        "postgresql"
+    ],
+    "sqlite": [
+        "sqlite"
+    ],
+    "oracle database": [
+        "oracle database"
+    ],
+    "sql server": [
+        "sql server"
+    ],
+    "mongodb": [
+        "mongodb"
+    ],
+    "cassandra": [
+        "cassandra"
+    ],
+    "dynamodb": [
+        "dynamodb"
+    ],
+    "redis": [
+        "redis"
+    ],
+    "neo4j": [
+        "neo4j"
+    ],
+    "couchdb": [
+        "couchdb"
+    ],
+    "mariadb": [
+        "mariadb"
+    ],
+    "cockroachdb": [
+        "cockroachdb"
+    ],
+    "timescaledb": [
+        "timescaledb"
+    ],
+    "influxdb": [
+        "influxdb"
+    ],
+    "snowflake": [
+        "snowflake"
+    ],
+    "bigquery": [
+        "bigquery"
+    ],
+    "redshift": [
+        "redshift"
+    ],
+    "teradata": [
+        "teradata"
+    ],
+    "hbase": [
+        "hbase"
+    ],
+    "elasticsearch": [
+        "elasticsearch"
+    ],
+    "django": [
+        "django"
+    ],
+    "flask": [
+        "flask"
+    ],
+    "fastapi": [
+        "fastapi"
+    ],
+    "spring boot": [
+        "spring boot"
+    ],
+    "express.js": [
+        "express.js"
+    ],
+    "nestjs": [
+        "nestjs"
+    ],
+    "laravel": [
+        "laravel"
+    ],
+    "ruby on rails": [
+        "ruby on rails"
+    ],
+    "asp.net core": [
+        "asp.net core"
+    ],
+    "phoenix framework": [
+        "phoenix framework"
+    ],
+    "actix": [
+        "actix"
+    ],
+    "fiber": [
+        "fiber"
+    ],
+    "gin": [
+        "gin"
+    ],
+    "echo framework": [
+        "echo framework"
+    ],
+    "react": [
+        "react"
+    ],
+    "next.js": [
+        "next.js"
+    ],
+    "vue.js": [
+        "vue.js"
+    ],
+    "nuxt.js": [
+        "nuxt.js"
+    ],
+    "angular": [
+        "angular"
+    ],
+    "svelte": [
+        "svelte"
+    ],
+    "solidjs": [
+        "solidjs"
+    ],
+    "html": [
+        "html"
+    ],
+    "css": [
+        "css"
+    ],
+    "sass": [
+        "sass"
+    ],
+    "less": [
+        "less"
+    ],
+    "tailwind css": [
+        "tailwind css"
+    ],
+    "bootstrap": [
+        "bootstrap"
+    ],
+    "material ui": [
+        "material ui"
+    ],
+    "chakra ui": [
+        "chakra ui"
+    ],
+    "ant design": [
+        "ant design"
+    ],
+    "docker": [
+        "docker"
+    ],
+    "kubernetes": [
+        "kubernetes"
+    ],
+    "helm": [
+        "helm"
+    ],
+    "terraform": [
+        "terraform"
+    ],
+    "ansible": [
+        "ansible"
+    ],
+    "chef": [
+        "chef"
+    ],
+    "puppet": [
+        "puppet"
+    ],
+    "jenkins": [
+        "jenkins"
+    ],
+    "github actions": [
+        "github actions"
+    ],
+    "gitlab ci": [
+        "gitlab ci"
+    ],
+    "circleci": [
+        "circleci"
+    ],
+    "argo cd": [
+        "argo cd"
+    ],
+    "prometheus": [
+        "prometheus"
+    ],
+    "grafana": [
+        "grafana"
+    ],
+    "elk stack": [
+        "elk stack"
+    ],
+    "loki": [
+        "loki"
+    ],
+    "fluentd": [
+        "fluentd"
+    ],
+    "datadog": [
+        "datadog"
+    ],
+    "new relic": [
+        "new relic"
+    ],
+    "splunk": [
+        "splunk"
+    ],
+    "istio": [
+        "istio"
+    ],
+    "linkerd": [
+        "linkerd"
+    ],
+    "aws": [
+        "aws"
+    ],
+    "amazon ec2": [
+        "amazon ec2"
+    ],
+    "amazon s3": [
+        "amazon s3"
+    ],
+    "amazon rds": [
+        "amazon rds"
+    ],
+    "aws lambda": [
+        "aws lambda"
+    ],
+    "aws glue": [
+        "aws glue"
+    ],
+    "aws cloudformation": [
+        "aws cloudformation"
+    ],
+    "aws ecs": [
+        "aws ecs"
+    ],
+    "aws eks": [
+        "aws eks"
+    ],
+    "google cloud platform": [
+        "google cloud platform"
+    ],
+    "google kubernetes engine": [
+        "google kubernetes engine"
+    ],
+    "cloud run": [
+        "cloud run"
+    ],
+    "firebase": [
+        "firebase"
+    ],
+    "microsoft azure": [
+        "microsoft azure"
+    ],
+    "azure functions": [
+        "azure functions"
+    ],
+    "azure devops": [
+        "azure devops"
+    ],
+    "azure data factory": [
+        "azure data factory"
+    ],
+    "azure synapse": [
+        "azure synapse"
+    ],
+    "apache spark": [
+        "apache spark"
+    ],
+    "pyspark": [
+        "pyspark"
+    ],
+    "apache kafka": [
+        "apache kafka"
+    ],
+    "apache flink": [
+        "apache flink"
+    ],
+    "apache airflow": [
+        "apache airflow"
+    ],
+    "dbt": [
+        "dbt"
+    ],
+    "hadoop": [
+        "hadoop"
+    ],
+    "hdfs": [
+        "hdfs"
+    ],
+    "mapreduce": [
+        "mapreduce"
+    ],
+    "data warehousing": [
+        "data warehousing"
+    ],
+    "etl pipelines": [
+        "etl pipelines"
+    ],
+    "data lake architecture": [
+        "data lake architecture"
+    ],
+    "stream processing": [
+        "stream processing"
+    ],
+    "batch processing": [
+        "batch processing"
+    ],
+    "data governance": [
+        "data governance"
+    ],
+    "penetration testing": [
+        "penetration testing"
+    ],
+    "ethical hacking": [
+        "ethical hacking"
+    ],
+    "network security": [
+        "network security"
+    ],
+    "application security": [
+        "application security"
+    ],
+    "cloud security": [
+        "cloud security"
+    ],
+    "identity access management": [
+        "identity access management"
+    ],
+    "threat modeling": [
+        "threat modeling"
+    ],
+    "vulnerability scanning": [
+        "vulnerability scanning"
+    ],
+    "siem": [
+        "siem"
+    ],
+    "soc operations": [
+        "soc operations"
+    ],
+    "incident response": [
+        "incident response"
+    ],
+    "digital forensics": [
+        "digital forensics"
+    ],
+    "zero trust architecture": [
+        "zero trust architecture"
+    ],
+    "product management": [
+        "product management"
+    ],
+    "product analytics": [
+        "product analytics"
+    ],
+    "growth hacking": [
+        "growth hacking"
+    ],
+    "conversion rate optimization": [
+        "conversion rate optimization"
+    ],
+    "seo": [
+        "seo"
+    ],
+    "technical seo": [
+        "technical seo"
+    ],
+    "content marketing": [
+        "content marketing"
+    ],
+    "email marketing": [
+        "email marketing"
+    ],
+    "performance marketing": [
+        "performance marketing"
+    ],
+    "affiliate marketing": [
+        "affiliate marketing"
+    ],
+    "social media marketing": [
+        "social media marketing"
+    ],
+    "market research": [
+        "market research"
+    ],
+    "competitive analysis": [
+        "competitive analysis"
+    ],
+    "customer segmentation": [
+        "customer segmentation"
+    ],
+    "pricing strategy": [
+        "pricing strategy"
+    ],
+    "brand strategy": [
+        "brand strategy"
+    ],
+    "sales funnel optimization": [
+        "sales funnel optimization"
+    ],
+    "crm management": [
+        "crm management"
+    ],
+    "agile": [
+        "agile"
+    ],
+    "scrum": [
+        "scrum"
+    ],
+    "kanban": [
+        "kanban"
+    ],
+    "lean methodology": [
+        "lean methodology"
+    ],
+    "six sigma": [
+        "six sigma"
+    ],
+    "pmp methodology": [
+        "pmp methodology"
+    ],
+    "risk management": [
+        "risk management"
+    ],
+    "stakeholder management": [
+        "stakeholder management"
+    ],
+    "roadmap planning": [
+        "roadmap planning"
+    ],
+    "sprint planning": [
+        "sprint planning"
+    ],
+    "backlog management": [
+        "backlog management"
+    ],
+    "git": [
+        "git"
+    ],
+    "github": [
+        "github"
+    ],
+    "gitlab": [
+        "gitlab"
+    ],
+    "bitbucket": [
+        "bitbucket"
+    ],
+    "jira": [
+        "jira"
+    ],
+    "confluence": [
+        "confluence"
+    ],
+    "notion": [
+        "notion"
+    ],
+    "slack": [
+        "slack"
+    ],
+    "figma": [
+        "figma"
+    ],
+    "adobe xd": [
+        "adobe xd"
+    ],
+    "tableau": [
+        "tableau"
+    ],
+    "power bi": [
+        "power bi"
+    ],
+    "looker": [
+        "looker"
+    ],
+    "metabase": [
+        "metabase"
+    ],
+    "superset": [
+        "superset"
+    ],
+    "excel": [
+        "excel"
+    ],
+    "google analytics": [
+        "google analytics"
+    ],
+    "mixpanel": [
+        "mixpanel"
+    ],
+    "api architecture": [
+        "api architecture"
+    ],
+    "api design": [
+        "api design"
+    ],
+    "api development": [
+        "api development"
+    ],
+    "api optimization": [
+        "api optimization"
+    ],
+    "api analysis": [
+        "api analysis"
+    ],
+    "api integration": [
+        "api integration"
+    ],
+    "api automation": [
+        "api automation"
+    ],
+    "api testing": [
+        "api testing"
+    ],
+    "api monitoring": [
+        "api monitoring"
+    ],
+    "api deployment": [
+        "api deployment"
+    ],
+    "microservices architecture": [
+        "microservices architecture"
+    ],
+    "microservices design": [
+        "microservices design"
+    ],
+    "microservices development": [
+        "microservices development"
+    ],
+    "microservices optimization": [
+        "microservices optimization"
+    ],
+    "microservices analysis": [
+        "microservices analysis"
+    ],
+    "microservices integration": [
+        "microservices integration"
+    ],
+    "microservices automation": [
+        "microservices automation"
+    ],
+    "microservices testing": [
+        "microservices testing"
+    ],
+    "microservices monitoring": [
+        "microservices monitoring"
+    ],
+    "microservices deployment": [
+        "microservices deployment"
+    ],
+    "data pipeline architecture": [
+        "data pipeline architecture"
+    ],
+    "data pipeline design": [
+        "data pipeline design"
+    ],
+    "data pipeline development": [
+        "data pipeline development"
+    ],
+    "data pipeline optimization": [
+        "data pipeline optimization"
+    ],
+    "data pipeline analysis": [
+        "data pipeline analysis"
+    ],
+    "data pipeline integration": [
+        "data pipeline integration"
+    ],
+    "data pipeline automation": [
+        "data pipeline automation"
+    ],
+    "data pipeline testing": [
+        "data pipeline testing"
+    ],
+    "data pipeline monitoring": [
+        "data pipeline monitoring"
+    ],
+    "data pipeline deployment": [
+        "data pipeline deployment"
+    ],
+    "distributed systems architecture": [
+        "distributed systems architecture"
+    ],
+    "distributed systems design": [
+        "distributed systems design"
+    ],
+    "distributed systems development": [
+        "distributed systems development"
+    ],
+    "distributed systems optimization": [
+        "distributed systems optimization"
+    ],
+    "distributed systems analysis": [
+        "distributed systems analysis"
+    ],
+    "distributed systems integration": [
+        "distributed systems integration"
+    ],
+    "distributed systems automation": [
+        "distributed systems automation"
+    ],
+    "distributed systems testing": [
+        "distributed systems testing"
+    ],
+    "distributed systems monitoring": [
+        "distributed systems monitoring"
+    ],
+    "distributed systems deployment": [
+        "distributed systems deployment"
+    ],
+    "cloud infrastructure architecture": [
+        "cloud infrastructure architecture"
+    ],
+    "cloud infrastructure design": [
+        "cloud infrastructure design"
+    ],
+    "cloud infrastructure development": [
+        "cloud infrastructure development"
+    ],
+    "cloud infrastructure optimization": [
+        "cloud infrastructure optimization"
+    ],
+    "cloud infrastructure analysis": [
+        "cloud infrastructure analysis"
+    ],
+    "cloud infrastructure integration": [
+        "cloud infrastructure integration"
+    ],
+    "cloud infrastructure automation": [
+        "cloud infrastructure automation"
+    ],
+    "cloud infrastructure testing": [
+        "cloud infrastructure testing"
+    ],
+    "cloud infrastructure monitoring": [
+        "cloud infrastructure monitoring"
+    ],
+    "cloud infrastructure deployment": [
+        "cloud infrastructure deployment"
+    ],
+    "ml models architecture": [
+        "ml models architecture"
+    ],
+    "ml models design": [
+        "ml models design"
+    ],
+    "ml models development": [
+        "ml models development"
+    ],
+    "ml models optimization": [
+        "ml models optimization"
+    ],
+    "ml models analysis": [
+        "ml models analysis"
+    ],
+    "ml models integration": [
+        "ml models integration"
+    ],
+    "ml models automation": [
+        "ml models automation"
+    ],
+    "ml models testing": [
+        "ml models testing"
+    ],
+    "ml models monitoring": [
+        "ml models monitoring"
+    ],
+    "ml models deployment": [
+        "ml models deployment"
+    ],
+    "data platforms architecture": [
+        "data platforms architecture"
+    ],
+    "data platforms design": [
+        "data platforms design"
+    ],
+    "data platforms development": [
+        "data platforms development"
+    ],
+    "data platforms optimization": [
+        "data platforms optimization"
+    ],
+    "data platforms analysis": [
+        "data platforms analysis"
+    ],
+    "data platforms integration": [
+        "data platforms integration"
+    ],
+    "data platforms automation": [
+        "data platforms automation"
+    ],
+    "data platforms testing": [
+        "data platforms testing"
+    ],
+    "data platforms monitoring": [
+        "data platforms monitoring"
+    ],
+    "data platforms deployment": [
+        "data platforms deployment"
+    ],
+    "security systems architecture": [
+        "security systems architecture"
+    ],
+    "security systems design": [
+        "security systems design"
+    ],
+    "security systems development": [
+        "security systems development"
+    ],
+    "security systems optimization": [
+        "security systems optimization"
+    ],
+    "security systems analysis": [
+        "security systems analysis"
+    ],
+    "security systems integration": [
+        "security systems integration"
+    ],
+    "security systems automation": [
+        "security systems automation"
+    ],
+    "security systems testing": [
+        "security systems testing"
+    ],
+    "security systems monitoring": [
+        "security systems monitoring"
+    ],
+    "security systems deployment": [
+        "security systems deployment"
+    ],
+    "analytics platforms architecture": [
+        "analytics platforms architecture"
+    ],
+    "analytics platforms design": [
+        "analytics platforms design"
+    ],
+    "analytics platforms development": [
+        "analytics platforms development"
+    ],
+    "analytics platforms optimization": [
+        "analytics platforms optimization"
+    ],
+    "analytics platforms analysis": [
+        "analytics platforms analysis"
+    ],
+    "analytics platforms integration": [
+        "analytics platforms integration"
+    ],
+    "analytics platforms automation": [
+        "analytics platforms automation"
+    ],
+    "analytics platforms testing": [
+        "analytics platforms testing"
+    ],
+    "analytics platforms monitoring": [
+        "analytics platforms monitoring"
+    ],
+    "analytics platforms deployment": [
+        "analytics platforms deployment"
+    ],
+    "mobile applications architecture": [
+        "mobile applications architecture"
+    ],
+    "mobile applications design": [
+        "mobile applications design"
+    ],
+    "mobile applications development": [
+        "mobile applications development"
+    ],
+    "mobile applications optimization": [
+        "mobile applications optimization"
+    ],
+    "mobile applications analysis": [
+        "mobile applications analysis"
+    ],
+    "mobile applications integration": [
+        "mobile applications integration"
+    ],
+    "mobile applications automation": [
+        "mobile applications automation"
+    ],
+    "mobile applications testing": [
+        "mobile applications testing"
+    ],
+    "mobile applications monitoring": [
+        "mobile applications monitoring"
+    ],
+    "mobile applications deployment": [
+        "mobile applications deployment"
     ]
 }
