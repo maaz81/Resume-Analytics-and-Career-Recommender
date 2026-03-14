@@ -47,6 +47,18 @@
 
 // 8888888888888888888888888888888888888888888888888888888888888888888888888888888888888
 
+import API from '../../auth/services/api';
+
+/**
+ * Get current resume (replaces getResumeAnalysisService)
+ * GET /api/v1/resumes/current
+ */
+export const getCurrentResumeService = async () => {
+  const response = await API.get('/resumes/current');
+  return response.data;
+};
+
+
 /**
  * Resume Service
  * Handles resume analysis and ATS scoring (DUMMY DATA FOR NOW)
