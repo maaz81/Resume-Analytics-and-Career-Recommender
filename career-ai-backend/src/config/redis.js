@@ -206,6 +206,7 @@ export const cacheKeys = {
     roadmap: (userId) => `roadmap:${userId}:active`,
     dashboard: (userId) => `dashboard:${userId}`,
     conversation: (conversationId) => `chat:${conversationId}`,
+    conversations: (userId) => `chat:${userId}:conversations`,
     session: (sessionId) => `session:${sessionId}`,
 };
 

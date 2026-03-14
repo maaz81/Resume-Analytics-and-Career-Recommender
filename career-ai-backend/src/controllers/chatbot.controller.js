@@ -7,7 +7,7 @@ import { catchAsync } from '../middleware/errorHandler.js';
 import { successResponse, createdResponse } from '../utils/response.js';
 import logger from '../config/logger.js';
 import { cache, cacheKeys } from '../config/redis.js';
-import { getCareerAdvice } from '../services/chatbot.service.js';
+import { sendMessageToAI } from '../services/chatbot.service.js';
 
 /**
  * Create a new conversation
@@ -93,40 +93,28 @@ export const getConversationById = catchAsync(async (req, res) => {
  * Send message to AI (streaming support)
  * POST /api/v1/conversations/:id/message
  */
+// Only the sendMessage function needs replacing — rest of your controller is fine
+
 export const sendMessage = catchAsync(async (req, res) => {
     const { id } = req.params;
     const { content } = req.body;
     const userId = req.user.id;
 
-    if (!content || content.trim().length === 0) {
-        throw new Error('Message content required');
-    }
+    if (!content?.trim()) throw new Error('Message content required');
 
-    // Check conversation exists
-    const convResult = await query(
-        `SELECT * FROM ai_conversations WHERE id=$1`,
-        [id]
-    );
+    const convResult = await query(`SELECT * FROM ai_conversations WHERE id=$1`, [id]);
     const conversation = convResult.rows[0];
 
-    if (!conversation) {
-        throw new Error('Conversation not found');
-    }
+    if (!conversation) throw new Error('Conversation not found');
+    if (conversation.user_id !== userId) throw new Error('Forbidden');
 
-    if (conversation.user_id !== userId) {
-        throw new Error('Forbidden');
-    }
-
-    // Insert user message
+    // Save user message
     const userMsgResult = await query(
         `INSERT INTO ai_messages (conversation_id, user_id, role, content, created_at)
          VALUES ($1, $2, 'user', $3, NOW()) RETURNING *`,
         [id, userId, content]
     );
 
-    const userMessage = userMsgResult.rows[0];
-
-    // Update conversation message count and last_message_at
     await query(
         `UPDATE ai_conversations
          SET message_count = message_count + 1, last_message_at = NOW(), updated_at = NOW()
@@ -134,29 +122,23 @@ export const sendMessage = catchAsync(async (req, res) => {
         [id]
     );
 
-    // Get conversation history for context
-    const historyResult = await query(
-        `SELECT role, content FROM ai_messages WHERE conversation_id=$1 ORDER BY created_at ASC`,
-        [id]
-    );
+    // ✅ use sendMessageToAI so DB history is included in context
+    const aiResponse = await sendMessageToAI({ conversationId: id, userMessage: content });
 
-    // Call AI service to generate response (streaming handled in service)
-    const aiResponse = await getCareerAdvice(
-        "You are an expert career advisor and resume analyst. Help the user optimize their career path.",
-        content,
-        historyResult.rows
-    );
-
-    // Insert AI message
     const aiMsgResult = await query(
         `INSERT INTO ai_messages (conversation_id, user_id, role, content, created_at)
          VALUES ($1, $2, 'assistant', $3, NOW()) RETURNING *`,
         [id, userId, aiResponse]
     );
 
-    return successResponse(res, { userMessage, aiMessage: aiMsgResult.rows[0] }, 'Message sent successfully');
-});
+    // ✅ invalidate stale conversations cache
+    await cache.del(cacheKeys.conversations(userId));
 
+    return successResponse(res, {
+        userMessage: userMsgResult.rows[0],
+        aiMessage: aiMsgResult.rows[0],
+    }, 'Message sent successfully');
+});
 /**
  * Delete a conversation
  * DELETE /api/v1/conversations/:id
