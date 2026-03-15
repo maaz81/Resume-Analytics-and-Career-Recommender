@@ -172,59 +172,6 @@ const ProfilePage = () => {
               </label>
             </div>
 
-            <div className="flex items-center justify-between py-3 border-b border-border">
-              <div>
-                <p className="font-medium text-text-primary">Weekly Progress Reports</p>
-                <p className="text-sm text-text-muted">Get weekly summaries of your learning progress</p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={notifications.weeklyProgress}
-                  onChange={() => handleNotificationToggle('weeklyProgress')}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-surface-alt rounded-full peer peer-checked:bg-brand-primary peer-focus:ring-2 peer-focus:ring-brand-primary/20 transition-colors">
-                  <div className="absolute top-0.5 left-0.5 bg-white w-5 h-5 rounded-full transition-transform peer-checked:translate-x-5"></div>
-                </div>
-              </label>
-            </div>
-
-            <div className="flex items-center justify-between py-3 border-b border-border">
-              <div>
-                <p className="font-medium text-text-primary">Job Match Alerts</p>
-                <p className="text-sm text-text-muted">Notify when new jobs match your profile</p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={notifications.jobMatches}
-                  onChange={() => handleNotificationToggle('jobMatches')}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-surface-alt rounded-full peer peer-checked:bg-brand-primary peer-focus:ring-2 peer-focus:ring-brand-primary/20 transition-colors">
-                  <div className="absolute top-0.5 left-0.5 bg-white w-5 h-5 rounded-full transition-transform peer-checked:translate-x-5"></div>
-                </div>
-              </label>
-            </div>
-
-            <div className="flex items-center justify-between py-3">
-              <div>
-                <p className="font-medium text-text-primary">Learning Reminders</p>
-                <p className="text-sm text-text-muted">Daily reminders to maintain your learning streak</p>
-              </div>
-              <label className="relative inline-flex items-center cursor-pointer">
-                <input
-                  type="checkbox"
-                  checked={notifications.learningReminders}
-                  onChange={() => handleNotificationToggle('learningReminders')}
-                  className="sr-only peer"
-                />
-                <div className="w-11 h-6 bg-surface-alt rounded-full peer peer-checked:bg-brand-primary peer-focus:ring-2 peer-focus:ring-brand-primary/20 transition-colors">
-                  <div className="absolute top-0.5 left-0.5 bg-white w-5 h-5 rounded-full transition-transform peer-checked:translate-x-5"></div>
-                </div>
-              </label>
-            </div>
           </div>
         </CardContent>
       </Card>
