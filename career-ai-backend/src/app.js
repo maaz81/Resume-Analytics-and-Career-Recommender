@@ -23,7 +23,6 @@ import roadmapRoutes from './routes/v1/roadmap.routes.js';
 import aiRoutes from './routes/v1/ai.routes.js';
 import profileRoutes from './routes/v1/profile.route.js'
 import dashboardRoutes from './routes/v1/dashboard.routes.js'
-import chatbotRoutes from './routes/v1/chatbot.routes.js'
 import chatMainRoutes from './routes/v1/chatMain.routes.js'
 
 // Import Oauth
