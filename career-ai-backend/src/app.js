@@ -119,7 +119,6 @@ app.use(`${API_PREFIX}/ats`, atsRoutes);
 app.use(`${API_PREFIX}/roadmaps`, roadmapRoutes);
 app.use(`${API_PREFIX}/ai`, aiRoutes);
 app.use(`${API_PREFIX}/profile`, profileRoutes);
-app.use(`${API_PREFIX}/chatbot`, chatbotRoutes);
 app.use(`${API_PREFIX}/chat`, chatMainRoutes);
 
 // ============================================
