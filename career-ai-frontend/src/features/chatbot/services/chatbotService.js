@@ -1,15 +1,28 @@
-const generateMockAIResponse = (userMessage) => {
-    const responses = [
-        "Based on your resume, I can see you have strong experience in your field. Let me analyze the key areas...",
-        "That's a great question! Here are some suggestions to improve your skills:",
-        "I'd be happy to help you with that. Let me break this down for you:",
-        "Based on current industry trends, here's what I recommend:",
-        "Your resume shows potential. Here are some areas where you can strengthen your profile:",
-    ];
+import API from '../../auth/services/api';
 
-    return responses[Math.floor(Math.random() * responses.length)] +
-        `\n\n**Key Points:**\n- First important point\n- Second consideration\n- Third recommendation\n\n` +
-        `This is a mock response for development. Connect your backend to get real AI responses.`;
+const API_BASE_URL = 'http://localhost:5000/api/v1';
+
+const getAuthHeaders = () => {
+    const token = localStorage.getItem('auth_token');
+    return {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+    };
+};
+
+export const createConversationAPI = async () => {
+    const res = await fetch(`${API_BASE_URL}/chat/conversations`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+    });
+
+    if (!res.ok) {
+        throw new Error("Failed to create conversation");
+    }
+
+    const data = await res.json();
+
+    return data.conversation;
 };
 
 /**
@@ -18,28 +31,59 @@ const generateMockAIResponse = (userMessage) => {
 export const sendMessageStreaming = async ({
     message,
     conversationId,
-    files = [],
     onChunk,
     onComplete,
     onError,
 }) => {
     try {
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 500));
+        const response = await fetch(
+            `${API_BASE_URL}/chat/conversations/${conversationId}/stream`,
+            {
+                method: "POST",
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ message }),
+            }
+        );
 
-        // Generate mock response
-        const mockResponse = generateMockAIResponse(message);
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
 
-        // Stream the response character by character
-        for (let i = 0; i < mockResponse.length; i++) {
-            await new Promise(resolve => setTimeout(resolve, 20)); // Simulate typing
-            if (onChunk) onChunk(mockResponse[i]);
+        let buffer = '';
+
+        while (true) {
+            const { value, done } = await reader.read();
+
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || ''; // keep the last potentially incomplete line in the buffer
+
+            for (const line of lines) {
+                if (line.startsWith("data: ")) {
+                    try {
+                        const data = JSON.parse(line.substring(6)); // substring(6) removes 'data: '
+
+                        if (data.chunk && onChunk) {
+                            onChunk(data.chunk);
+                        }
+
+                        if (data.done && onComplete) {
+                            onComplete();
+                        }
+                        
+                        if (data.error && onError) {
+                            onError(new Error(data.error));
+                        }
+                    } catch (e) {
+                        console.error("Failed to parse stream chunk JSON:", e, "Line:", line);
+                    }
+                }
+            }
         }
-
-        // Complete streaming
-        if (onComplete) onComplete();
     } catch (error) {
-        console.error('Mock streaming error:', error);
+        console.error("Streaming error:", error);
         if (onError) onError(error);
     }
 };
@@ -72,50 +116,39 @@ export const deleteFile = async (fileId) => {
  * Mock get all conversations
  */
 export const getAllConversations = async () => {
-    await new Promise(resolve => setTimeout(resolve, 500));
+    const res = await fetch(`${API_BASE_URL}/chat/conversations`, {
+        method: "GET",
+        headers: getAuthHeaders(),
+    });
 
-    return [
-        {
-            id: 'conv_1',
-            title: 'Resume Analysis Discussion',
-            createdAt: new Date(Date.now() - 86400000).toISOString(),
-            updatedAt: new Date(Date.now() - 3600000).toISOString(),
-            messageCount: 8,
-        },
-        {
-            id: 'conv_2',
-            title: 'Career Path Guidance',
-            createdAt: new Date(Date.now() - 172800000).toISOString(),
-            updatedAt: new Date(Date.now() - 7200000).toISOString(),
-            messageCount: 5,
-        },
-    ];
+    if (!res.ok) {
+        throw new Error("Failed to fetch conversations");
+    }
+
+    const data = await res.json();
+
+    return data.conversations;
 };
 
 /**
  * Mock get conversation history
  */
 export const getConversationHistory = async (conversationId) => {
-    await new Promise(resolve => setTimeout(resolve, 500));
+    const res = await fetch(
+        `${API_BASE_URL}/chat/conversations/${conversationId}/history`,
+        {
+            method: "GET",
+            headers: getAuthHeaders(),
+        }
+    );
 
-    return {
-        id: conversationId,
-        title: 'Sample Conversation',
-        messages: [
-            {
-                id: 'msg_1',
-                role: 'user',
-                content: 'Can you help me with my resume?',
-                timestamp: new Date(Date.now() - 3600000).toISOString(),
-            },
-            {
-                id: 'msg_2',
-                role: 'assistant',
-                content: 'Of course! I\'d be happy to help you with your resume. Could you share what specific areas you\'d like to improve?',
-                timestamp: new Date(Date.now() - 3500000).toISOString(),
-            },
-        ],
-    };
+    if (!res.ok) {
+        throw new Error("Failed to fetch conversation history");
+    }
+
+    const data = await res.json();
+
+    return data;
 };
 
 /**

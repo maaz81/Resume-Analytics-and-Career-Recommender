@@ -32,6 +32,7 @@ import {
     getConversationHistory,
     deleteConversationAPI,
     exportConversationToPDF,
+    createConversationAPI,
 } from '../services/chatbotService';
 
 /**
@@ -87,9 +88,23 @@ export const useChatbot = () => {
     /**
      * Create a new conversation
      */
-    const handleNewChat = useCallback(() => {
-        const conversationId = `conv_${Date.now()}`;
-        dispatch(createConversation({ id: conversationId }));
+    const handleNewChat = useCallback(async () => {
+        try {
+            dispatch(setLoading(true));
+
+            const conversation = await createConversationAPI();
+
+            dispatch(createConversation({
+                id: conversation.id,
+                title: conversation.title || "New Chat"
+            }));
+
+        } catch (err) {
+            console.error("Create conversation failed:", err);
+            dispatch(setError(err.message));
+        } finally {
+            dispatch(setLoading(false));
+        }
     }, [dispatch]);
 
     /**
@@ -122,9 +137,16 @@ export const useChatbot = () => {
 
             // Ensure we have an active conversation
             let conversationId = activeConversation?.id;
+
             if (!conversationId) {
-                conversationId = `conv_${Date.now()}`;
-                dispatch(createConversation({ id: conversationId }));
+                const conversation = await createConversationAPI();
+
+                conversationId = conversation.id;
+
+                dispatch(createConversation({
+                    id: conversation.id,
+                    title: conversation.title || "New Chat"
+                }));
             }
 
             // Clear any previous errors
