@@ -5,6 +5,7 @@ import Button from '@common/Button';
 import Badge from '@common/Badge';
 import { cn } from '@utils/helpers';
 import { useDashboard } from '../hooks/useDashboard';
+import ROUTES from '@/constants/routes';
 
 /**
  * NextActionCard Component
@@ -23,8 +24,6 @@ const NextActionCard = () => {
       description: apiNextAction.description,
       actionLabel: 'Take Action',
       actionRoute: apiNextAction.actionUrl || '/resume/issues',
-      estimatedTime: '10 minutes',
-      impact: 'High - Improves interview chances',
     }
     : {
       type: 'fix_resume',
@@ -32,9 +31,7 @@ const NextActionCard = () => {
       title: 'Fix Critical Resume Issues',
       description: `Your ATS score is at ${atsScore?.overall ?? '--'}. Add missing keywords to reach 85%+`,
       actionLabel: 'Fix Issues Now',
-      actionRoute: '/resume/issues',
-      estimatedTime: '10 minutes',
-      impact: 'High - Improves interview chances by 40%',
+      actionRoute: ROUTES.SKILL_GAP,
     };
 
   const getPriorityIcon = (priority) => {
@@ -75,21 +72,7 @@ const NextActionCard = () => {
             {nextAction.description}
           </p>
 
-          {/* Metrics */}
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-text-muted" />
-              <span className="text-sm text-text-secondary">
-                {nextAction.estimatedTime}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-status-success" />
-              <span className="text-sm text-text-secondary">
-                {nextAction.impact}
-              </span>
-            </div>
-          </div>
+
 
           {/* Divider */}
           <div className="border-t border-border" />
@@ -99,7 +82,7 @@ const NextActionCard = () => {
             variant="primary"
             size="lg"
             fullWidth
-            onClick={() => navigate(nextAction.actionRoute)}
+            onClick={() => navigate(ROUTES.SKILL_GAP)}
             rightIcon={<ArrowRight className="w-5 h-5" />}
             className="bg-brand-primary hover:bg-brand-primary/90 shadow-lg hover:shadow-xl"
           >
