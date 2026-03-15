@@ -5,7 +5,7 @@ import Button from '@common/Button';
 import Badge from '@common/Badge';
 import { cn } from '@utils/helpers';
 import { useDashboard } from '../hooks/useDashboard';
-import ROUTES from '@/constants/routes';
+import { ROUTES } from '@/constants/routes';
 
 /**
  * NextActionCard Component
