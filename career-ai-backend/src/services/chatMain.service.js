@@ -11,7 +11,7 @@ const client = new OpenAI({
     },
 });
 
-const MODEL = 'openai/gpt-oss-120b:free';
+const MODEL = 'arcee-ai/trinity-mini:free';
 
 const SYSTEM_PROMPT = `You are an expert career advisor with 15+ years of experience.
 You help users with:
