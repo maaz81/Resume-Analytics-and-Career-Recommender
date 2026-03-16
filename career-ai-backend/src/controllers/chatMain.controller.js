@@ -94,9 +94,12 @@ export const chatStream = async (req, res) => {
         // ✅ pass userId — ai_messages needs it
         await sendMessageStream(id, req.user.id, message, (chunk) => {
             res.write(`data: ${JSON.stringify({ chunk })}\n\n`);
+            // Flush each chunk immediately — prevents compression middleware from buffering SSE
+            if (typeof res.flush === 'function') res.flush();
         });
 
         res.write(`data: ${JSON.stringify({ done: true })}\n\n`);
+        if (typeof res.flush === 'function') res.flush();
         res.end();
     } catch (err) {
         logger.error(`Stream error: ${err.message}`);
