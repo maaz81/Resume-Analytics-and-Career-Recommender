@@ -1,56 +1,110 @@
-const generateMockAIResponse = (userMessage) => {
-    const responses = [
-        "Based on your resume, I can see you have strong experience in your field. Let me analyze the key areas...",
-        "That's a great question! Here are some suggestions to improve your skills:",
-        "I'd be happy to help you with that. Let me break this down for you:",
-        "Based on current industry trends, here's what I recommend:",
-        "Your resume shows potential. Here are some areas where you can strengthen your profile:",
-    ];
+/**
+ * Chatbot Service
+ * All API calls for chat conversations.
+ * Uses the shared axios instance from auth/services/api.js which
+ * automatically attaches the Bearer token via its request interceptor.
+ */
+import API from '../../auth/services/api';
 
-    return responses[Math.floor(Math.random() * responses.length)] +
-        `\n\n**Key Points:**\n- First important point\n- Second consideration\n- Third recommendation\n\n` +
-        `This is a mock response for development. Connect your backend to get real AI responses.`;
+// ─── Create a new conversation ────────────────────────────────────────────────
+export const createConversationAPI = async () => {
+    const res = await API.post('/chat/conversations');
+    return res.data.conversation;
 };
 
+// ─── Get all conversations ────────────────────────────────────────────────────
+export const getAllConversations = async () => {
+    const res = await API.get('/chat/conversations');
+    return res.data.conversations;
+};
+
+// ─── Get conversation history ─────────────────────────────────────────────────
+export const getConversationHistory = async (conversationId) => {
+    const res = await API.get(`/chat/conversations/${conversationId}/history`);
+    return res.data; // { messages: [...] }
+};
+
+// ─── Delete a conversation ────────────────────────────────────────────────────
+export const deleteConversationAPI = async (conversationId) => {
+    // No backend delete route yet — graceful no-op
+    return { success: true };
+};
+
+// ─── Send a message with SSE streaming ───────────────────────────────────────
 /**
- * Mock streaming function
+ * Uses the native fetch API for SSE (Server-Sent Events) streaming.
+ * Axios does not support ReadableStream, so we fall back to fetch here
+ * and manually attach the Bearer token.
  */
 export const sendMessageStreaming = async ({
     message,
     conversationId,
-    files = [],
     onChunk,
     onComplete,
     onError,
 }) => {
     try {
-        // Simulate network delay
-        await new Promise(resolve => setTimeout(resolve, 500));
+        const token = localStorage.getItem('auth_token');
+        const baseURL = 'http://localhost:5000/api/v1';
 
-        // Generate mock response
-        const mockResponse = generateMockAIResponse(message);
+        const response = await fetch(
+            `${baseURL}/chat/conversations/${conversationId}/stream`,
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    ...(token ? { Authorization: `Bearer ${token}` } : {}),
+                },
+                body: JSON.stringify({ message }),
+            }
+        );
 
-        // Stream the response character by character
-        for (let i = 0; i < mockResponse.length; i++) {
-            await new Promise(resolve => setTimeout(resolve, 20)); // Simulate typing
-            if (onChunk) onChunk(mockResponse[i]);
+        if (!response.ok) {
+            throw new Error(`Server error: ${response.status}`);
         }
 
-        // Complete streaming
-        if (onComplete) onComplete();
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        while (true) {
+            const { value, done } = await reader.read();
+
+            if (done) break;
+
+            const chunk = decoder.decode(value);
+            const lines = chunk.split('\n');
+
+            for (const line of lines) {
+                if (line.startsWith('data: ')) {
+                    try {
+                        const data = JSON.parse(line.replace('data: ', ''));
+
+                        if (data.chunk && onChunk) {
+                            onChunk(data.chunk);
+                        }
+
+                        if (data.done && onComplete) {
+                            onComplete();
+                        }
+
+                        if (data.error && onError) {
+                            onError(new Error(data.error));
+                        }
+                    } catch {
+                        // Ignore malformed SSE lines
+                    }
+                }
+            }
+        }
     } catch (error) {
-        console.error('Mock streaming error:', error);
+        console.error('Streaming error:', error);
         if (onError) onError(error);
     }
 };
 
-/**
- * Mock file upload
- */
+// ─── File upload (local / mock) ───────────────────────────────────────────────
 export const uploadFile = async (file) => {
-    // Simulate upload delay
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
+    await new Promise((resolve) => setTimeout(resolve, 1000));
     return {
         id: `file_${Date.now()}`,
         name: file.name,
@@ -60,80 +114,15 @@ export const uploadFile = async (file) => {
     };
 };
 
-/**
- * Mock file deletion
- */
-export const deleteFile = async (fileId) => {
-    await new Promise(resolve => setTimeout(resolve, 300));
+// ─── File deletion (mock) ─────────────────────────────────────────────────────
+export const deleteFile = async (_fileId) => {
+    await new Promise((resolve) => setTimeout(resolve, 300));
     return { success: true };
 };
 
-/**
- * Mock get all conversations
- */
-export const getAllConversations = async () => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    return [
-        {
-            id: 'conv_1',
-            title: 'Resume Analysis Discussion',
-            createdAt: new Date(Date.now() - 86400000).toISOString(),
-            updatedAt: new Date(Date.now() - 3600000).toISOString(),
-            messageCount: 8,
-        },
-        {
-            id: 'conv_2',
-            title: 'Career Path Guidance',
-            createdAt: new Date(Date.now() - 172800000).toISOString(),
-            updatedAt: new Date(Date.now() - 7200000).toISOString(),
-            messageCount: 5,
-        },
-    ];
-};
-
-/**
- * Mock get conversation history
- */
-export const getConversationHistory = async (conversationId) => {
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    return {
-        id: conversationId,
-        title: 'Sample Conversation',
-        messages: [
-            {
-                id: 'msg_1',
-                role: 'user',
-                content: 'Can you help me with my resume?',
-                timestamp: new Date(Date.now() - 3600000).toISOString(),
-            },
-            {
-                id: 'msg_2',
-                role: 'assistant',
-                content: 'Of course! I\'d be happy to help you with your resume. Could you share what specific areas you\'d like to improve?',
-                timestamp: new Date(Date.now() - 3500000).toISOString(),
-            },
-        ],
-    };
-};
-
-/**
- * Mock delete conversation
- */
-export const deleteConversationAPI = async (conversationId) => {
-    await new Promise(resolve => setTimeout(resolve, 300));
-    return { success: true };
-};
-
-/**
- * Mock export to PDF
- */
+// ─── Export conversation to PDF (mock) ───────────────────────────────────────
 export const exportConversationToPDF = async (conversationId) => {
-    // Simulate PDF generation
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // Create a simple text blob as mock PDF
-    const pdfContent = `Mock PDF Export\nConversation ID: ${conversationId}\n\nThis is a mock PDF. Connect your backend for real PDF export.`;
+    await new Promise((resolve) => setTimeout(resolve, 1000));
+    const pdfContent = `Career AI Chat Export\nConversation ID: ${conversationId}\n\nConnect your backend for real PDF export.`;
     return new Blob([pdfContent], { type: 'application/pdf' });
 };
