@@ -139,22 +139,26 @@ export const getMe = catchAsync(async (req, res) => {
  * PATCH /api/v1/auth/profile
  */
 export const updateProfile = catchAsync(async (req, res) => {
-    const allowedUpdates = [
-        'fullName',
-        'currentRole',
-        'yearsOfExperience',
-        'targetRole',
-        'industry',
-        'bio',
-        'location',
-    ];
+    const fieldMap = {
+        // camelCase -> snake_case (existing support)
+        'fullName': 'full_name',
+        'currentRole': 'current_role',
+        'yearsOfExperience': 'years_of_experience',
+        'targetRole': 'target_role',
+        'industry': 'industry',
+        'bio': 'bio',
+        'location': 'location',
+        // snake_case -> snake_case (new direct support)
+        'full_name': 'full_name',
+        'current_role': 'current_role',
+        'years_of_experience': 'years_of_experience',
+        'target_role': 'target_role',
+    };
 
     const updates = {};
     Object.keys(req.body).forEach((key) => {
-        if (allowedUpdates.includes(key)) {
-            // Convert camelCase to snake_case
-            const snakeKey = key.replace(/([A-Z])/g, '_$1').toLowerCase();
-            updates[snakeKey] = req.body[key];
+        if (fieldMap[key]) {
+            updates[fieldMap[key]] = req.body[key];
         }
     });
 
