@@ -72,21 +72,10 @@ const predefinedResponses = {
  * @param {Object} context - User context (resume, skills, etc.)
  * @returns {Promise} - AI response
  */
-import axios from "axios";
 import API from '../../auth/services/api';
 
 export const sendChatMessageService = async (message, conversationId) => {
-  const token = localStorage.getItem("token");
-
-  const res = await axios.post(
-    `${API}/conversations/${conversationId}/chat`,
-    { message },
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const res = await API.post(`/chat/conversations/${conversationId}/chat`, { message });
 
   return {
     id: `msg_${Date.now()}`,
@@ -97,17 +86,7 @@ export const sendChatMessageService = async (message, conversationId) => {
 };
 
 export const createConversationService = async () => {
-  const token = localStorage.getItem("token");
-
-  const res = await axios.post(
-    "http://localhost:5000/api/v1/chat/conversations",
-    {},
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    }
-  );
+  const res = await API.post('/chat/conversations', {});
 
   return res.data.conversation.id;
 };
