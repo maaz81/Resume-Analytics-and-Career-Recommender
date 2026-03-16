@@ -100,10 +100,10 @@ const SkillGapPage = () => {
         </div>
         <Button
           variant="primary"
-          onClick={() => navigate(ROUTES.SKILL_PRIORITY)}
+          onClick={() => navigate(ROUTES.RECOMMENDATIONS)}
           rightIcon={<ArrowRight className="w-4 h-4" />}
         >
-          View Priority Queue
+          View Recommendations
         </Button>
       </div>
 

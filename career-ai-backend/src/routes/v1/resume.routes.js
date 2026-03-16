@@ -27,6 +27,12 @@ router.get('/', resumeController.getMyResumes);
 // Get active resume
 router.get('/active', resumeController.getActiveResume);
 
+// Get current resume
+router.get('/current', resumeController.getCurrentResume);
+
+// Get resume history
+router.get("/history", resumeController.getResumeHistory);
+
 // Get specific resume
 router.get('/:id', resumeController.getResumeById);
 

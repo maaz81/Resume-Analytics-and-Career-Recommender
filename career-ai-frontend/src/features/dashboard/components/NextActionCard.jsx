@@ -4,25 +4,35 @@ import Card from '@common/Card';
 import Button from '@common/Button';
 import Badge from '@common/Badge';
 import { cn } from '@utils/helpers';
+import { useDashboard } from '../hooks/useDashboard';
+import { ROUTES } from '@/constants/routes';
 
 /**
  * NextActionCard Component
  * Highlights the most important action for the user
  */
 const NextActionCard = () => {
+  const { atsScore, nextAction: apiNextAction } = useDashboard({ autoLoad: false });
   const navigate = useNavigate();
 
-  // Mock data
-  const nextAction = {
-    type: 'fix_resume',
-    priority: 'high',
-    title: 'Fix Critical Resume Issues',
-    description: 'Your ATS score is at 72%. Add missing keywords to reach 85%+',
-    actionLabel: 'Fix Issues Now',
-    actionRoute: '/resume/issues',
-    estimatedTime: '10 minutes',
-    impact: 'High - Improves interview chances by 40%',
-  };
+  // Use real backend data, fallback to sensible defaults
+  const nextAction = apiNextAction
+    ? {
+      type: apiNextAction.type,
+      priority: apiNextAction.priority,
+      title: apiNextAction.title,
+      description: apiNextAction.description,
+      actionLabel: 'Take Action',
+      actionRoute: apiNextAction.actionUrl || '/resume/issues',
+    }
+    : {
+      type: 'fix_resume',
+      priority: 'high',
+      title: 'Fix Critical Resume Issues',
+      description: `Your ATS score is at ${atsScore?.overall ?? '--'}. Add missing keywords to reach 85%+`,
+      actionLabel: 'Fix Issues Now',
+      actionRoute: ROUTES.SKILL_GAP,
+    };
 
   const getPriorityIcon = (priority) => {
     return <Zap className="w-5 h-5" />;
@@ -62,21 +72,7 @@ const NextActionCard = () => {
             {nextAction.description}
           </p>
 
-          {/* Metrics */}
-          <div className="flex items-center gap-6">
-            <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-text-muted" />
-              <span className="text-sm text-text-secondary">
-                {nextAction.estimatedTime}
-              </span>
-            </div>
-            <div className="flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-status-success" />
-              <span className="text-sm text-text-secondary">
-                {nextAction.impact}
-              </span>
-            </div>
-          </div>
+
 
           {/* Divider */}
           <div className="border-t border-border" />
@@ -86,7 +82,7 @@ const NextActionCard = () => {
             variant="primary"
             size="lg"
             fullWidth
-            onClick={() => navigate(nextAction.actionRoute)}
+            onClick={() => navigate(ROUTES.SKILL_GAP)}
             rightIcon={<ArrowRight className="w-5 h-5" />}
             className="bg-brand-primary hover:bg-brand-primary/90 shadow-lg hover:shadow-xl"
           >

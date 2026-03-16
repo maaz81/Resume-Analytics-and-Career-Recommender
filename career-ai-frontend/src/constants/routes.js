@@ -28,7 +28,7 @@ export const ROUTES = {
   SKILL_PRIORITY: '/skills/priority',
 
   // Recomandations Routes
-  RECOMANDATION: '/recomadation',
+  RECOMMENDATIONS: '/recomadation',
 
   // Chat Bot Routes
   CHAT_BOT: '/chat-bot',

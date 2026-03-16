@@ -101,14 +101,6 @@ const ResumeVersionCard = ({ resume, isCurrent, onView, onRestore, onDelete }) =
 
                         {!isCurrent && (
                             <>
-                                <Button
-                                    variant="outline"
-                                    size="sm"
-                                    leftIcon={<RotateCcw className="w-4 h-4" />}
-                                    onClick={() => onRestore(resume)}
-                                >
-                                    Restore
-                                </Button>
 
                                 <Button
                                     variant="outline"
