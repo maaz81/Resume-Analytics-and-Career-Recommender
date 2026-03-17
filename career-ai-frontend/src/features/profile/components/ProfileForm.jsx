@@ -11,11 +11,11 @@ import Alert from '@common/Alert';
  */
 const ProfileForm = ({ user, onSave, isUpdating = false, updateSuccess = false }) => {
     const [formData, setFormData] = useState({
-        name: user?.name || '',
+        name: user?.full_name || '',
         email: user?.email || '',
-        targetRole: user?.careerGoal?.targetRole || '',
-        experienceLevel: user?.careerGoal?.experience || '',
-        location: user?.careerGoal?.location || '',
+        targetRole: user?.target_role || '',
+        experienceLevel: user?.years_of_experience || '',
+        location: user?.location || '',
         targetCompanies: user?.careerGoal?.targetCompanies || [],
     });
 
@@ -25,21 +25,21 @@ const ProfileForm = ({ user, onSave, isUpdating = false, updateSuccess = false }
     useEffect(() => {
         if (user) {
             setFormData({
-                name: user.name || '',
+                name: user.full_name || '',
                 email: user.email || '',
-                targetRole: user.careerGoal?.targetRole || '',
-                experienceLevel: user.careerGoal?.experience || '',
-                location: user.careerGoal?.location || '',
+                targetRole: user.target_role || '',
+                experienceLevel: user.years_of_experience || '',
+                location: user.location || '',
                 targetCompanies: user.careerGoal?.targetCompanies || [],
             });
         }
     }, [user]);
 
     const experienceLevels = [
-        { value: 'entry', label: 'Entry Level (0-2 years)' },
-        { value: 'intermediate', label: 'Intermediate (3-5 years)' },
-        { value: 'senior', label: 'Senior (6-10 years)' },
-        { value: 'lead', label: 'Lead/Principal (10+ years)' },
+        { value: 1, label: 'Entry Level (0-2 years)' },
+        { value: 4, label: 'Intermediate (3-5 years)' },
+        { value: 8, label: 'Senior (6-10 years)' },
+        { value: 12, label: 'Lead/Principal (10+ years)' },
     ];
 
     const targetRoles = [
@@ -84,7 +84,12 @@ const ProfileForm = ({ user, onSave, isUpdating = false, updateSuccess = false }
             return;
         }
 
-        onSave(formData);
+        onSave({
+            full_name: formData.name,
+            target_role: formData.targetRole,
+            years_of_experience: formData.experienceLevel,
+            location: formData.location
+        })
     };
 
     return (
