@@ -127,7 +127,9 @@ export default class User {
             `UPDATE "users" 
        SET ${updateFields.join(', ')}, "updated_at" = NOW()
        WHERE "id" = $${paramIndex}
-       RETURNING "id", "email", "full_name", "current_role", "target_role", "updated_at"`,
+       RETURNING "id", "email", "full_name", "current_role", "years_of_experience",
+        "target_role", "industry", "profile_picture_url", "bio", "location",
+        "is_email_verified", "is_active", "last_login_at", "created_at", "updated_at"`,
             values
         );
 
