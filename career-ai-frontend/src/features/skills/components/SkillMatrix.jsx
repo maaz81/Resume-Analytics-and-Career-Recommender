@@ -18,13 +18,11 @@ const SkillMatrix = ({ skillsByCategory }) => {
   const getStatusLabel = (status) => {
     switch (status) {
       case 'strong':
-        return 'Strong';
+        return 'Core';
       case 'weak':
-        return 'Needs Work';
+        return 'Nice to Have';
       case 'missing':
-        return 'Missing';
-      default:
-        return status;
+        return 'Emerging';
     }
   };
 
@@ -79,7 +77,7 @@ const SkillMatrix = ({ skillsByCategory }) => {
               {categories.map((category) => {
                 const skills = skillsByCategory[category.key] || [];
                 const total = skills.length;
-                
+
                 return (
                   <tr key={category.key} className="border-b border-border hover:bg-surface-alt/50">
                     <td className="p-3">
@@ -88,7 +86,7 @@ const SkillMatrix = ({ skillsByCategory }) => {
                     {statuses.map((status) => {
                       const count = countByStatus(skills, status);
                       const percentage = total > 0 ? Math.round((count / total) * 100) : 0;
-                      
+
                       return (
                         <td key={status} className="p-3 text-center">
                           <div className="flex flex-col items-center gap-1">

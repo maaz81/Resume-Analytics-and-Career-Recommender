@@ -10,8 +10,9 @@ import {
   setTyping,
   closeChat,
   clearMessages,
+  setConversationId
 } from '../slices/chatSlice';
-import { sendChatMessageService, getChatSuggestionsService } from '../services/chatService';
+import { sendChatMessageService, getChatSuggestionsService, createConversationService } from '../services/chatService';
 
 /**
  * AIChatPanel Component
@@ -19,7 +20,9 @@ import { sendChatMessageService, getChatSuggestionsService } from '../services/c
  */
 const AIChatPanel = () => {
   const dispatch = useDispatch();
-  const { messages, isOpen, isTyping } = useSelector((state) => state.chat);
+  const { messages, isOpen, isTyping, conversationId } = useSelector(
+    (state) => state.chat
+  );
   const messagesEndRef = useRef(null);
   const [suggestions, setSuggestions] = useState([]);
 
@@ -41,16 +44,19 @@ const AIChatPanel = () => {
 
   // Send initial greeting if no messages
   useEffect(() => {
-    if (isOpen && messages.length === 0) {
-      const greeting = {
-        id: `msg_${Date.now()}`,
-        content: "👋 Hi! I'm your AI career assistant. I can help you with resume optimization, skill development, and career planning. What would you like to know?",
-        timestamp: new Date().toISOString(),
-        sender: 'assistant',
-      };
-      dispatch(addMessage(greeting));
-    }
-  }, [isOpen, messages.length, dispatch]);
+    const createConversation = async () => {
+      if (isOpen && !conversationId) {
+        try {
+          const id = await createConversationService();
+          dispatch(setConversationId(id));
+        } catch (err) {
+          console.error("Conversation creation failed", err);
+        }
+      }
+    };
+
+    createConversation();
+  }, [isOpen, conversationId, dispatch]);
 
   const handleSendMessage = async (messageText) => {
     // Add user message
@@ -67,11 +73,10 @@ const AIChatPanel = () => {
 
     try {
       // Get AI response
-      const response = await sendChatMessageService(messageText, {
-        currentPage: window.location.pathname.includes('resume') ? 'resume' :
-                     window.location.pathname.includes('skills') ? 'skills' :
-                     window.location.pathname.includes('roadmap') ? 'roadmap' : 'general',
-      });
+      const response = await sendChatMessageService(
+        messageText,
+        conversationId
+      );
 
       // Add AI response
       dispatch(addMessage(response));
@@ -129,7 +134,7 @@ const AIChatPanel = () => {
               <p className="text-xs text-white/80">Always here to help</p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
             <button
               onClick={handleClearChat}

@@ -3,48 +3,24 @@
 // ============================================
 
 import express from 'express';
-import * as resumeController from '../../controllers/resume.controller.js';
+import * as controller from '../../controllers/resume.controller.js';
 import { protect } from '../../middleware/auth.js';
-import { uploadLimiter } from '../../middleware/rateLimiter.js';
 import { upload } from '../../utils/fileUpload.js';
 
 const router = express.Router();
 
-// All routes require authentication
 router.use(protect);
 
-// Upload resume
-router.post(
-    '/upload',
-    uploadLimiter,
-    upload.single('resume'),
-    resumeController.uploadResume
-);
+// upload
+router.post('/upload', upload.single('resume'), controller.uploadResume);
 
-// Get all user resumes
-router.get('/', resumeController.getMyResumes);
+// history
+router.get('/history', controller.getResumeHistory);
 
-// Get active resume
-router.get('/active', resumeController.getActiveResume);
+// analysis
+router.get('/:id/analysis', controller.getResumeAnalysis);
 
-// Get current resume
-router.get('/current', resumeController.getCurrentResume);
-
-// Get resume history
-router.get("/history", resumeController.getResumeHistory);
-
-// Get specific resume
-router.get('/:id', resumeController.getResumeById);
-
-// Set resume as active
-router.patch('/:id/activate', resumeController.setActiveResume);
-
-// Get parsing status
-router.get('/:id/status', resumeController.getParsingStatus);
-
-// Delete resume
-router.delete('/:id', resumeController.deleteResume);
-
-router.post('/:id/score', resumeController.scoreResume);
+// score
+router.post('/:id/score', controller.scoreResume);
 
 export default router;

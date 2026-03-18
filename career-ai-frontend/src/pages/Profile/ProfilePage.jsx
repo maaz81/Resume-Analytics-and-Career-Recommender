@@ -37,15 +37,7 @@ const ProfilePage = () => {
   });
 
   const handleSaveProfile = (formData) => {
-    // Map frontend form fields to backend snake_case fields
-    const mappedData = {
-      fullName: formData.name,
-      targetRole: formData.targetRole,
-      yearsOfExperience: formData.experienceLevel,
-      location: formData.location,
-    };
-
-    dispatch(updateProfile(mappedData));
+    dispatch(updateProfile(formData));
   };
 
   const handleNotificationToggle = (key) => {
@@ -66,16 +58,7 @@ const ProfilePage = () => {
     setShowDeleteModal(false);
   };
 
-  // Map backend snake_case fields to the format ProfileForm expects
-  const mappedUser = user && {
-    name: user.full_name,
-    email: user.email,
-    careerGoal: {
-      targetRole: user.target_role,
-      experience: user.years_of_experience,
-      location: user.location,
-    },
-  };
+
 
   if (isLoading) {
     return (
@@ -136,7 +119,7 @@ const ProfilePage = () => {
         </CardHeader>
         <CardContent>
           <ProfileForm
-            user={mappedUser}
+            user={user}
             onSave={handleSaveProfile}
             isUpdating={isUpdating}
             updateSuccess={updateSuccess}
@@ -203,57 +186,13 @@ const ProfilePage = () => {
               </Button>
             </div>
 
-            <div className="flex items-start justify-between p-4 rounded-lg bg-status-error/5 border border-status-error/20">
-              <div className="flex-1">
-                <h4 className="font-semibold text-status-error mb-1">Delete Account</h4>
-                <p className="text-sm text-text-secondary">
-                  Permanently delete your account and all data. This action cannot be undone.
-                </p>
-              </div>
-              <Button
-                variant="outline"
-                leftIcon={<Trash2 className="w-4 h-4" />}
-                onClick={() => setShowDeleteModal(true)}
-                className="text-status-error hover:text-status-error hover:border-status-error"
-              >
-                Delete
-              </Button>
-            </div>
+
           </div>
         </CardContent>
       </Card>
 
       {/* Delete Confirmation Modal */}
-      <Modal
-        isOpen={showDeleteModal}
-        onClose={() => setShowDeleteModal(false)}
-        title="Delete Account"
-        footer={
-          <>
-            <Button variant="outline" onClick={() => setShowDeleteModal(false)}>
-              Cancel
-            </Button>
-            <Button variant="danger" onClick={handleDeleteAccount}>
-              Yes, Delete My Account
-            </Button>
-          </>
-        }
-      >
-        <div className="space-y-4">
-          <p className="text-text-secondary">
-            Are you sure you want to delete your account? This will permanently remove:
-          </p>
-          <ul className="list-disc list-inside space-y-2 text-text-secondary">
-            <li>All your resume versions and analysis</li>
-            <li>Your skill gap analysis and learning progress</li>
-            <li>Your personalized roadmap</li>
-            <li>All chat history with the AI assistant</li>
-          </ul>
-          <p className="text-status-error font-semibold">
-            This action cannot be undone.
-          </p>
-        </div>
-      </Modal>
+
     </div>
   );
 };

@@ -5,6 +5,7 @@ const chatSlice = createSlice({
   name: 'chat',
   initialState: {
     messages: [],
+    conversationId: null,
     isOpen: false,
     isTyping: false,
     error: null,
@@ -12,6 +13,9 @@ const chatSlice = createSlice({
   reducers: {
     addMessage: (state, action) => {
       state.messages.push(action.payload);
+    },
+    setConversationId: (state, action) => {
+      state.conversationId = action.payload;
     },
     setTyping: (state, action) => {
       state.isTyping = action.payload;
@@ -33,6 +37,7 @@ const chatSlice = createSlice({
 
 export const {
   addMessage,
+  setConversationId,
   setTyping,
   toggleChat,
   openChat,
