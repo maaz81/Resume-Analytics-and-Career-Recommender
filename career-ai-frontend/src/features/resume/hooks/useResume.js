@@ -52,7 +52,7 @@ const useResume = () => {
             setIsLoading(true);
             setError(null);
 
-            const data = await getResumeAnalysisService(resumeId);
+            const data = await getResumeAnalysisService(resumeId); // ✅ FIX
 
             dispatch(setAnalysis(data));
             dispatch(setATSScore(data.atsScore));
@@ -60,11 +60,11 @@ const useResume = () => {
             return { success: true, data };
 
         } catch (err) {
-            setError(err.message);
-            return { success: false, error: err.message };
+            setError(getError(err));
+            return { success: false, error: getError(err) };
 
         } finally {
-            setIsLoading(false); // ✅ finally use karo — hamesha reset hoga
+            setIsLoading(false);
         }
     }, [dispatch]);
 
@@ -97,17 +97,18 @@ const useResume = () => {
             setIsLoading(true);
             setError(null);
 
-            const { resumes } = await getResumeHistoryService();
-            dispatch(setResumeHistory(resumes));
+            const data = await getResumeHistoryService();
 
-            return { success: true, data: resumes };
+            dispatch(setResumeHistory(data.resumes));
+
+            return { success: true, data: data.resumes }; // ✅ FIX
 
         } catch (err) {
-            setError(err.message);
-            return { success: false, error: err.message };
+            setError(getError(err));
+            return { success: false, error: getError(err) };
 
         } finally {
-            setIsLoading(false); // ✅
+            setIsLoading(false);
         }
     }, [dispatch]);
 
