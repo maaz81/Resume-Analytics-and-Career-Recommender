@@ -1,241 +1,169 @@
-// src/features/resume/hooks/useResume.js
-// import { useState } from 'react';
-// import { useDispatch, useSelector } from 'react-redux';
-// import {
-//   uploadResumeStart,
-//   uploadResumeSuccess,
-//   uploadResumeFailure,
-//   setATSScore,
-//   setAnalysis,
-//   setIssues,
-// } from '../slices/resumeSlice';
-// import {
-//   getResumeAnalysisService,
-//   getResumeIssuesService,
-//   getResumeHistoryService,
-//   uploadResumeService,
-// } from '../services/resumeService';
+// ===== src/features/resume/hooks/useResume.js =====
 
-// export const useResume = () => {
-//   const dispatch = useDispatch();
-//   const resume = useSelector((state) => state.resume);
-//   const [isLoading, setIsLoading] = useState(false);
-//   const [error, setError] = useState(null);
-
-//   /**
-//    * Upload resume file
-//    * @param {File} file
-//    */
-//   const uploadResume = async (file) => {
-//     try {
-//       dispatch(uploadResumeStart());
-//       const data = await uploadResumeService(file);
-//       dispatch(uploadResumeSuccess(data.resume));
-//       return { success: true, data };
-//     } catch (err) {
-//       const message = err.response?.data?.message || err.message;
-//       dispatch(uploadResumeFailure(message));
-//       return { success: false, error: message };
-//     }
-//   };
-
-//   /**
-//    * Get active resume + ATS score
-//    */
-//   const getResumeAnalysis = async () => {
-//     try {
-//       setIsLoading(true);
-//       setError(null);
-//       const data = await getResumeAnalysisService();
-//       dispatch(setAnalysis(data.resume));
-//       dispatch(setATSScore(data.resume?.ats_score ?? null));
-//       setIsLoading(false);
-//       return { success: true, data };
-//     } catch (err) {
-//       const message = err.response?.data?.message || err.message;
-//       setError(message);
-//       setIsLoading(false);
-//       return { success: false, error: message };
-//     }
-//   };
-
-//   /**
-//    * Score resume against job description
-//    * @param {string} resumeId
-//    * @param {string} jdText
-//    */
-//   const getResumeIssues = async (resumeId, jdText) => {
-//     try {
-//       setIsLoading(true);
-//       setError(null);
-//       const data = await getResumeIssuesService(resumeId, jdText);
-//       dispatch(setIssues(data.analysis));
-//       setIsLoading(false);
-//       return { success: true, data };
-//     } catch (err) {
-//       const message = err.response?.data?.message || err.message;
-//       setError(message);
-//       setIsLoading(false);
-//       return { success: false, error: message };
-//     }
-//   };
-
-//   /**
-//    * Get all resume versions
-//    */
-//   const getResumeHistory = async () => {
-//     try {
-//       setIsLoading(true);
-//       setError(null);
-//       const data = await getResumeHistoryService();
-//       setIsLoading(false);
-//       return { success: true, data };
-//     } catch (err) {
-//       const message = err.response?.data?.message || err.message;
-//       setError(message);
-//       setIsLoading(false);
-//       return { success: false, error: message };
-//     }
-//   };
-
-//   return {
-//     currentResume: resume.currentResume,
-//     atsScore: resume.atsScore,
-//     analysis: resume.analysis,
-//     issues: resume.issues,
-//     isLoading: isLoading || resume.isLoading,
-//     error: error || resume.error,
-
-//     uploadResume,
-//     getResumeAnalysis,
-//     getResumeIssues,
-//     getResumeHistory,
-//   };
-// };
-import { useState, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import {
     uploadResumeStart,
     uploadResumeSuccess,
     uploadResumeFailure,
-    setATSScore,
     setAnalysis,
-    setIssues,
+    setATSScore,
     setResumeHistory,
 } from '../slices/resumeSlice';
 import {
+    uploadResumeService,
     getResumeAnalysisService,
-    getCurrentResumeService,
-    getResumeIssuesService,
     getResumeHistoryService,
+    scoreResumeService,
 } from '../services/resumeService';
 
-/**
- * useResume Hook
- * Manages resume analysis and issues
- */
-export const useResume = () => {
-    const dispatch = useDispatch();
-    const resume = useSelector((state) => state.resume);
+const getError = (err) => err.response?.data?.message || err.message;
 
+const useResume = () => {
+    // ✅ Local state — sirf UI ke liye (non-upload flows)
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const getCurrentResume = async () => {
+    // ✅ Redux state
+    const dispatch = useDispatch();
+    const resume = useSelector((state) => state.resume);
+
+    // ─────────────────────────────────────────
+    // Upload Resume
+    // ─────────────────────────────────────────
+    const uploadResume = useCallback(async (file) => {
         try {
-            setIsLoading(true);
-            setError(null);
+            dispatch(uploadResumeStart()); // ✅ Redux handles loading for upload
 
-            const data = await getCurrentResumeService();
+            const data = await uploadResumeService(file);
+            dispatch(uploadResumeSuccess(data.resume));
 
-            dispatch(uploadResumeSuccess(data));
-
-            setIsLoading(false);
-            return { success: true, data };
+            return { success: true, data: data.resume };
 
         } catch (err) {
-            setError(err.message);
-            setIsLoading(false);
+            dispatch(uploadResumeFailure(err.message));
             return { success: false, error: err.message };
         }
-    };
+    }, [dispatch]);
 
-    /**
-     * Get resume analysis
-     */
-    const getResumeAnalysis = async () => {
+    // ─────────────────────────────────────────
+    // Get Resume Analysis
+    // ─────────────────────────────────────────
+    const getResumeAnalysis = useCallback(async (resumeId) => {
         try {
             setIsLoading(true);
             setError(null);
 
-            const data = await getResumeAnalysisService();
+            const targetId = resumeId || 'latest';
+            const data = await getResumeAnalysisService(targetId); // ✅ FIX
+
             dispatch(setAnalysis(data));
             dispatch(setATSScore(data.atsScore));
 
-            setIsLoading(false);
             return { success: true, data };
-        } catch (err) {
-            setError(err.message);
-            setIsLoading(false);
-            return { success: false, error: err.message };
-        }
-    };
 
-    /**
-     * Get resume issues
-     */
-    const getResumeIssues = async () => {
+        } catch (err) {
+            setError(getError(err));
+            return { success: false, error: getError(err) };
+
+        } finally {
+            setIsLoading(false);
+        }
+    }, [dispatch]);
+
+    // ─────────────────────────────────────────
+    // Score Resume
+    // ─────────────────────────────────────────
+    const scoreResume = useCallback(async (resumeId, jdText) => {
         try {
             setIsLoading(true);
             setError(null);
 
-            const data = await getResumeIssuesService();
-            dispatch(setIssues(data.issues));
+            const targetId = resumeId || 'latest';
+            const data = await scoreResumeService(targetId, jdText);
 
-            setIsLoading(false);
             return { success: true, data };
+
         } catch (err) {
             setError(err.message);
-            setIsLoading(false);
             return { success: false, error: err.message };
-        }
-    };
 
-    /**
-     * Get resume history
-     */
-    const getResumeHistory = async () => {
+        } finally {
+            setIsLoading(false); // ✅
+        }
+    }, []);
+
+    // ─────────────────────────────────────────
+    // Get Resume History
+    // ─────────────────────────────────────────
+    const getResumeHistory = useCallback(async () => {
         try {
             setIsLoading(true);
             setError(null);
 
-            const response = await getResumeHistoryService();
-            const resumes = response.data?.resumes || [];
-            
-            dispatch(setResumeHistory(resumes));
+            const data = await getResumeHistoryService();
 
-            setIsLoading(false);
-            return { success: true, data: { resumes } };
+            dispatch(setResumeHistory(data.resumes));
+
+            return { success: true, data: data.resumes }; // ✅ FIX
+
         } catch (err) {
-            setError(err.message);
+            setError(getError(err));
+            return { success: false, error: getError(err) };
+
+        } finally {
             setIsLoading(false);
-            return { success: false, error: err.message };
         }
-    };
+    }, [dispatch]);
+
+    // ─────────────────────────────────────────
+    // Get Resume Issues (MOCK)
+    // ─────────────────────────────────────────
+    const getResumeIssues = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            setError(null);
+
+            // Mock implementation since there is no backend API for it yet
+            await new Promise(r => setTimeout(r, 500));
+
+            const mockData = {
+                totalIssues: 0,
+                criticalIssues: 0,
+                quickFixes: [],
+                issues: []
+            };
+
+            return { success: true, data: mockData };
+
+        } catch (err) {
+            setError(getError(err));
+            return { success: false, error: getError(err) };
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
 
     return {
-        // State
+        // Redux state
         currentResume: resume.currentResume,
         atsScore: resume.atsScore,
         analysis: resume.analysis,
         issues: resume.issues,
-        isLoading: isLoading || resume.isLoading,
-        error: error || resume.error,
+        resumeHistory: resume.resumeHistory,
+
+        // ✅ Single source of truth:
+        // upload ke liye Redux isLoading, baaki ke liye local
+        isLoading: resume.isLoading || isLoading,
+        error: resume.error || error,
 
         // Actions
+        uploadResume,
         getResumeAnalysis,
-        getResumeIssues,
         getResumeHistory,
-        getCurrentResume,
+        scoreResume,
+        getResumeIssues,
     };
 };
+
+export default useResume;

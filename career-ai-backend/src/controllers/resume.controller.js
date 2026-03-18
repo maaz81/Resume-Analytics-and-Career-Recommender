@@ -2,323 +2,60 @@
 // controllers/resume.controller.js
 // ============================================
 
-import Resume from '../models/Resume.js';
+import fs from 'fs';
+import pdf from 'pdf-parse';
+
+import {
+    uploadResumeService,
+    getResumeAnalysisService,
+    scoreResumeService,
+    getResumeHistoryService
+} from '../services/resume.service.js';
+
 import { successResponse, createdResponse } from '../utils/response.js';
 import { errors, catchAsync } from '../middleware/errorHandler.js';
-import { cache, cacheKeys } from '../config/redis.js';
-import { callAIService } from '../services/ai.service.js';
-import logger from '../config/logger.js';
-import { query } from '../config/db.js';
-import { deleteFile } from '../utils/fileUpload.js';
-import { analyzeResume } from '../services/ai.service.js';
-import fs from 'fs';
-import { createRequire } from 'module';
-const require = createRequire(import.meta.url);
-const pdf = require('pdf-parse');
 
-/**
- * Upload new resume
- * POST /api/v1/resumes/upload
- */
+
 export const uploadResume = catchAsync(async (req, res) => {
-    if (!req.file) {
-        throw errors.badRequest('No file uploaded');
-    }
+    if (!req.file) throw errors.badRequest('No file uploaded');
 
-    // Extract PDF text
-    const buffer = fs.readFileSync(req.file.path);
-    const pdfData = await pdf(buffer);
-    const rawText = pdfData.text;
+    let buffer;
+    try {
+        buffer = await fs.promises.readFile(req.file.path);
+        const pdfData = await pdf(buffer);
 
-    // Create resume record (make sure Resume.create supports rawText)
-    const resume = await Resume.create({
-        userId: req.user.id,
-        originalFilename: req.file.originalname,
-        filePath: req.file.path,
-        fileSize: req.file.size,
-        mimeType: req.file.mimetype,
-        rawText
-    });
-
-    // Log audit
-    await query(
-        `INSERT INTO audit_logs (user_id, action, entity_type, entity_id, metadata)
-         VALUES ($1, $2, $3, $4, $5)`,
-        [
-            req.user.id,
-            'resume.uploaded',
-            'resume',
-            resume.id,
-            JSON.stringify({ filename: req.file.originalname })
-        ]
-    );
-
-    logger.info('Resume uploaded', {
-        userId: req.user.id,
-        resumeId: resume.id
-    });
-
-    return createdResponse(
-        res,
-        { resume },
-        'Resume uploaded successfully'
-    );
-});
-
-/**
- * Get all resumes for current user
- * GET /api/v1/resumes
- */
-export const getMyResumes = catchAsync(async (req, res) => {
-    const resumes = await Resume.findAllByUserId(req.user.id);
-
-    return successResponse(res, { resumes, count: resumes.length }, 'Resumes retrieved successfully');
-});
-
-/**
- * Get active resume
- * GET /api/v1/resumes/active
- */
-export const getActiveResume = catchAsync(async (req, res) => {
-    // Check cache first
-    const cacheKey = cacheKeys.resumeActive(req.user.id);
-    let resume = await cache.get(cacheKey);
-
-    if (!resume) {
-        resume = await Resume.findActiveByUserId(req.user.id);
-
-        if (resume) {
-            // Cache for 1 hour
-            await cache.set(cacheKey, resume, 3600);
-        }
-    }
-
-    if (!resume) {
-        throw errors.notFound('No active resume found. Please upload a resume.');
-    }
-
-    return successResponse(res, { resume }, 'Active resume retrieved successfully');
-});
-
-/**
- * Get resume by ID
- * GET /api/v1/resumes/:id
- */
-export const getResumeById = catchAsync(async (req, res) => {
-    const resume = await Resume.findById(req.params.id);
-
-    if (!resume) {
-        throw errors.notFound('Resume not found');
-    }
-
-    // Check ownership
-    if (resume.user_id !== req.user.id) {
-        throw errors.forbidden('You do not have permission to access this resume');
-    }
-
-    // Get with latest ATS score
-    const resumeWithScore = await Resume.findWithLatestScore(resume.id);
-
-    return successResponse(res, { resume: resumeWithScore }, 'Resume retrieved successfully');
-});
-
-/**
- * Get current resume
- * GET /api/v1/resumes/current
- */
-export const getCurrentResume = catchAsync(async (req, res) => {
-    const userId = req.user.id;
-
-    const resume = await Resume.findActiveByUserId(userId);
-
-    if (!resume) {
-        return res.status(404).json({
-            status: 'fail',
-            message: 'No active resume found'
+        const resume = await uploadResumeService({
+            userId: req.user.id,
+            file: req.file,
+            rawText: pdfData.text
         });
+
+        return createdResponse(res, { resume }, 'Uploaded successfully');
+
+    } finally {
+        // ✅ success ho ya error — file hamesha delete hogi
+        await fs.promises.unlink(req.file.path).catch(() => { });
     }
-
-    res.status(200).json({
-        status: 'success',
-        data: {
-            name: resume.original_filename,
-            version: resume.version,
-            uploadedAt: resume.uploaded_at
-        }
-    });
-});
-
-/**
- * Set resume as active
- * PATCH /api/v1/resumes/:id/activate
- */
-export const setActiveResume = catchAsync(async (req, res) => {
-    const resume = await Resume.findById(req.params.id);
-
-    if (!resume) {
-        throw errors.notFound('Resume not found');
-    }
-
-    // Check ownership
-    if (resume.user_id !== req.user.id) {
-        throw errors.forbidden('You do not have permission to modify this resume');
-    }
-
-    // Check if parsing is complete
-    if (resume.parsing_status !== 'completed') {
-        throw errors.badRequest('Cannot activate resume. Parsing is not complete.');
-    }
-
-    // Set as active
-    const updatedResume = await Resume.setActive(resume.id, req.user.id);
-
-    // Invalidate cache
-    await cache.del(cacheKeys.resumeActive(req.user.id));
-    await cache.del(cacheKeys.userContext(req.user.id));
-    await cache.del(cacheKeys.dashboard(req.user.id));
-
-    logger.info('Resume activated', { userId: req.user.id, resumeId: resume.id });
-
-    return successResponse(res, { resume: updatedResume }, 'Resume set as active successfully');
-});
-
-/**
- * Delete resume
- * DELETE /api/v1/resumes/:id
- */
-export const deleteResume = catchAsync(async (req, res) => {
-    const resume = await Resume.findById(req.params.id);
-
-    if (!resume) {
-        throw errors.notFound('Resume not found');
-    }
-
-    // Check ownership
-    if (resume.user_id !== req.user.id) {
-        throw errors.forbidden('You do not have permission to delete this resume');
-    }
-
-    // Don't allow deleting active resume if it's the only one
-    if (resume.is_active) {
-        const allResumes = await Resume.findAllByUserId(req.user.id);
-        if (allResumes.length === 1) {
-            throw errors.badRequest('Cannot delete your only resume. Upload a new one first.');
-        }
-    }
-
-    // Delete file from disk
-    deleteFile(resume.file_path);
-
-    // Delete from database (cascade will handle related records)
-    await Resume.delete(resume.id);
-
-    // Invalidate caches
-    await cache.del(cacheKeys.resumeActive(req.user.id));
-    await cache.del(cacheKeys.userContext(req.user.id));
-
-    logger.info('Resume deleted', { userId: req.user.id, resumeId: resume.id });
-
-    return successResponse(res, null, 'Resume deleted successfully');
-});
-
-/**
- * Get resume parsing status
- * GET /api/v1/resumes/:id/status
- */
-export const getParsingStatus = catchAsync(async (req, res) => {
-    const resume = await Resume.findById(req.params.id);
-
-    if (!resume) {
-        throw errors.notFound('Resume not found');
-    }
-
-    // Check ownership
-    if (resume.user_id !== req.user.id) {
-        throw errors.forbidden('You do not have permission to access this resume');
-    }
-
-    return successResponse(res, {
-        status: resume.parsing_status,
-        parsedAt: resume.parsed_at,
-        error: resume.parsing_error,
-    }, 'Parsing status retrieved successfully');
 });
 
 
+export const getResumeAnalysis = catchAsync(async (req, res) => {
+    const data = await getResumeAnalysisService(req.params.id, req.user.id);
+    return successResponse(res, data);
+});
 
 
 export const scoreResume = catchAsync(async (req, res) => {
-    const resume = await Resume.findById(req.params.id);
+    const { jdText } = req.body;
+    if (!jdText) throw errors.badRequest('Job description required');
 
-    if (!resume) {
-        throw errors.notFound('Resume not found');
-    }
+    const data = await scoreResumeService(req.params.id, req.user.id, jdText);
 
-    if (resume.user_id !== req.user.id) {
-        throw errors.forbidden('Unauthorized');
-    }
-
-    const jdText = req.body.jdText;
-
-    if (!jdText) {
-        throw errors.badRequest('Job description required');
-    }
-
-    const aiResult = await analyzeResume(resume.raw_text, jdText);
-
-    await query(
-        `INSERT INTO ats_scores 
-         (resume_id, user_id, overall_score, keyword_score, missing_keywords)
-         VALUES ($1,$2,$3,$4,$5)`,
-        [
-            resume.id,
-            req.user.id,
-            aiResult.job_match_score,
-            aiResult.ats_score,
-            JSON.stringify(aiResult.missing_skills)
-        ]
-    );
-
-    return successResponse(res, { analysis: aiResult }, 'Resume analyzed successfully');
+    return successResponse(res, { score: data });
 });
 
 
 export const getResumeHistory = catchAsync(async (req, res) => {
-    const userId = req.user.id;
-
-    // Get all resumes for the user
-    const resumes = await Resume.findAllByUserId(userId);
-
-    const resumeHistory = [];
-
-    for (const resume of resumes) {
-        // get latest ATS score for each resume
-        const scoreResult = await query(
-            `SELECT overall_score 
-       FROM ats_scores 
-       WHERE resume_id = $1
-       ORDER BY scored_at DESC
-       LIMIT 1`,
-            [resume.id]
-        );
-
-        const atsScore = scoreResult.rows[0]?.overall_score || null;
-
-        resumeHistory.push({
-            id: resume.id,
-            version: resume.version,
-            fileName: resume.original_filename,
-            uploadedAt: resume.uploaded_at,
-            atsScore,
-            status: resume.is_active ? "current" : "archived",
-        });
-    }
-
-    res.status(200).json({
-        status: "success",
-        results: resumeHistory.length,
-        data: {
-            resumes: resumeHistory,
-        },
-    });
+    const data = await getResumeHistoryService(req.user.id);
+    return successResponse(res, { resumes: data });
 });

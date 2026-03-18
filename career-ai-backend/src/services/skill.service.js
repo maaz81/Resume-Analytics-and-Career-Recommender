@@ -148,11 +148,10 @@ export default class SkillsService {
       targetRoleId: null, // We'll add job_roles later
       resumeId: activeResume?.id || null,
       missingSkills: aiAnalysis.missingSkills || [],
-      weakSkills: aiAnalysis.weakSkills || [],
-      strongSkills: aiAnalysis.strongSkills || [],
+      resumeSkills: userSkills.map(s => s.name) || [],
       gapScore,
       matchPercentage,
-      immediateActions: this.generateImmediateActions(aiAnalysis),
+      immediateActions: this.generateImmediateActions(aiAnalysis, userSkills),
       learningPriorities: this.prioritizeSkills(aiAnalysis.missingSkills || []),
       aiModelVersion: aiAnalysis.modelVersion || 'v1.0',
     });
@@ -182,7 +181,7 @@ export default class SkillsService {
   /**
    * Generate immediate actions based on analysis
    */
-  static generateImmediateActions(analysis) {
+  static generateImmediateActions(analysis, userSkills = []) {
     const actions = [];
 
     // Top 3 critical skills
@@ -200,16 +199,16 @@ export default class SkillsService {
       });
     }
 
-    // Weak skills to improve
-    const weakSkills = (analysis.weakSkills || []).slice(0, 2);
+    // Skills to improve from resume
+    const skillsToImprove = userSkills.slice(0, 2);
 
-    if (weakSkills.length > 0) {
+    if (skillsToImprove.length > 0) {
       actions.push({
         type: 'improve_skills',
         priority: 'high',
         title: 'Strengthen Existing Skills',
-        description: `Improve: ${weakSkills.map((s) => s.skill_name).join(', ')}`,
-        skills: weakSkills.map((s) => s.skill_name),
+        description: `Improve: ${skillsToImprove.map((s) => s.name).join(', ')}`,
+        skills: skillsToImprove.map((s) => s.name),
       });
     }
 

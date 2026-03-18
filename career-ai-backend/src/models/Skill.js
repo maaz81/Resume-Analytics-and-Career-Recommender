@@ -32,20 +32,20 @@ export default class Skill {
     static async createSkillGap(data) {
         const {
             userId, resumeId, gapScore, matchPercentage,
-            missingSkills, weakSkills, strongSkills,
+            missingSkills, resumeSkills,
             immediateActions, learningPriorities, aiModelVersion
         } = data;
 
         const result = await query(
             `INSERT INTO skill_gaps (
                 user_id, resume_id, gap_score, match_percentage,
-                missing_skills, weak_skills, strong_skills,
+                missing_skills, resume_skills,
                 immediate_actions, learning_priorities, ai_model_version
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
             RETURNING *`,
             [
                 userId, resumeId, gapScore, matchPercentage,
-                JSON.stringify(missingSkills), JSON.stringify(weakSkills), JSON.stringify(strongSkills),
+                JSON.stringify(missingSkills), JSON.stringify(resumeSkills),
                 JSON.stringify(immediateActions), JSON.stringify(learningPriorities), aiModelVersion
             ]
         );

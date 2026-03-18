@@ -1,5 +1,5 @@
 // ===== src/pages/Resume/ResumeIssuesPage.jsx =====
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ArrowLeft, Zap } from 'lucide-react';
 import ResumeIssuesList from '@features/resume/components/ResumeIssuesList';
@@ -8,13 +8,13 @@ import Button from '@common/Button';
 import Badge from '@common/Badge';
 import Spinner from '@common/Spinner';
 import Alert from '@common/Alert';
-import { useResume } from '@features/resume/hooks/useResume';
 import { ROUTES } from '@constants/routes';
+import useResume from '@features/resume/hooks/useResume';
 
 const ResumeIssuesPage = () => {
   const navigate = useNavigate();
   const { isLoading, error, getResumeIssues } = useResume();
-  const [issuesData, setIssuesData] = React.useState(null);
+  const [issuesData, setIssuesData] = useState(null);
 
   useEffect(() => {
     const loadIssues = async () => {
@@ -59,7 +59,7 @@ const ResumeIssuesPage = () => {
         >
           Back to Analysis
         </Button>
-        
+
         <h1 className="text-3xl font-bold text-text-primary">Resume Issues</h1>
         <p className="text-text-secondary mt-1">
           Fix these issues to improve your ATS score
