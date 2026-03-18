@@ -63,7 +63,7 @@ const ResumeHistoryPage = () => {
     return null;
   }
 
-  if (!historyData.resumes || historyData.resumes.length === 0) {
+  if (!historyData || historyData.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] text-center">
         <History className="w-12 h-12 text-text-muted mb-4" />
@@ -83,8 +83,8 @@ const ResumeHistoryPage = () => {
   }
 
   // Calculate score improvement
-  const oldestResume = historyData.resumes[historyData.resumes.length - 1];
-  const currentResume = historyData.resumes[0];
+  const oldestResume = historyData[historyData.length - 1];
+  const currentResume = historyData[0];
   const scoreImprovement = currentResume.atsScore - oldestResume.atsScore;
 
   return (
@@ -126,7 +126,7 @@ const ResumeHistoryPage = () => {
               <div>
                 <p className="text-sm text-text-muted mb-1">Total Versions</p>
                 <p className="text-3xl font-bold text-text-primary">
-                  {historyData.resumes.length}
+                  {historyData.length}
                 </p>
               </div>
               <History className="w-8 h-8 text-brand-primary" />
@@ -158,7 +158,7 @@ const ResumeHistoryPage = () => {
               <div>
                 <p className="text-sm text-text-muted mb-1">Score Improvement</p>
                 <p className="text-3xl font-bold text-status-success">
-                  +{scoreImprovement}
+                  {scoreImprovement > 0 ? `+${scoreImprovement}` : scoreImprovement}
                 </p>
               </div>
               <TrendingUp className="w-8 h-8 text-status-success" />
@@ -175,7 +175,7 @@ const ResumeHistoryPage = () => {
         </CardHeader>
         <CardContent>
           <div className="flex items-end justify-between h-40 gap-2">
-            {historyData.resumes.slice().reverse().map((resume, idx) => {
+            {historyData.slice().reverse().map((resume, idx) => {
               const height = (resume.atsScore / 100) * 100;
               return (
                 <div key={resume.id} className="flex-1 flex flex-col items-center gap-2">
@@ -202,7 +202,7 @@ const ResumeHistoryPage = () => {
           All Versions
         </h2>
         <div className="space-y-4">
-          {historyData.resumes.map((resume) => (
+          {historyData.map((resume) => (
             <ResumeVersionCard
               key={resume.id}
               resume={resume}
