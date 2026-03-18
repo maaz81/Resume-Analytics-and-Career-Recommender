@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /**
  * Chatbot Service
  * All API calls for chat conversations.
@@ -10,6 +11,33 @@ import API from '../../auth/services/api';
 export const createConversationAPI = async () => {
     const res = await API.post('/chat/conversations');
     return res.data.conversation;
+=======
+import API from '../../auth/services/api';
+
+const API_BASE_URL = 'http://localhost:5000/api/v1';
+
+const getAuthHeaders = () => {
+    const token = localStorage.getItem('auth_token');
+    return {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {})
+    };
+};
+
+export const createConversationAPI = async () => {
+    const res = await fetch(`${API_BASE_URL}/chat/conversations`, {
+        method: "POST",
+        headers: getAuthHeaders(),
+    });
+
+    if (!res.ok) {
+        throw new Error("Failed to create conversation");
+    }
+
+    const data = await res.json();
+
+    return data.conversation;
+>>>>>>> b85fa9e9cb04aa3573e2a79c38a61f1b24cdc7c9
 };
 
 // ─── Get all conversations ────────────────────────────────────────────────────
@@ -44,6 +72,7 @@ export const sendMessageStreaming = async ({
     onError,
 }) => {
     try {
+<<<<<<< HEAD
         const token = localStorage.getItem('auth_token');
         const baseURL = 'http://localhost:5000/api/v1';
 
@@ -98,6 +127,56 @@ export const sendMessageStreaming = async ({
         }
     } catch (error) {
         console.error('Streaming error:', error);
+=======
+        const response = await fetch(
+            `${API_BASE_URL}/chat/conversations/${conversationId}/stream`,
+            {
+                method: "POST",
+                headers: getAuthHeaders(),
+                body: JSON.stringify({ message }),
+            }
+        );
+
+        const reader = response.body.getReader();
+        const decoder = new TextDecoder();
+
+        let buffer = '';
+
+        while (true) {
+            const { value, done } = await reader.read();
+
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+
+            const lines = buffer.split('\n');
+            buffer = lines.pop() || ''; // keep the last potentially incomplete line in the buffer
+
+            for (const line of lines) {
+                if (line.startsWith("data: ")) {
+                    try {
+                        const data = JSON.parse(line.substring(6)); // substring(6) removes 'data: '
+
+                        if (data.chunk && onChunk) {
+                            onChunk(data.chunk);
+                        }
+
+                        if (data.done && onComplete) {
+                            onComplete();
+                        }
+                        
+                        if (data.error && onError) {
+                            onError(new Error(data.error));
+                        }
+                    } catch (e) {
+                        console.error("Failed to parse stream chunk JSON:", e, "Line:", line);
+                    }
+                }
+            }
+        }
+    } catch (error) {
+        console.error("Streaming error:", error);
+>>>>>>> b85fa9e9cb04aa3573e2a79c38a61f1b24cdc7c9
         if (onError) onError(error);
     }
 };
@@ -120,7 +199,60 @@ export const deleteFile = async (_fileId) => {
     return { success: true };
 };
 
+<<<<<<< HEAD
 // ─── Export conversation to PDF (mock) ───────────────────────────────────────
+=======
+/**
+ * Mock get all conversations
+ */
+export const getAllConversations = async () => {
+    const res = await fetch(`${API_BASE_URL}/chat/conversations`, {
+        method: "GET",
+        headers: getAuthHeaders(),
+    });
+
+    if (!res.ok) {
+        throw new Error("Failed to fetch conversations");
+    }
+
+    const data = await res.json();
+
+    return data.conversations;
+};
+
+/**
+ * Mock get conversation history
+ */
+export const getConversationHistory = async (conversationId) => {
+    const res = await fetch(
+        `${API_BASE_URL}/chat/conversations/${conversationId}/history`,
+        {
+            method: "GET",
+            headers: getAuthHeaders(),
+        }
+    );
+
+    if (!res.ok) {
+        throw new Error("Failed to fetch conversation history");
+    }
+
+    const data = await res.json();
+
+    return data;
+};
+
+/**
+ * Mock delete conversation
+ */
+export const deleteConversationAPI = async (conversationId) => {
+    await new Promise(resolve => setTimeout(resolve, 300));
+    return { success: true };
+};
+
+/**
+ * Mock export to PDF
+ */
+>>>>>>> b85fa9e9cb04aa3573e2a79c38a61f1b24cdc7c9
 export const exportConversationToPDF = async (conversationId) => {
     await new Promise((resolve) => setTimeout(resolve, 1000));
     const pdfContent = `Career AI Chat Export\nConversation ID: ${conversationId}\n\nConnect your backend for real PDF export.`;
