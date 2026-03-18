@@ -4,6 +4,7 @@
 
 import crypto from 'crypto';
 import Resume from '../models/Resume.js';
+import { errors } from '../middleware/errorHandler.js';
 import { query } from '../config/db.js';
 import { analyzeResume } from './ai.service.js';
 import { mapAIToATS, formatAnalysisResponse } from '../utils/resume.mapper.js';
@@ -23,7 +24,16 @@ export const uploadResumeService = async ({ userId, file, rawText }) => {
 
 
 export const getResumeAnalysisService = async (resumeId, userId) => {
-    const resume = await Resume.findById(resumeId);
+    let resume;
+    if (resumeId === 'latest') {
+        resume = await Resume.findActiveByUserId(userId);
+        if (!resume) {
+            const allResumes = await Resume.findAllByUserId(userId);
+            if (allResumes.length > 0) resume = allResumes[0];
+        }
+    } else {
+        resume = await Resume.findById(resumeId);
+    }
 
     if (!resume) throw errors.notFound('Resume not found');
     if (resume.user_id !== userId) throw errors.forbidden('Unauthorized');
@@ -44,7 +54,16 @@ export const getResumeAnalysisService = async (resumeId, userId) => {
 
 
 export const scoreResumeService = async (resumeId, userId, jdText) => {
-    const resume = await Resume.findById(resumeId);
+    let resume;
+    if (resumeId === 'latest') {
+        resume = await Resume.findActiveByUserId(userId);
+        if (!resume) {
+            const allResumes = await Resume.findAllByUserId(userId);
+            if (allResumes.length > 0) resume = allResumes[0];
+        }
+    } else {
+        resume = await Resume.findById(resumeId);
+    }
 
     if (!resume) throw errors.notFound('Resume not found');
     if (resume.user_id !== userId) throw errors.forbidden('Unauthorized');

@@ -8,6 +8,7 @@ import Button from '@common/Button';
 import Spinner from '@common/Spinner';
 import Alert from '@common/Alert';
 import { ROUTES } from '@constants/routes';
+import useResume from '@features/resume/hooks/useResume';
 
 const ResumeHistoryPage = () => {
   const navigate = useNavigate();

@@ -1,4 +1,6 @@
 // Upload Resume
+import API from '../../auth/services/api';
+
 export const uploadResumeService = async (file) => {
   const formData = new FormData();
   formData.append('resume', file);

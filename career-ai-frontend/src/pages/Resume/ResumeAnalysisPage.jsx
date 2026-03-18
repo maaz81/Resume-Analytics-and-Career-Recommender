@@ -11,6 +11,7 @@ import Spinner from '@common/Spinner';
 import Alert from '@common/Alert';
 import { ROUTES } from '@constants/routes';
 import { formatDate } from '@utils/helpers';
+import useResume from '@features/resume/hooks/useResume';
 
 const ResumeAnalysisPage = () => {
   const navigate = useNavigate();

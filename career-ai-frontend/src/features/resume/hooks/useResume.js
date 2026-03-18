@@ -17,6 +17,8 @@ import {
     scoreResumeService,
 } from '../services/resumeService';
 
+const getError = (err) => err.response?.data?.message || err.message;
+
 const useResume = () => {
     // ✅ Local state — sirf UI ke liye (non-upload flows)
     const [isLoading, setIsLoading] = useState(false);
@@ -52,7 +54,8 @@ const useResume = () => {
             setIsLoading(true);
             setError(null);
 
-            const data = await getResumeAnalysisService(resumeId); // ✅ FIX
+            const targetId = resumeId || 'latest';
+            const data = await getResumeAnalysisService(targetId); // ✅ FIX
 
             dispatch(setAnalysis(data));
             dispatch(setATSScore(data.atsScore));
@@ -76,7 +79,8 @@ const useResume = () => {
             setIsLoading(true);
             setError(null);
 
-            const data = await scoreResumeService(resumeId, jdText);
+            const targetId = resumeId || 'latest';
+            const data = await scoreResumeService(targetId, jdText);
 
             return { success: true, data };
 
@@ -112,6 +116,34 @@ const useResume = () => {
         }
     }, [dispatch]);
 
+    // ─────────────────────────────────────────
+    // Get Resume Issues (MOCK)
+    // ─────────────────────────────────────────
+    const getResumeIssues = useCallback(async () => {
+        try {
+            setIsLoading(true);
+            setError(null);
+
+            // Mock implementation since there is no backend API for it yet
+            await new Promise(r => setTimeout(r, 500));
+
+            const mockData = {
+                totalIssues: 0,
+                criticalIssues: 0,
+                quickFixes: [],
+                issues: []
+            };
+
+            return { success: true, data: mockData };
+
+        } catch (err) {
+            setError(getError(err));
+            return { success: false, error: getError(err) };
+        } finally {
+            setIsLoading(false);
+        }
+    }, []);
+
     return {
         // Redux state
         currentResume: resume.currentResume,
@@ -130,6 +162,7 @@ const useResume = () => {
         getResumeAnalysis,
         getResumeHistory,
         scoreResume,
+        getResumeIssues,
     };
 };
 
