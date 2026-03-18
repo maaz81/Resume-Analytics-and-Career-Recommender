@@ -38,6 +38,9 @@ export const getResumeAnalysisService = async (resumeId, userId) => {
     if (!resume) throw errors.notFound('Resume not found');
     if (resume.user_id !== userId) throw errors.forbidden('Unauthorized');
 
+    // Use the actual resolved ID for all subsequent queries
+    resumeId = resume.id;
+
     const scoreResult = await query(
         `SELECT * FROM ats_scores 
          WHERE resume_id = $1 
@@ -67,6 +70,9 @@ export const scoreResumeService = async (resumeId, userId, jdText) => {
 
     if (!resume) throw errors.notFound('Resume not found');
     if (resume.user_id !== userId) throw errors.forbidden('Unauthorized');
+
+    // Use the actual resolved ID for all subsequent queries
+    resumeId = resume.id;
 
     // ✅ JD ka hash banao
     const jdHash = crypto.createHash('sha256').update(jdText.trim()).digest('hex');
