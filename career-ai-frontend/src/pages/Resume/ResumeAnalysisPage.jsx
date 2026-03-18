@@ -9,7 +9,6 @@ import Button from '@common/Button';
 import Badge from '@common/Badge';
 import Spinner from '@common/Spinner';
 import Alert from '@common/Alert';
-import { useResume } from '@features/resume/hooks/useResume';
 import { ROUTES } from '@constants/routes';
 import { formatDate } from '@utils/helpers';
 

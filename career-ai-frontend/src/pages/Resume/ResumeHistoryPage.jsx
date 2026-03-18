@@ -7,7 +7,6 @@ import Card, { CardHeader, CardTitle, CardContent } from '@common/Card';
 import Button from '@common/Button';
 import Spinner from '@common/Spinner';
 import Alert from '@common/Alert';
-import { useResume } from '@features/resume/hooks/useResume';
 import { ROUTES } from '@constants/routes';
 
 const ResumeHistoryPage = () => {
