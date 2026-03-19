@@ -10,18 +10,27 @@ import { analyzeResume } from './ai.service.js';
 import { mapAIToATS, formatAnalysisResponse } from '../utils/resume.mapper.js';
 
 export const uploadResumeService = async ({ userId, file, rawText }) => {
+    // 🔥 Step 1: Deactivate all previous resumes
+    await query(
+        `UPDATE resumes 
+         SET is_active = false 
+         WHERE user_id = $1`,
+        [userId]
+    );
+
+    // 🔥 Step 2: Insert new resume as active
     const resume = await Resume.create({
         userId,
         originalFilename: file.originalname,
         filePath: file.path,
         fileSize: file.size,
         mimeType: file.mimetype,
-        rawText
+        rawText,
+        isActive: true // explicitly set
     });
 
     return resume;
 };
-
 
 export const getResumeAnalysisService = async (resumeId, userId) => {
     let resume;
