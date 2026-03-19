@@ -42,7 +42,7 @@ export const useOnboarding = () => {
       
       // Update Redux state
       dispatch(setCareerGoal(response.careerGoal));
-      dispatch(updateUser({ careerGoal: response.careerGoal }));
+      dispatch(updateUser({ targetRole: response.careerGoal.targetRole }));
       
       setIsLoading(false);
       return { success: true };
@@ -132,6 +132,25 @@ export const useOnboarding = () => {
   };
 
   /**
+   * Save job description (optional step)
+   */
+  const saveJobDescription = async (jdData) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      // JD is optional — just mark the step as done
+      // In the future this could call an API to store the JD
+      setIsLoading(false);
+      return { success: true };
+    } catch (err) {
+      setError(err.message);
+      setIsLoading(false);
+      return { success: false, error: err.message };
+    }
+  };
+
+  /**
    * Complete onboarding and navigate to dashboard
    */
   const finishOnboarding = () => {
@@ -149,6 +168,7 @@ export const useOnboarding = () => {
     
     // Actions
     saveCareerGoal,
+    saveJobDescription,
     uploadResume,
     getCareerRoles,
     getTopCompanies,

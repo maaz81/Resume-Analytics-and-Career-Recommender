@@ -9,6 +9,7 @@ const ProgressIndicator = ({ currentStep, totalSteps = 2 }) => {
   const steps = [
     { number: 1, label: 'Career Goal' },
     { number: 2, label: 'Resume Upload' },
+    { number: 3, label: 'Job Description' }
   ];
 
   return (
@@ -27,12 +28,12 @@ const ProgressIndicator = ({ currentStep, totalSteps = 2 }) => {
                   className={cn(
                     'w-10 h-10 rounded-full flex items-center justify-center font-semibold text-sm transition-all duration-200',
                     isCompleted &&
-                      'bg-status-success text-white ring-4 ring-status-success/20',
+                    'bg-status-success text-white ring-4 ring-status-success/20',
                     isActive &&
-                      'bg-brand-primary text-white ring-4 ring-brand-primary/20',
+                    'bg-brand-primary text-white ring-4 ring-brand-primary/20',
                     !isActive &&
-                      !isCompleted &&
-                      'bg-surface-alt text-text-muted border-2 border-border'
+                    !isCompleted &&
+                    'bg-surface-alt text-text-muted border-2 border-border'
                   )}
                 >
                   {isCompleted ? (

@@ -46,7 +46,7 @@ export const useAuth = () => {
       dispatch(loginSuccess(response));
 
       // Navigate to dashboard or onboarding based on user state
-      if (response.user.careerGoal) {
+      if (response.user.targetRole) {
         navigate(ROUTES.DASHBOARD);
       } else {
         navigate(ROUTES.ONBOARDING_CAREER_GOAL);
