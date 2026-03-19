@@ -16,7 +16,7 @@ const ProfileForm = ({ user, onSave, isUpdating = false, updateSuccess = false }
         targetRole: user?.target_role || '',
         experienceLevel: user?.years_of_experience || '',
         location: user?.location || '',
-        targetCompanies: user?.careerGoal?.targetCompanies || [],
+        targetCompanies: [],
     });
 
     const [errors, setErrors] = useState({});
@@ -30,7 +30,7 @@ const ProfileForm = ({ user, onSave, isUpdating = false, updateSuccess = false }
                 targetRole: user.target_role || '',
                 experienceLevel: user.years_of_experience || '',
                 location: user.location || '',
-                targetCompanies: user.careerGoal?.targetCompanies || [],
+                targetCompanies: [],
             });
         }
     }, [user]);

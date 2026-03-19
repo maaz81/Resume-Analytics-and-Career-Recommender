@@ -1,10 +1,22 @@
+import API from '../../auth/services/api';
+
 /**
  * Onboarding Service
- * Handles career goal selection and resume upload (DUMMY DATA FOR NOW)
+ * Handles career goal selection and resume upload
  */
 
-// Simulated delay for realistic API behavior
+// Simulated delay for UI dropdown data (Career roles and Companies)
 const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const mapExperienceToYears = (level) => {
+  switch (level) {
+    case 'entry': return 1;
+    case 'intermediate': return 4;
+    case 'senior': return 8;
+    case 'lead': return 12;
+    default: return 0;
+  }
+};
 
 /**
  * Save Career Goal Service
@@ -12,9 +24,6 @@ const delay = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
  * @returns {Promise} - Saved career goal data
  */
 export const saveCareerGoalService = async (careerGoalData) => {
-  await delay(1000); // Simulate network delay
-
-  // Validate required fields
   if (!careerGoalData.targetRole) {
     throw new Error('Target role is required');
   }
@@ -23,15 +32,16 @@ export const saveCareerGoalService = async (careerGoalData) => {
     throw new Error('Experience level is required');
   }
 
-  // Return saved data
+  const payload = {
+    targetRole: careerGoalData.targetRole,
+    yearsOfExperience: mapExperienceToYears(careerGoalData.experienceLevel),
+    location: careerGoalData.location || null,
+  };
+
+  const response = await API.patch('/auth/profile', payload);
+
   return {
-    careerGoal: {
-      targetRole: careerGoalData.targetRole,
-      experienceLevel: careerGoalData.experienceLevel,
-      targetCompanies: careerGoalData.targetCompanies || [],
-      location: careerGoalData.location || null,
-      remotePreference: careerGoalData.remotePreference || 'flexible',
-    },
+    careerGoal: careerGoalData,
     message: 'Career goal saved successfully',
   };
 };
@@ -42,35 +52,31 @@ export const saveCareerGoalService = async (careerGoalData) => {
  * @returns {Promise} - Upload result with file info
  */
 export const uploadResumeService = async (file) => {
-  await delay(2000); // Simulate file upload delay
-
-  // Validate file
   if (!file) {
     throw new Error('No file provided');
   }
 
-  // Check file type
   const fileType = file.name.split('.').pop().toLowerCase();
   if (fileType !== 'pdf') {
     throw new Error('Only PDF files are supported');
   }
 
-  // Check file size (max 5MB)
   const maxSize = 5 * 1024 * 1024; // 5MB
   if (file.size > maxSize) {
     throw new Error('File size must be less than 5MB');
   }
 
-  // Simulate file upload and return metadata
+  const formData = new FormData();
+  formData.append('resume', file);
+
+  const response = await API.post('/resumes/upload', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' },
+  });
+
   return {
-    resume: {
-      id: `resume_${Date.now()}`,
-      fileName: file.name,
-      fileSize: file.size,
-      fileType: 'application/pdf',
-      uploadedAt: new Date().toISOString(),
-      version: 1,
-    },
+    // The backend `uploadResume` controller returns `{ status: 'success', data: { resume: ... } }`
+    // So response.data.data has `resume`.
+    resume: response.data.data.resume,
     message: 'Resume uploaded successfully',
   };
 };

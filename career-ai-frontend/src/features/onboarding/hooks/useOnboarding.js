@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
   setCareerGoal,
+  setStep,
   nextStep,
   previousStep,
   completeOnboarding,
@@ -26,7 +27,7 @@ export const useOnboarding = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const onboarding = useSelector((state) => state.onboarding);
-  
+
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
@@ -39,11 +40,11 @@ export const useOnboarding = () => {
       setError(null);
 
       const response = await saveCareerGoalService(careerGoalData);
-      
+
       // Update Redux state
       dispatch(setCareerGoal(response.careerGoal));
-      dispatch(updateUser({ careerGoal: response.careerGoal }));
-      
+      dispatch(updateUser({ targetRole: response.careerGoal.targetRole }));
+
       setIsLoading(false);
       return { success: true };
     } catch (err) {
@@ -62,11 +63,10 @@ export const useOnboarding = () => {
       setError(null);
 
       const response = await uploadResumeService(file);
-      
+
       // Update Redux state
       dispatch(uploadResumeSuccess(response.resume));
-      dispatch(completeOnboarding());
-      
+
       setIsLoading(false);
       return { success: true, data: response.resume };
     } catch (err) {
@@ -112,7 +112,16 @@ export const useOnboarding = () => {
     if (onboarding.currentStep === 1) {
       navigate(ROUTES.ONBOARDING_RESUME_UPLOAD);
     } else if (onboarding.currentStep === 2) {
+      navigate(ROUTES.ONBOARDING_JOB_DESCRIPTION);
+    } else if (onboarding.currentStep === 3) {
+      dispatch(completeOnboarding());
       navigate(ROUTES.DASHBOARD);
+    }
+  };
+
+  const forceSetStep = (step) => {
+    if (onboarding.currentStep !== step) {
+      dispatch(setStep(step));
     }
   };
 
@@ -120,8 +129,14 @@ export const useOnboarding = () => {
    * Navigate to previous step
    */
   const goToPreviousStep = () => {
-    dispatch(previousStep());
-    navigate(ROUTES.ONBOARDING_CAREER_GOAL);
+    if (onboarding.currentStep === 3) {
+      dispatch(previousStep());
+      navigate(ROUTES.ONBOARDING_RESUME_UPLOAD);
+    }
+    else if (onboarding.currentStep === 2) {
+      dispatch(previousStep());
+      navigate(ROUTES.ONBOARDING_CAREER_GOAL);
+    }
   };
 
   /**
@@ -129,6 +144,25 @@ export const useOnboarding = () => {
    */
   const skipOnboarding = () => {
     navigate(ROUTES.DASHBOARD);
+  };
+
+  /**
+   * Save job description (optional step)
+   */
+  const saveJobDescription = async (jdData) => {
+    try {
+      setIsLoading(true);
+      setError(null);
+
+      // JD is optional — just mark the step as done
+      // In the future this could call an API to store the JD
+      setIsLoading(false);
+      return { success: true };
+    } catch (err) {
+      setError(err.message);
+      setIsLoading(false);
+      return { success: false, error: err.message };
+    }
   };
 
   /**
@@ -146,9 +180,11 @@ export const useOnboarding = () => {
     isCompleted: onboarding.isCompleted,
     isLoading,
     error,
-    
+
     // Actions
+    setStep: forceSetStep,
     saveCareerGoal,
+    saveJobDescription,
     uploadResume,
     getCareerRoles,
     getTopCompanies,

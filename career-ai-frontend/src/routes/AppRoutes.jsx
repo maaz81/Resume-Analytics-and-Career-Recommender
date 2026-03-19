@@ -14,6 +14,7 @@ import LoginPage from '@pages/Auth/LoginPage';
 import SignupPage from '@pages/Auth/SignupPage';
 import CareerGoalPage from '@pages/Onboarding/CareerGoalPage';
 import ResumeUploadPage from '@pages/Onboarding/ResumeUploadPage';
+import JobDescriptionPage from '@pages/Onboarding/JobDescriptionPage';
 import DashboardPage from '@pages/Dashboard/DashboardPage';
 import ResumeAnalysisPage from '@pages/Resume/ResumeAnalysisPage';
 import ResumeIssuesPage from '@pages/Resume/ResumeIssuesPage';
@@ -72,6 +73,16 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <AuthLayout>
               <ResumeUploadPage />
+            </AuthLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.ONBOARDING_JOB_DESCRIPTION}
+        element={
+          <ProtectedRoute>
+            <AuthLayout>
+              <JobDescriptionPage />
             </AuthLayout>
           </ProtectedRoute>
         }

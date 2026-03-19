@@ -76,7 +76,11 @@ export const login = catchAsync(async (req, res) => {
         throw errors.unauthorized('Your account has been deactivated. Please contact support.');
     }
 
-    // Verify password
+    // Verify password exists (might be null for OAuth users)
+    if (!user.password_hash) {
+        throw errors.unauthorized('Please login with the provider you used to sign up (e.g. Google)');
+    }
+
     const isPasswordValid = await User.verifyPassword(password, user.password_hash);
     if (!isPasswordValid) {
         throw errors.unauthorized('Invalid email or password');

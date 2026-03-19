@@ -182,7 +182,10 @@ export const loginService = async (email, password) => {
 
 // SIGNUP
 export const signupService = async (userData) => {
-  const response = await API.post('/auth/register', userData);
+  const response = await API.post('/auth/register', {
+    ...userData,
+    fullName: userData.name,
+  });
 
   return {
     user: response.data.data.user,

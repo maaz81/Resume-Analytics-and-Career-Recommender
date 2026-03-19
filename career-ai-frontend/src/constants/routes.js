@@ -14,6 +14,7 @@ export const ROUTES = {
   // Onboarding Flow
   ONBOARDING_CAREER_GOAL: '/onboarding/career-goal',
   ONBOARDING_RESUME_UPLOAD: '/onboarding/resume-upload',
+  ONBOARDING_JOB_DESCRIPTION: '/onboarding/job-description',
 
   // Dashboard
   DASHBOARD: '/dashboard',
