@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import {
   setCareerGoal,
+  setStep,
   nextStep,
   previousStep,
   completeOnboarding,
@@ -105,17 +106,22 @@ export const useOnboarding = () => {
    * Navigate to next step
    */
   const goToNextStep = () => {
+    dispatch(nextStep());
+    
+    // Navigate to next page based on current step
     if (onboarding.currentStep === 1) {
-      dispatch(nextStep());
       navigate(ROUTES.ONBOARDING_RESUME_UPLOAD);
-    }
-    else if (onboarding.currentStep === 2) {
-      dispatch(nextStep());
+    } else if (onboarding.currentStep === 2) {
       navigate(ROUTES.ONBOARDING_JOB_DESCRIPTION);
-    }
-    else if (onboarding.currentStep === 3) {
+    } else if (onboarding.currentStep === 3) {
       dispatch(completeOnboarding());
       navigate(ROUTES.DASHBOARD);
+    }
+  };
+
+  const forceSetStep = (step) => {
+    if (onboarding.currentStep !== step) {
+      dispatch(setStep(step));
     }
   };
 
@@ -176,6 +182,7 @@ export const useOnboarding = () => {
     error,
 
     // Actions
+    setStep: forceSetStep,
     saveCareerGoal,
     saveJobDescription,
     uploadResume,

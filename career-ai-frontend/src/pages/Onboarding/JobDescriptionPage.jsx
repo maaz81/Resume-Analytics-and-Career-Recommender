@@ -1,10 +1,15 @@
+import { useEffect } from 'react';
 import Card, { CardContent } from '@common/Card';
 import ProgressIndicator from '@features/onboarding/components/ProgressIndicator';
 import JobDescriptionForm from '@features/onboarding/components/JobDescriptionForm';
 import { useOnboarding } from '@features/onboarding/hooks/useOnboarding';
 
 const JobDescriptionPage = () => {
-    const { currentStep, finishOnboarding, goToPreviousStep } = useOnboarding();
+    const { currentStep, setStep, finishOnboarding, goToPreviousStep } = useOnboarding();
+
+    useEffect(() => {
+        setStep(3);
+    }, [setStep]);
 
     return (
         <div className="w-full max-w-3xl mx-auto space-y-8 py-8">
