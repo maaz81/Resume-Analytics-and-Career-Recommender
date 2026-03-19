@@ -1,7 +1,7 @@
 // ===== src/pages/Resume/ResumeAnalysisPage.jsx =====
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Download, Share2, ArrowRight } from 'lucide-react';
+import { FileText, Download, Share2, Upload, ArrowRight } from 'lucide-react';
 import ATSScoreCard from '@features/resume/components/ATSScoreCard';
 import ATSBreakdown from '@features/resume/components/ATSBreakdown';
 import Card, { CardHeader, CardTitle, CardContent } from '@common/Card';
@@ -56,12 +56,14 @@ const ResumeAnalysisPage = () => {
           </p>
         </div>
         <div className="flex gap-3">
-          <Button variant="outline" leftIcon={<Download className="w-4 h-4" />}>
-            Download Report
+          <Button
+            variant="primary"
+            leftIcon={<Upload className="w-4 h-4" />}
+            onClick={() => navigate(ROUTES.ONBOARDING_RESUME_UPLOAD)}
+          >
+            Upload New Version
           </Button>
-          <Button variant="outline" leftIcon={<Share2 className="w-4 h-4" />}>
-            Share
-          </Button>
+
         </div>
       </div>
 
