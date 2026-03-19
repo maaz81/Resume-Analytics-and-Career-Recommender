@@ -5,7 +5,7 @@ import { cn } from '@utils/helpers';
  * ProgressIndicator Component
  * Visual stepper showing onboarding progress
  */
-const ProgressIndicator = ({ currentStep, totalSteps = 2 }) => {
+const ProgressIndicator = ({ currentStep, totalSteps = 3 }) => {
   const steps = [
     { number: 1, label: 'Career Goal' },
     { number: 2, label: 'Resume Upload' },

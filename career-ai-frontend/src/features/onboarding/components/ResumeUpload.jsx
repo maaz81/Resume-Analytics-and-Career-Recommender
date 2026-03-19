@@ -4,16 +4,20 @@ import FileUpload from '@components/forms/FileUpload';
 import Button from '@common/Button';
 import Alert from '@common/Alert';
 import { useOnboarding } from '../hooks/useOnboarding';
+import { useNavigate } from 'react-router-dom';
+import { ROUTES } from '@constants/routes';
 
 /**
  * ResumeUpload Component
  * Resume upload with analysis loading state
  */
 const ResumeUpload = ({ onComplete, onBack }) => {
+  const navigate = useNavigate();
   const { uploadResume, isLoading, error } = useOnboarding();
   const [file, setFile] = useState(null);
   const [uploadError, setUploadError] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -23,15 +27,14 @@ const ResumeUpload = ({ onComplete, onBack }) => {
       return;
     }
 
-    // Upload resume
     setIsAnalyzing(true);
+
     const result = await uploadResume(file);
 
     if (result.success) {
-      // Simulate analysis delay
       setTimeout(() => {
         setIsAnalyzing(false);
-        onComplete();
+        navigate(ROUTES.ONBOARDING_JOB_DESCRIPTION); // ✅ FIX
       }, 1500);
     } else {
       setIsAnalyzing(false);
@@ -39,7 +42,7 @@ const ResumeUpload = ({ onComplete, onBack }) => {
   };
 
   const handleSkip = () => {
-    onComplete();
+    navigate(ROUTES.ONBOARDING_JOB_DESCRIPTION);
   };
 
   return (
