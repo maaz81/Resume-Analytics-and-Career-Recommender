@@ -82,6 +82,15 @@ const ResumeVersionCard = ({ resume, isCurrent, onView, onRestore, onDelete }) =
 
                     {/* Actions */}
                     <div className="flex items-center gap-2">
+                        {/* <Button
+                            variant="outline"
+                            size="sm"
+                            leftIcon={<Eye className="w-4 h-4" />}
+                            onClick={() => onAnalysis(resume)}
+                        >
+                            Analysis
+                        </Button> */}
+
                         <Button
                             variant="outline"
                             size="sm"

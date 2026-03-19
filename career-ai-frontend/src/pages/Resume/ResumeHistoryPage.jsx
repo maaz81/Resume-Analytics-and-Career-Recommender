@@ -9,11 +9,14 @@ import Spinner from '@common/Spinner';
 import Alert from '@common/Alert';
 import { ROUTES } from '@constants/routes';
 import useResume from '@features/resume/hooks/useResume';
+import { BACKEND_URL } from '@features/auth/services/api';
+import PDFPreviewModal from '@common/Pdf/PDFPreviewModal';
 
 const ResumeHistoryPage = () => {
   const navigate = useNavigate();
   const { isLoading, error, getResumeHistory } = useResume();
   const [historyData, setHistoryData] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   useEffect(() => {
     const loadHistory = async () => {
@@ -26,7 +29,20 @@ const ResumeHistoryPage = () => {
   }, []);
 
   const handleView = (resume) => {
-    navigate(ROUTES.RESUME_ANALYSIS);
+    if (!resume.fileUrl) {
+      alert("No file path found for this resume.");
+      return;
+    }
+    const fullUrl = resume.fileUrl.startsWith('http') 
+        ? resume.fileUrl 
+        : `${BACKEND_URL}${resume.fileUrl}`;
+    setPreviewUrl(fullUrl);
+  };
+
+  const handleViewAnalysis = (resume) => {
+    navigate(ROUTES.RESUME_ANALYSIS, {
+      state: { resumeId: resume.id }
+    });
   };
 
   const handleRestore = (resume) => {
@@ -42,6 +58,8 @@ const ResumeHistoryPage = () => {
       alert('Resume deleted successfully!');
     }
   };
+
+
 
   if (isLoading) {
     return (
@@ -208,6 +226,7 @@ const ResumeHistoryPage = () => {
               resume={resume}
               isCurrent={resume.status === 'current'}
               onView={handleView}
+              onAnalysis={handleViewAnalysis} // new
               onRestore={handleRestore}
               onDelete={handleDelete}
             />
@@ -241,8 +260,16 @@ const ResumeHistoryPage = () => {
           </ul>
         </CardContent>
       </Card>
+
+      {/* ✅ ADD MODAL HERE */}
+      <PDFPreviewModal
+        isOpen={!!previewUrl}
+        fileUrl={previewUrl}
+        onClose={() => setPreviewUrl(null)}
+      />
     </div>
   );
 };
+
 
 export default ResumeHistoryPage;

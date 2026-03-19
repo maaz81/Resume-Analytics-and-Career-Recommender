@@ -127,7 +127,7 @@ export const scoreResumeService = async (resumeId, userId, jdText) => {
 
 export const getResumeHistoryService = async (userId) => {
     const result = await query(
-        `SELECT r.id, r.version, r.original_filename, r.uploaded_at,
+        `SELECT r.id, r.version, r.original_filename, r.file_path, r.uploaded_at,
                 r.is_active,
                 a.overall_score
          FROM resumes r
@@ -143,12 +143,16 @@ export const getResumeHistoryService = async (userId) => {
         [userId]
     );
 
-    return result.rows.map(r => ({
-        id: r.id,
-        version: r.version,
-        fileName: r.original_filename,
-        uploadedAt: r.uploaded_at,
-        atsScore: r.overall_score,
-        status: r.is_active ? "current" : "archived"
-    }));
+    return result.rows.map(r => {
+        const filename = r.file_path ? r.file_path.split(/[\\/]/).pop() : '';
+        return {
+            id: r.id,
+            version: r.version,
+            fileName: r.original_filename,
+            uploadedAt: r.uploaded_at,
+            atsScore: r.overall_score,
+            status: r.is_active ? "current" : "archived",
+            fileUrl: r.file_path ? `/uploads/${userId}/${encodeURIComponent(filename)}` : null
+        };
+    });
 };

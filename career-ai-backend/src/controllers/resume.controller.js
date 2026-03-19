@@ -32,9 +32,10 @@ export const uploadResume = catchAsync(async (req, res) => {
 
         return createdResponse(res, { resume }, 'Uploaded successfully');
 
-    } finally {
-        // ✅ success ho ya error — file hamesha delete hogi
+    } catch (error) {
+        // Only delete file if there was an error processing it
         await fs.promises.unlink(req.file.path).catch(() => { });
+        throw error;
     }
 });
 
