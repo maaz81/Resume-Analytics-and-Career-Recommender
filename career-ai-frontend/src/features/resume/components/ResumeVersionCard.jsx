@@ -9,7 +9,7 @@ import { cn } from '@utils/helpers';
  * ResumeVersionCard Component
  * Displays individual resume version with actions
  */
-const ResumeVersionCard = ({ resume, isCurrent, onView, onRestore, onDelete }) => {
+const ResumeVersionCard = ({ resume, isCurrent, onView, onDownload, onRestore, onDelete }) => {
     const getScoreVariant = (score) => {
         if (score >= 80) return 'success';
         if (score >= 60) return 'warning';
@@ -104,6 +104,7 @@ const ResumeVersionCard = ({ resume, isCurrent, onView, onRestore, onDelete }) =
                             variant="outline"
                             size="sm"
                             leftIcon={<Download className="w-4 h-4" />}
+                            onClick={() => onDownload?.(resume)}
                         >
                             Download
                         </Button>

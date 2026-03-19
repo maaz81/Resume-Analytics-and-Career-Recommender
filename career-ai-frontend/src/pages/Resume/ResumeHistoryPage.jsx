@@ -33,9 +33,9 @@ const ResumeHistoryPage = () => {
       alert("No file path found for this resume.");
       return;
     }
-    const fullUrl = resume.fileUrl.startsWith('http') 
-        ? resume.fileUrl 
-        : `${BACKEND_URL}${resume.fileUrl}`;
+    const fullUrl = resume.fileUrl.startsWith('http')
+      ? resume.fileUrl
+      : `${BACKEND_URL}${resume.fileUrl}`;
     setPreviewUrl(fullUrl);
   };
 
@@ -43,6 +43,37 @@ const ResumeHistoryPage = () => {
     navigate(ROUTES.RESUME_ANALYSIS, {
       state: { resumeId: resume.id }
     });
+  };
+
+  const handleDownload = async (resume) => {
+    try {
+      if (!resume.fileUrl) {
+        alert("No file available");
+        return;
+      }
+
+      const fullUrl = resume.fileUrl.startsWith('http')
+        ? resume.fileUrl
+        : `${BACKEND_URL}${resume.fileUrl}`;
+
+      const response = await fetch(fullUrl);
+      const blob = await response.blob();
+
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = resume.fileName || 'resume.pdf'; // ✅ filename
+      document.body.appendChild(a);
+      a.click();
+
+      a.remove();
+      window.URL.revokeObjectURL(url);
+
+    } catch (err) {
+      console.error("Download failed:", err);
+      alert("Failed to download file");
+    }
   };
 
   const handleRestore = (resume) => {
@@ -226,6 +257,7 @@ const ResumeHistoryPage = () => {
               resume={resume}
               isCurrent={resume.status === 'current'}
               onView={handleView}
+              onDownload={handleDownload}
               onAnalysis={handleViewAnalysis} // new
               onRestore={handleRestore}
               onDelete={handleDelete}
