@@ -9,7 +9,8 @@ import {
     uploadResumeService,
     getResumeAnalysisService,
     scoreResumeService,
-    getResumeHistoryService
+    getResumeHistoryService,
+    deleteResumeService
 } from '../services/resume.service.js';
 
 import { successResponse, createdResponse } from '../utils/response.js';
@@ -60,3 +61,21 @@ export const getResumeHistory = catchAsync(async (req, res) => {
     const data = await getResumeHistoryService(req.user.id);
     return successResponse(res, { resumes: data });
 });
+
+// controllers/resume.controller.js
+
+export const deleteResumeController = async (req, res, next) => {
+    try {
+        const { id } = req.params;
+        const userId = req.user.id;
+
+        await deleteResumeService(id, userId);
+
+        res.json({
+            success: true,
+            message: "Resume deleted successfully"
+        });
+    } catch (err) {
+        next(err);
+    }
+};

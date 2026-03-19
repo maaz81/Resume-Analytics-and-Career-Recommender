@@ -15,6 +15,7 @@ import {
     getResumeAnalysisService,
     getResumeHistoryService,
     scoreResumeService,
+    deleteResumeService as deleteResumeApi,
 } from '../services/resumeService';
 
 const getError = (err) => err.response?.data?.message || err.message;
@@ -144,6 +145,15 @@ const useResume = () => {
         }
     }, []);
 
+    const deleteResumeService = async (resumeId) => {
+        try {
+            const data = await deleteResumeApi(resumeId);
+            return data; // Returns { success: true, message: ... }
+        } catch (err) {
+            return { success: false, message: getError(err) };
+        }
+    };
+
     return {
         // Redux state
         currentResume: resume.currentResume,
@@ -163,6 +173,7 @@ const useResume = () => {
         getResumeHistory,
         scoreResume,
         getResumeIssues,
+        deleteResumeService
     };
 };
 

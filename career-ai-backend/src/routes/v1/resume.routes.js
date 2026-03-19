@@ -23,4 +23,7 @@ router.get('/:id/analysis', controller.getResumeAnalysis);
 // score
 router.post('/:id/score', controller.scoreResume);
 
+// delete
+router.delete('/:id', controller.deleteResumeController);
+
 export default router;

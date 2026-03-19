@@ -8,6 +8,7 @@ import { errors } from '../middleware/errorHandler.js';
 import { query } from '../config/db.js';
 import { analyzeResume } from './ai.service.js';
 import { mapAIToATS, formatAnalysisResponse } from '../utils/resume.mapper.js';
+import fs from 'fs/promises';
 
 export const uploadResumeService = async ({ userId, file, rawText }) => {
     // 🔥 Step 1: Deactivate all previous resumes
@@ -155,4 +156,29 @@ export const getResumeHistoryService = async (userId) => {
             fileUrl: r.file_path ? `/uploads/${userId}/${encodeURIComponent(filename)}` : null
         };
     });
+};
+
+
+export const deleteResumeService = async (resumeId, userId) => {
+    const resume = await Resume.findById(resumeId);
+
+    if (!resume) throw errors.notFound("Resume not found");
+    if (resume.user_id !== userId) throw errors.forbidden("Unauthorized");
+
+    // ❌ Prevent deleting active resume (optional rule)
+    if (resume.is_active) {
+        throw errors.badRequest("Cannot delete active resume");
+    }
+
+    // ✅ Delete file from disk
+    if (resume.file_path) {
+        try {
+            await fs.unlink(resume.file_path);
+        } catch (err) {
+            console.warn("File delete failed:", err.message);
+        }
+    }
+
+    // ✅ Delete from DB
+    await query(`DELETE FROM resumes WHERE id = $1`, [resumeId]);
 };

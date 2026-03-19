@@ -32,3 +32,9 @@ export const scoreResumeService = async (resumeId, jdText) => {
 
   return response.data.data; // ✅ FIX
 };
+
+// Delete Resume
+export const deleteResumeService = async (resumeId) => {
+  const response = await API.delete(`/resumes/${resumeId}`);
+  return response.data;
+};

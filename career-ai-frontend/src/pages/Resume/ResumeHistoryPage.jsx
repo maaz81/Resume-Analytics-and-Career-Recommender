@@ -14,7 +14,7 @@ import PDFPreviewModal from '@common/Pdf/PDFPreviewModal';
 
 const ResumeHistoryPage = () => {
   const navigate = useNavigate();
-  const { isLoading, error, getResumeHistory } = useResume();
+  const { isLoading, error, getResumeHistory, deleteResumeService } = useResume();
   const [historyData, setHistoryData] = useState(null);
   const [previewUrl, setPreviewUrl] = useState(null);
 
@@ -43,6 +43,31 @@ const ResumeHistoryPage = () => {
     navigate(ROUTES.RESUME_ANALYSIS, {
       state: { resumeId: resume.id }
     });
+  };
+
+  const handleDelete = async (resume) => {
+    const confirmDelete = window.confirm(
+      `Delete ${resume.fileName}? This action cannot be undone.`
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const result = await deleteResumeService(resume.id);
+
+      if (result.success) {
+        // ✅ Remove from UI instantly
+        setHistoryData(prev =>
+          prev.filter(item => item.id !== resume.id)
+        );
+      } else {
+        alert(result.message || "Delete failed");
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    }
   };
 
   const handleDownload = async (resume) => {
@@ -82,15 +107,6 @@ const ResumeHistoryPage = () => {
       alert('Resume restored successfully!');
     }
   };
-
-  const handleDelete = (resume) => {
-    if (window.confirm(`Delete ${resume.fileName}? This action cannot be undone.`)) {
-      // In real app, call API to delete
-      alert('Resume deleted successfully!');
-    }
-  };
-
-
 
   if (isLoading) {
     return (
