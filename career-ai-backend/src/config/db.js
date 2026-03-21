@@ -96,6 +96,9 @@ export const closePool = async () => {
     logger.info('PostgreSQL pool closed');
 };
 
+// Named export so services can do: import { pool } from '../config/db.js'
+export { pool };
+
 export default {
     query,
     transaction,
