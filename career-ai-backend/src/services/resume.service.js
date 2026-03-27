@@ -190,11 +190,24 @@ export const getResumeAnalysisService = async (resumeId, userId) => {
         )
     ]);
 
+    const atsRow = ats.rows[0] ?? null;
+    const gapRow = gaps.rows[0] ?? null;
+    const skillList = skills.rows.map(s => s.name);
+
+    // Format using the shared mapper so the frontend gets
+    // { atsScore: { overall, breakdown, grade }, targetRoleComparison, ... }
+    const formatted = formatAnalysisResponse(resume, atsRow);
+
     return {
-        resume,
-        ats: ats.rows[0] ?? null,
-        skill_gap: gaps.rows[0] ?? null,
-        skills: skills.rows.map(s => s.name)
+        ...formatted,
+        skills: skillList,
+        skillGap: gapRow
+            ? {
+                matchPercentage: gapRow.match_percentage,
+                missingSkills: gapRow.missing_skills ?? [],
+                resumeSkills: gapRow.resume_skills ?? []
+            }
+            : null
     };
 };
 
