@@ -1,0 +1,826 @@
+{
+  "programming_languages": {
+    "python": [
+      "python"
+    ],
+    "java": [
+      "java"
+    ],
+    "javascript": [
+      "javascript",
+      "js"
+    ],
+    "typescript": [
+      "typescript"
+    ],
+    "c": [
+      "c"
+    ],
+    "c++": [
+      "cpp",
+      "c++",
+      "c plus plus"
+    ],
+    "c#": [
+      "c#"
+    ],
+    "go": [
+      "go"
+    ],
+    "rust": [
+      "rust"
+    ],
+    "kotlin": [
+      "kotlin"
+    ],
+    "swift": [
+      "swift"
+    ],
+    "dart": [
+      "dart"
+    ],
+    "php": [
+      "php"
+    ],
+    "ruby": [
+      "ruby"
+    ],
+    "scala": [
+      "scala"
+    ],
+    "groovy": [
+      "groovy"
+    ],
+    "haskell": [
+      "haskell"
+    ],
+    "elixir": [
+      "elixir"
+    ],
+    "erlang": [
+      "erlang"
+    ],
+    "julia": [
+      "julia"
+    ],
+    "fortran": [
+      "fortran"
+    ],
+    "cobol": [
+      "cobol"
+    ],
+    "matlab": [
+      "matlab"
+    ],
+    "r": [
+      "r"
+    ],
+    "bash": [
+      "bash"
+    ],
+    "powershell": [
+      "powershell"
+    ],
+    "solidity": [
+      "solidity"
+    ],
+    "zig": [
+      "zig"
+    ],
+    "nim": [
+      "nim"
+    ],
+    "crystal": [
+      "crystal"
+    ],
+    "ocaml": [
+      "ocaml"
+    ],
+    "f#": [
+      "f#"
+    ],
+    "lisp": [
+      "lisp"
+    ],
+    "scheme": [
+      "scheme"
+    ],
+    "prolog": [
+      "prolog"
+    ],
+    "ada": [
+      "ada"
+    ]
+  },
+  "web_development": {
+    "html": [
+      "html"
+    ],
+    "css": [
+      "css"
+    ],
+    "sass": [
+      "sass"
+    ],
+    "less": [
+      "less"
+    ],
+    "react": [
+      "react"
+    ],
+    "next.js": [
+      "nextjs",
+      "next.js"
+    ],
+    "vue": [
+      "vue"
+    ],
+    "nuxt": [
+      "nuxt"
+    ],
+    "angular": [
+      "angular"
+    ],
+    "svelte": [
+      "svelte"
+    ],
+    "solidjs": [
+      "solidjs"
+    ],
+    "nodejs": [
+      "nodejs"
+    ],
+    "express": [
+      "express"
+    ],
+    "django": [
+      "django"
+    ],
+    "flask": [
+      "flask"
+    ],
+    "fastapi": [
+      "fastapi"
+    ],
+    "spring boot": [
+      "spring boot",
+      "springboot",
+      "spring-boot"
+    ],
+    "laravel": [
+      "laravel"
+    ],
+    "rails": [
+      "rails"
+    ],
+    "asp.net": [
+      "aspnet",
+      "asp.net"
+    ]
+  },
+  "databases": {
+    "mysql": [
+      "mysql"
+    ],
+    "postgresql": [
+      "postgresql",
+      "postgres"
+    ],
+    "mongodb": [
+      "mongodb"
+    ],
+    "redis": [
+      "redis"
+    ],
+    "sqlite": [
+      "sqlite"
+    ],
+    "oracle": [
+      "oracle"
+    ],
+    "sql server": [
+      "sqlserver",
+      "sql-server",
+      "sql server"
+    ],
+    "cassandra": [
+      "cassandra"
+    ],
+    "dynamodb": [
+      "dynamodb"
+    ],
+    "neo4j": [
+      "neo4j"
+    ],
+    "couchdb": [
+      "couchdb"
+    ],
+    "mariadb": [
+      "mariadb"
+    ],
+    "cockroachdb": [
+      "cockroachdb"
+    ],
+    "timescaledb": [
+      "timescaledb"
+    ],
+    "influxdb": [
+      "influxdb"
+    ],
+    "snowflake": [
+      "snowflake"
+    ],
+    "bigquery": [
+      "bigquery"
+    ],
+    "redshift": [
+      "redshift"
+    ],
+    "teradata": [
+      "teradata"
+    ],
+    "hbase": [
+      "hbase"
+    ],
+    "elasticsearch": [
+      "elasticsearch"
+    ]
+  },
+  "ai_ml": {
+    "machine learning": [
+      "ml",
+      "machinelearning",
+      "machine-learning",
+      "machine learning"
+    ],
+    "deep learning": [
+      "dl",
+      "deep-learning",
+      "deep learning",
+      "deeplearning"
+    ],
+    "nlp": [
+      "nlp"
+    ],
+    "computer vision": [
+      "computervision",
+      "computer vision",
+      "computer-vision"
+    ],
+    "reinforcement learning": [
+      "reinforcement-learning",
+      "reinforcement learning",
+      "reinforcementlearning"
+    ],
+    "predictive modeling": [
+      "predictive modeling",
+      "predictivemodeling",
+      "predictive-modeling"
+    ],
+    "feature engineering": [
+      "feature engineering",
+      "feature-engineering",
+      "featureengineering"
+    ],
+    "model deployment": [
+      "model-deployment",
+      "model deployment",
+      "modeldeployment"
+    ],
+    "model evaluation": [
+      "model-evaluation",
+      "modelevaluation",
+      "model evaluation"
+    ],
+    "mlops": [
+      "mlops"
+    ],
+    "data mining": [
+      "datamining",
+      "data-mining",
+      "data mining"
+    ],
+    "pattern recognition": [
+      "pattern-recognition",
+      "patternrecognition",
+      "pattern recognition"
+    ],
+    "time series forecasting": [
+      "time series forecasting",
+      "timeseriesforecasting",
+      "time-series-forecasting"
+    ],
+    "anomaly detection": [
+      "anomaly-detection",
+      "anomaly detection",
+      "anomalydetection"
+    ],
+    "recommendation systems": [
+      "recommendation-systems",
+      "recommendationsystems",
+      "recommendation systems"
+    ],
+    "speech recognition": [
+      "speech-recognition",
+      "speech recognition",
+      "speechrecognition"
+    ],
+    "sentiment analysis": [
+      "sentiment-analysis",
+      "sentiment analysis",
+      "sentimentanalysis"
+    ],
+    "text classification": [
+      "text classification",
+      "text-classification",
+      "textclassification"
+    ],
+    "entity recognition": [
+      "entity-recognition",
+      "entityrecognition",
+      "entity recognition"
+    ],
+    "knowledge graphs": [
+      "knowledge-graphs",
+      "knowledgegraphs",
+      "knowledge graphs"
+    ],
+    "transformers": [
+      "transformers"
+    ],
+    "generative ai": [
+      "generativeai",
+      "generative ai",
+      "generative-ai"
+    ],
+    "prompt engineering": [
+      "promptengineering",
+      "prompt engineering",
+      "prompt-engineering"
+    ],
+    "large language models": [
+      "large language models",
+      "large-language-models",
+      "largelanguagemodels"
+    ],
+    "transfer learning": [
+      "transfer learning",
+      "transfer-learning",
+      "transferlearning"
+    ],
+    "autoencoders": [
+      "autoencoders"
+    ],
+    "bayesian modeling": [
+      "bayesianmodeling",
+      "bayesian-modeling",
+      "bayesian modeling"
+    ],
+    "graph neural networks": [
+      "graph neural networks",
+      "graphneuralnetworks",
+      "graph-neural-networks"
+    ],
+    "ensemble learning": [
+      "ensemblelearning",
+      "ensemble learning",
+      "ensemble-learning"
+    ],
+    "dimensionality reduction": [
+      "dimensionality-reduction",
+      "dimensionalityreduction",
+      "dimensionality reduction"
+    ]
+  },
+  "data_science_tools": {
+    "numpy": [
+      "numpy"
+    ],
+    "pandas": [
+      "pandas"
+    ],
+    "scikit-learn": [
+      "scikit-learn"
+    ],
+    "tensorflow": [
+      "tensorflow"
+    ],
+    "pytorch": [
+      "pytorch"
+    ],
+    "keras": [
+      "keras"
+    ],
+    "xgboost": [
+      "xgboost"
+    ],
+    "lightgbm": [
+      "lightgbm"
+    ],
+    "catboost": [
+      "catboost"
+    ],
+    "statsmodels": [
+      "statsmodels"
+    ],
+    "opencv": [
+      "opencv"
+    ],
+    "nltk": [
+      "nltk"
+    ],
+    "spacy": [
+      "spacy"
+    ],
+    "gensim": [
+      "gensim"
+    ],
+    "huggingface transformers": [
+      "huggingface-transformers",
+      "huggingfacetransformers",
+      "huggingface transformers"
+    ],
+    "fastai": [
+      "fastai"
+    ],
+    "dask": [
+      "dask"
+    ],
+    "ray": [
+      "ray"
+    ],
+    "mlflow": [
+      "mlflow"
+    ],
+    "onnx": [
+      "onnx"
+    ]
+  },
+  "cloud_devops": {
+    "aws": [
+      "aws"
+    ],
+    "amazon ec2": [
+      "amazonec2",
+      "amazon ec2",
+      "amazon-ec2"
+    ],
+    "amazon s3": [
+      "amazon s3",
+      "amazons3",
+      "amazon-s3"
+    ],
+    "amazon rds": [
+      "amazon-rds",
+      "amazonrds",
+      "amazon rds"
+    ],
+    "aws lambda": [
+      "aws lambda",
+      "aws-lambda",
+      "awslambda"
+    ],
+    "aws cloudformation": [
+      "aws cloudformation",
+      "aws-cloudformation",
+      "awscloudformation"
+    ],
+    "aws ecs": [
+      "aws ecs",
+      "awsecs",
+      "aws-ecs"
+    ],
+    "aws eks": [
+      "aws-eks",
+      "awseks",
+      "aws eks"
+    ],
+    "google cloud": [
+      "google-cloud",
+      "googlecloud",
+      "google cloud"
+    ],
+    "google kubernetes engine": [
+      "google-kubernetes-engine",
+      "google kubernetes engine",
+      "googlekubernetesengine"
+    ],
+    "cloud run": [
+      "cloud-run",
+      "cloud run",
+      "cloudrun"
+    ],
+    "firebase": [
+      "firebase"
+    ],
+    "microsoft azure": [
+      "microsoftazure",
+      "microsoft azure",
+      "microsoft-azure"
+    ],
+    "azure functions": [
+      "azure-functions",
+      "azure functions",
+      "azurefunctions"
+    ],
+    "azure devops": [
+      "azuredevops",
+      "azure-devops",
+      "azure devops"
+    ],
+    "azure data factory": [
+      "azuredatafactory",
+      "azure data factory",
+      "azure-data-factory"
+    ],
+    "azure synapse": [
+      "azuresynapse",
+      "azure synapse",
+      "azure-synapse"
+    ],
+    "docker": [
+      "docker"
+    ],
+    "kubernetes": [
+      "kubernetes"
+    ],
+    "helm": [
+      "helm"
+    ],
+    "terraform": [
+      "terraform"
+    ],
+    "ansible": [
+      "ansible"
+    ],
+    "chef": [
+      "chef"
+    ],
+    "puppet": [
+      "puppet"
+    ],
+    "jenkins": [
+      "jenkins"
+    ],
+    "github actions": [
+      "github-actions",
+      "github actions",
+      "githubactions"
+    ],
+    "gitlab ci": [
+      "gitlab ci",
+      "gitlab-ci",
+      "gitlabci"
+    ],
+    "circleci": [
+      "circleci"
+    ],
+    "argo cd": [
+      "argo-cd",
+      "argocd",
+      "argo cd"
+    ],
+    "prometheus": [
+      "prometheus"
+    ],
+    "grafana": [
+      "grafana"
+    ],
+    "elk stack": [
+      "elk stack",
+      "elkstack",
+      "elk-stack"
+    ],
+    "loki": [
+      "loki"
+    ],
+    "fluentd": [
+      "fluentd"
+    ],
+    "datadog": [
+      "datadog"
+    ],
+    "new relic": [
+      "new-relic",
+      "new relic",
+      "newrelic"
+    ],
+    "splunk": [
+      "splunk"
+    ],
+    "istio": [
+      "istio"
+    ],
+    "linkerd": [
+      "linkerd"
+    ]
+  },
+  "data_engineering": {
+    "apache spark": [
+      "apache spark",
+      "apachespark",
+      "apache-spark"
+    ],
+    "pyspark": [
+      "pyspark"
+    ],
+    "apache kafka": [
+      "apachekafka",
+      "apache kafka",
+      "apache-kafka"
+    ],
+    "apache flink": [
+      "apacheflink",
+      "apache-flink",
+      "apache flink"
+    ],
+    "apache airflow": [
+      "apacheairflow",
+      "apache airflow",
+      "apache-airflow"
+    ],
+    "dbt": [
+      "dbt"
+    ],
+    "hadoop": [
+      "hadoop"
+    ],
+    "hdfs": [
+      "hdfs"
+    ],
+    "mapreduce": [
+      "mapreduce"
+    ],
+    "data warehousing": [
+      "data warehousing",
+      "datawarehousing",
+      "data-warehousing"
+    ],
+    "etl pipelines": [
+      "etlpipelines",
+      "etl pipelines",
+      "etl-pipelines"
+    ],
+    "data lake architecture": [
+      "data-lake-architecture",
+      "data lake architecture",
+      "datalakearchitecture"
+    ],
+    "stream processing": [
+      "streamprocessing",
+      "stream processing",
+      "stream-processing"
+    ],
+    "batch processing": [
+      "batchprocessing",
+      "batch processing",
+      "batch-processing"
+    ],
+    "data governance": [
+      "data-governance",
+      "datagovernance",
+      "data governance"
+    ]
+  },
+  "cybersecurity": {
+    "penetration testing": [
+      "penetration testing",
+      "penetration-testing",
+      "penetrationtesting"
+    ],
+    "ethical hacking": [
+      "ethical-hacking",
+      "ethicalhacking",
+      "ethical hacking"
+    ],
+    "network security": [
+      "network-security",
+      "networksecurity",
+      "network security"
+    ],
+    "application security": [
+      "application security",
+      "applicationsecurity",
+      "application-security"
+    ],
+    "cloud security": [
+      "cloud security",
+      "cloud-security",
+      "cloudsecurity"
+    ],
+    "identity access management": [
+      "identity access management",
+      "identity-access-management",
+      "identityaccessmanagement"
+    ],
+    "threat modeling": [
+      "threat modeling",
+      "threatmodeling",
+      "threat-modeling"
+    ],
+    "vulnerability scanning": [
+      "vulnerabilityscanning",
+      "vulnerability-scanning",
+      "vulnerability scanning"
+    ],
+    "siem": [
+      "siem"
+    ],
+    "soc operations": [
+      "soc-operations",
+      "soc operations",
+      "socoperations"
+    ],
+    "incident response": [
+      "incidentresponse",
+      "incident-response",
+      "incident response"
+    ],
+    "digital forensics": [
+      "digital-forensics",
+      "digitalforensics",
+      "digital forensics"
+    ],
+    "zero trust architecture": [
+      "zerotrustarchitecture",
+      "zero trust architecture",
+      "zero-trust-architecture"
+    ]
+  },
+  "analytics_bi": {
+    "tableau": [
+      "tableau"
+    ],
+    "power bi": [
+      "power-bi",
+      "powerbi",
+      "power bi"
+    ],
+    "looker": [
+      "looker"
+    ],
+    "metabase": [
+      "metabase"
+    ],
+    "superset": [
+      "superset"
+    ],
+    "excel": [
+      "excel"
+    ],
+    "google analytics": [
+      "google analytics",
+      "googleanalytics",
+      "google-analytics"
+    ],
+    "mixpanel": [
+      "mixpanel"
+    ]
+  },
+  "version_control_tools": {
+    "git": [
+      "git"
+    ],
+    "github": [
+      "github"
+    ],
+    "gitlab": [
+      "gitlab"
+    ],
+    "bitbucket": [
+      "bitbucket"
+    ],
+    "jira": [
+      "jira"
+    ],
+    "confluence": [
+      "confluence"
+    ],
+    "notion": [
+      "notion"
+    ],
+    "slack": [
+      "slack"
+    ],
+    "figma": [
+      "figma"
+    ],
+    "adobe xd": [
+      "adobe-xd",
+      "adobexd",
+      "adobe xd"
+    ],
+    "postman": [
+      "postman"
+    ],
+    "vscode": [
+      "vscode"
+    ],
+    "intellij": [
+      "intellij"
+    ],
+    "pycharm": [
+      "pycharm"
+    ]
+  }
+}

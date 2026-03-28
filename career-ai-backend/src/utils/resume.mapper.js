@@ -2,16 +2,13 @@
 // utils/resume.mapper.js
 // ============================================
 
-export const mapAIToATS = (ai) => {
-    return {
-        overall_score: ai.job_match_score || 0,
-        keyword_score: ai.keyword_score || 0,
-        formatting_score: ai.formatting_score || 0,
-        experience_score: ai.experience_score || 0,
-        missing_keywords: ai.missing_skills || []
-    };
-};
-
+export const mapAIToATS = (ai) => ({
+    overall_score: ai.ats_score ?? 0,
+    keyword_score: ai.job_match_score ?? 0, // closest match
+    formatting_score: null,   // Python abhi return nahi karta — DB mein NULL rakho
+    experience_score: null,   // same
+    missing_keywords: ai.missing_skills ?? []
+});
 export const getGrade = (score) => {
     if (score >= 85) return 'A';
     if (score >= 70) return 'B';
