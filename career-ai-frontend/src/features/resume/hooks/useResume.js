@@ -28,6 +28,7 @@ const useResume = () => {
     // ✅ Redux state
     const dispatch = useDispatch();
     const resume = useSelector((state) => state.resume);
+    const auth = useSelector((state) => state.auth);
 
     // ─────────────────────────────────────────
     // Upload Resume
@@ -36,7 +37,9 @@ const useResume = () => {
         try {
             dispatch(uploadResumeStart()); // ✅ Redux handles loading for upload
 
-            const data = await uploadResumeService(file);
+            const defaultJd = auth.user?.targetRole || 'Software Engineer';
+            const data = await uploadResumeService(file, defaultJd);
+            
             dispatch(uploadResumeSuccess(data.resume));
 
             return { success: true, data: data.resume };
@@ -45,7 +48,7 @@ const useResume = () => {
             dispatch(uploadResumeFailure(err.message));
             return { success: false, error: err.message };
         }
-    }, [dispatch]);
+    }, [dispatch, auth.user?.targetRole]);
 
     // ─────────────────────────────────────────
     // Get Resume Analysis

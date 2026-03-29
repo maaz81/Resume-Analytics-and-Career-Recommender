@@ -51,7 +51,7 @@ export const saveCareerGoalService = async (careerGoalData) => {
  * @param {File} file - Resume file (PDF)
  * @returns {Promise} - Upload result with file info
  */
-export const uploadResumeService = async (file) => {
+export const uploadResumeService = async (file, jdText = '') => {
   if (!file) {
     throw new Error('No file provided');
   }
@@ -68,15 +68,17 @@ export const uploadResumeService = async (file) => {
 
   const formData = new FormData();
   formData.append('resume', file);
+  if (jdText) {
+    formData.append('jdText', jdText);
+  }
 
   const response = await API.post('/resumes/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },
   });
 
   return {
-    // The backend `uploadResume` controller returns `{ status: 'success', data: { resume: ... } }`
-    // So response.data.data has `resume`.
     resume: response.data.data.resume,
+    analysis: response.data.data.analysis,
     message: 'Resume uploaded successfully',
   };
 };

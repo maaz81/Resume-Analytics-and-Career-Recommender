@@ -1,9 +1,12 @@
 // Upload Resume
 import API from '../../auth/services/api';
 
-export const uploadResumeService = async (file) => {
+export const uploadResumeService = async (file, jdText = '') => {
   const formData = new FormData();
   formData.append('resume', file);
+  if (jdText) {
+    formData.append('jdText', jdText);
+  }
 
   const response = await API.post('/resumes/upload', formData, {
     headers: { 'Content-Type': 'multipart/form-data' },

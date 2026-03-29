@@ -196,7 +196,7 @@ export const getResumeAnalysisService = async (resumeId, userId) => {
 
     // Format using the shared mapper so the frontend gets
     // { atsScore: { overall, breakdown, grade }, targetRoleComparison, ... }
-    const formatted = formatAnalysisResponse(resume, atsRow);
+    const formatted = formatAnalysisResponse(resume, atsRow, gapRow);
 
     return {
         ...formatted,
@@ -293,7 +293,7 @@ export const getResumeHistoryService = async (userId) => {
         atsScore: r.overall_score ?? null,
         status: r.is_active ? 'current' : 'archived',
         // Serve through a protected endpoint, not a raw disk path
-        fileUrl: `/api/resumes/${r.id}/file`
+        fileUrl: `/api/v1/resumes/${r.id}/file`
     }));
 };
 

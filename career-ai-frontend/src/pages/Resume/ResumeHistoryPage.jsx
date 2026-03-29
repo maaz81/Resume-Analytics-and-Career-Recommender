@@ -28,15 +28,30 @@ const ResumeHistoryPage = () => {
     loadHistory();
   }, []);
 
-  const handleView = (resume) => {
+  const handleView = async (resume) => {
     if (!resume.fileUrl) {
       alert("No file path found for this resume.");
       return;
     }
-    const fullUrl = resume.fileUrl.startsWith('http')
-      ? resume.fileUrl
-      : `${BACKEND_URL}${resume.fileUrl}`;
-    setPreviewUrl(fullUrl);
+    try {
+      const fullUrl = resume.fileUrl.startsWith('http')
+        ? resume.fileUrl
+        : `${BACKEND_URL}${resume.fileUrl}`;
+
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch(fullUrl, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) throw new Error('Failed to load file');
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      setPreviewUrl(blobUrl);
+    } catch (err) {
+      console.error("View failed:", err);
+      alert("Failed to load resume file");
+    }
   };
 
   const handleViewAnalysis = (resume) => {
@@ -81,14 +96,19 @@ const ResumeHistoryPage = () => {
         ? resume.fileUrl
         : `${BACKEND_URL}${resume.fileUrl}`;
 
-      const response = await fetch(fullUrl);
-      const blob = await response.blob();
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch(`${fullUrl}?download=true`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
 
+      if (!response.ok) throw new Error('Download failed');
+
+      const blob = await response.blob();
       const url = window.URL.createObjectURL(blob);
 
       const a = document.createElement('a');
       a.href = url;
-      a.download = resume.fileName || 'resume.pdf'; // ✅ filename
+      a.download = resume.fileName || 'resume.pdf';
       document.body.appendChild(a);
       a.click();
 

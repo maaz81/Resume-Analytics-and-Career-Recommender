@@ -23,6 +23,9 @@ router.get('/:id/analysis', controller.getResumeAnalysis);
 // score
 router.post('/:id/score', controller.scoreResume);
 
+// serve file (view / download)
+router.get('/:id/file', controller.serveResumeFile);
+
 // delete
 router.delete('/:id', controller.deleteResumeController);
 

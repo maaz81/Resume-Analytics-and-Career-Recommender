@@ -84,7 +84,40 @@ export const getResumeHistory = catchAsync(async (req, res) => {
     return successResponse(res, { resumes: data });
 });
 
-// controllers/resume.controller.js
+// Serve resume file (View / Download)
+export const serveResumeFile = catchAsync(async (req, res) => {
+    const { id } = req.params;
+    const userId = req.user.id;
+
+    // Import model directly for a lightweight lookup
+    const { default: Resume } = await import('../models/Resume.js');
+    const resume = await Resume.findById(id);
+
+    if (!resume) throw errors.notFound('Resume not found');
+    if (resume.user_id !== userId) throw errors.forbidden('Unauthorized');
+    if (!resume.file_path) throw errors.notFound('File not available');
+
+    // Check file exists on disk
+    try {
+        await fs.promises.access(resume.file_path, fs.constants.R_OK);
+    } catch {
+        throw errors.notFound('File no longer exists on disk');
+    }
+
+    // Determine if download was requested via query param
+    const isDownload = req.query.download === 'true';
+
+    res.setHeader('Content-Type', resume.mime_type || 'application/pdf');
+    res.setHeader(
+        'Content-Disposition',
+        isDownload
+            ? `attachment; filename="${resume.original_filename}"`
+            : `inline; filename="${resume.original_filename}"`
+    );
+
+    const fileStream = fs.createReadStream(resume.file_path);
+    fileStream.pipe(res);
+});
 
 export const deleteResumeController = catchAsync(async (req, res) => {
     const { id } = req.params;

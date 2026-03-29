@@ -15,6 +15,7 @@ import {
   getCareerRolesService,
   getTopCompaniesService,
 } from '../services/onboardingService';
+import { scoreResumeService } from '@features/resume/services/resumeService';
 import { uploadResumeSuccess } from '@features/resume/slices/resumeSlice';
 import { ROUTES } from '@constants/routes';
 import { useState } from 'react';
@@ -62,7 +63,9 @@ export const useOnboarding = () => {
       setIsLoading(true);
       setError(null);
 
-      const response = await uploadResumeService(file);
+      // Use target role as default JD if nothing else
+      const defaultJd = onboarding.careerGoal?.targetRole || 'Software Engineer';
+      const response = await uploadResumeService(file, defaultJd);
 
       // Update Redux state
       dispatch(uploadResumeSuccess(response.resume));
@@ -154,8 +157,13 @@ export const useOnboarding = () => {
       setIsLoading(true);
       setError(null);
 
-      // JD is optional — just mark the step as done
-      // In the future this could call an API to store the JD
+      // Call score API so the backend runs AI analysis with specific JD
+      const jdText = jdData.type === 'manual' 
+        ? jdData.content 
+        : onboarding.careerGoal?.targetRole || 'Software Engineer';
+        
+      await scoreResumeService('latest', jdText);
+
       setIsLoading(false);
       return { success: true };
     } catch (err) {
