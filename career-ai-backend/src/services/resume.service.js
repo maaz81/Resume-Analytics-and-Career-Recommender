@@ -113,7 +113,7 @@ export const uploadResumeService = async ({ userId, file, rawText, jdText }) => 
                 await client.query(
                     `INSERT INTO user_skills (user_id, resume_id, name)
                      SELECT $1, $2, unnest($3::text[])
-                     ON CONFLICT (user_id, resume_id, name) DO NOTHING`,
+                     ON CONFLICT (user_id, name) DO NOTHING`,
                     [userId, resumeId, aiResult.resume_skills]
                 );
             }

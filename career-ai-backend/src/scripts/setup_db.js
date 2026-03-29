@@ -78,7 +78,7 @@ CREATE TABLE IF NOT EXISTS "user_skills" (
     "proficiency_level" INTEGER,
     "years_of_experience" FLOAT,
     "created_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
-    UNIQUE("user_id", "resume_id", "name")
+    UNIQUE("user_id", "name")
 );
 
 CREATE TABLE IF NOT EXISTS "skill_gaps" (
