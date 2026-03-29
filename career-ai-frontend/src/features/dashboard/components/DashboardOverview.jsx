@@ -1,5 +1,6 @@
-import { FileText, Target, Map, Briefcase } from 'lucide-react';
+import { FileText, Target, Map, Briefcase, Upload } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import Button from '@common/Button';
 import StatsCard from './StatsCard';
 import NextActionCard from './NextActionCard';
 import ResumeHealthWidget from './ResumeHealthWidget';
@@ -38,13 +39,25 @@ const DashboardOverview = () => {
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-text-primary">
-          Welcome back, {firstName}!
-        </h1>
-        <p className="text-text-secondary mt-1">
-          Here's your career progress at a glance
-        </p>
+      <div className='flex items-start justify-between'>
+        <div>
+          <h1 className="text-3xl font-bold text-text-primary">
+            Welcome back, {firstName}!
+          </h1>
+          <p className="text-text-secondary mt-1">
+            Here's your career progress at a glance
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <Button
+            variant="primary"
+            leftIcon={<Upload className="w-4 h-4" />}
+            onClick={() => navigate(ROUTES.ONBOARDING_CAREER_GOAL)}
+          >
+            Upload New Version
+          </Button>
+
+        </div>
       </div>
 
       {/* Stats Cards Grid */}
