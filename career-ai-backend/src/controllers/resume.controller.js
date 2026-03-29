@@ -17,42 +17,18 @@ import { successResponse, createdResponse } from '../utils/response.js';
 import { errors, catchAsync } from '../middleware/errorHandler.js';
 
 
-// export const uploadResume = catchAsync(async (req, res) => {
-//     if (!req.file) throw errors.badRequest('No file uploaded');
-
-//     let buffer;
-//     try {
-//         buffer = await fs.promises.readFile(req.file.path);
-//         const pdfData = await pdf(buffer);
-
-//         const resume = await uploadResumeService({
-//             userId: req.user.id,
-//             file: req.file,
-//             rawText: pdfData.text
-//         });
-
-//         return createdResponse(res, { resume }, 'Uploaded successfully');
-
-//     } catch (error) {
-//         // Only delete file if there was an error processing it
-//         await fs.promises.unlink(req.file.path).catch(() => { });
-//         throw error;
-//     }
-// });
-
 export const uploadResume = catchAsync(async (req, res) => {
     if (!req.file) throw errors.badRequest('No file uploaded');
 
-    let buffer;
     try {
-        buffer = await fs.promises.readFile(req.file.path);
+        const buffer = await fs.promises.readFile(req.file.path);
         const pdfData = await pdf(buffer);
 
         const result = await uploadResumeService({
             userId: req.user.id,
             file: req.file,
             rawText: pdfData.text,
-            jdText: req.body.jdText // optional but recommended
+            jdText: req.body.jdText   // optional but recommended
         });
 
         return createdResponse(res, result, 'Resume analyzed successfully');
@@ -63,19 +39,38 @@ export const uploadResume = catchAsync(async (req, res) => {
     }
 });
 
+
 export const getResumeAnalysis = catchAsync(async (req, res) => {
     const data = await getResumeAnalysisService(req.params.id, req.user.id);
     return successResponse(res, data);
 });
 
 
+// ─────────────────────────────────────────────
+// SCORE
+// Body: { jdText: string, isAuto?: boolean }
+//
+//   isAuto = false (default) → jdText is a full job description pasted by the user
+//   isAuto = true            → jdText is just a role title; backend calls LLM to
+//                              generate a full JD before scoring
+// ─────────────────────────────────────────────
 export const scoreResume = catchAsync(async (req, res) => {
-    const { jdText } = req.body;
-    if (!jdText) throw errors.badRequest('Job description required');
+    const { jdText, isAuto = false } = req.body;
 
-    const data = await scoreResumeService(req.params.id, req.user.id, jdText);
+    if (!jdText?.trim()) throw errors.badRequest('Job description (or target role title) required');
 
-    return successResponse(res, { score: data });
+    const data = await scoreResumeService(
+        req.params.id,
+        req.user.id,
+        jdText,
+        Boolean(isAuto)     // coerce in case the client sends "true" as a string
+    );
+
+    // data = { score: <ats_scores row>, generatedJD: string | null }
+    return successResponse(res, {
+        score: data.score,
+        generatedJD: data.generatedJD ?? undefined,   // omit key entirely when null
+    });
 });
 
 
@@ -84,12 +79,11 @@ export const getResumeHistory = catchAsync(async (req, res) => {
     return successResponse(res, { resumes: data });
 });
 
-// Serve resume file (View / Download)
+
 export const serveResumeFile = catchAsync(async (req, res) => {
     const { id } = req.params;
     const userId = req.user.id;
 
-    // Import model directly for a lightweight lookup
     const { default: Resume } = await import('../models/Resume.js');
     const resume = await Resume.findById(id);
 
@@ -97,14 +91,12 @@ export const serveResumeFile = catchAsync(async (req, res) => {
     if (resume.user_id !== userId) throw errors.forbidden('Unauthorized');
     if (!resume.file_path) throw errors.notFound('File not available');
 
-    // Check file exists on disk
     try {
         await fs.promises.access(resume.file_path, fs.constants.R_OK);
     } catch {
         throw errors.notFound('File no longer exists on disk');
     }
 
-    // Determine if download was requested via query param
     const isDownload = req.query.download === 'true';
 
     res.setHeader('Content-Type', resume.mime_type || 'application/pdf');
@@ -115,15 +107,11 @@ export const serveResumeFile = catchAsync(async (req, res) => {
             : `inline; filename="${resume.original_filename}"`
     );
 
-    const fileStream = fs.createReadStream(resume.file_path);
-    fileStream.pipe(res);
+    fs.createReadStream(resume.file_path).pipe(res);
 });
 
+
 export const deleteResumeController = catchAsync(async (req, res) => {
-    const { id } = req.params;
-    const userId = req.user.id;
-
-    await deleteResumeService(id, userId);
-
+    await deleteResumeService(req.params.id, req.user.id);
     return successResponse(res, null, 'Resume deleted successfully');
 });

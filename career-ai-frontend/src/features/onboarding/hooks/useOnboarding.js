@@ -42,7 +42,6 @@ export const useOnboarding = () => {
 
       const response = await saveCareerGoalService(careerGoalData);
 
-      // Update Redux state
       dispatch(setCareerGoal(response.careerGoal));
       dispatch(updateUser({ targetRole: response.careerGoal.targetRole }));
 
@@ -63,11 +62,9 @@ export const useOnboarding = () => {
       setIsLoading(true);
       setError(null);
 
-      // Use target role as default JD if nothing else
       const defaultJd = onboarding.careerGoal?.targetRole || 'Software Engineer';
       const response = await uploadResumeService(file, defaultJd);
 
-      // Update Redux state
       dispatch(uploadResumeSuccess(response.resume));
 
       setIsLoading(false);
@@ -110,8 +107,7 @@ export const useOnboarding = () => {
    */
   const goToNextStep = () => {
     dispatch(nextStep());
-    
-    // Navigate to next page based on current step
+
     if (onboarding.currentStep === 1) {
       navigate(ROUTES.ONBOARDING_RESUME_UPLOAD);
     } else if (onboarding.currentStep === 2) {
@@ -135,41 +131,49 @@ export const useOnboarding = () => {
     if (onboarding.currentStep === 3) {
       dispatch(previousStep());
       navigate(ROUTES.ONBOARDING_RESUME_UPLOAD);
-    }
-    else if (onboarding.currentStep === 2) {
+    } else if (onboarding.currentStep === 2) {
       dispatch(previousStep());
       navigate(ROUTES.ONBOARDING_CAREER_GOAL);
     }
   };
 
   /**
-   * Skip onboarding (for later)
+   * Skip onboarding
    */
   const skipOnboarding = () => {
     navigate(ROUTES.DASHBOARD);
   };
 
   /**
-   * Save job description (optional step)
+   * Save job description
+   *
+   * jdData.type === 'auto'   → user clicked "Use AI Generated JD"
+   *                            jdText = their target role title
+   *                            isAuto = true → backend calls OpenRouter LLM
+   *
+   * jdData.type === 'manual' → user pasted their own JD text
+   *                            jdText = full pasted content
+   *                            isAuto = false → scored as-is
    */
   const saveJobDescription = async (jdData) => {
     try {
       setIsLoading(true);
       setError(null);
 
-      // Call score API so the backend runs AI analysis with specific JD
-      const jdText = jdData.type === 'manual' 
-        ? jdData.content 
-        : onboarding.careerGoal?.targetRole || 'Software Engineer';
-        
-      await scoreResumeService('latest', jdText);
+      const isAuto = jdData.type === 'auto';
+      const jdText = isAuto
+        ? (onboarding.careerGoal?.targetRole || 'Software Engineer')  // role title → LLM generates real JD
+        : jdData.content;                                              // full JD pasted by user
+
+      await scoreResumeService('latest', jdText, isAuto);
 
       setIsLoading(false);
       return { success: true };
     } catch (err) {
-      setError(err.message);
+      const errorMsg = err.response?.data?.message || err.message;
+      setError(errorMsg);
       setIsLoading(false);
-      return { success: false, error: err.message };
+      return { success: false, error: errorMsg };
     }
   };
 

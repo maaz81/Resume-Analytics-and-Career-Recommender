@@ -7,11 +7,11 @@ import fs from 'fs/promises';
 
 import Resume from '../models/Resume.js';
 import { errors } from '../middleware/errorHandler.js';
-import { query, pool } from '../config/db.js';  // ← import pool for transactions
+import { query, pool } from '../config/db.js';
 import { analyzeResume } from './ai.service.js';
+import { generateAutoJobDescription } from './llm.service.js';       // ← NEW
 import { mapAIToATS, formatAnalysisResponse } from '../utils/resume.mapper.js';
-
-
+import logger from '../config/logger.js';
 
 
 // ─────────────────────────────────────────────
@@ -42,8 +42,6 @@ const resolveResume = async (resumeId, userId) => {
 // ─────────────────────────────────────────────
 export const uploadResumeService = async ({ userId, file, rawText, jdText }) => {
 
-    // ── Step 1: Call Python AI (outside transaction — no point holding
-    //            a DB connection open while waiting for the AI response)
     let aiResult = null;
 
     if (jdText) {
@@ -55,20 +53,16 @@ export const uploadResumeService = async ({ userId, file, rawText, jdText }) => 
         }
     }
 
-    // ── Steps 2–6: All DB writes in a single transaction
     const client = await pool.connect();
 
     try {
         await client.query('BEGIN');
 
-        // 2. Deactivate old resumes
         await client.query(
             `UPDATE resumes SET is_active = false WHERE user_id = $1`,
             [userId]
         );
 
-        // 3. Insert new resume
-        // NOTE: Resume.create should accept a client arg — see note below
         const insertResult = await client.query(
             `INSERT INTO resumes (
                 user_id, version, original_filename, file_path,
@@ -80,23 +74,13 @@ export const uploadResumeService = async ({ userId, file, rawText, jdText }) => 
                 $2, $3, $4, $5, $6, true, 'parsed'
              )
              RETURNING *`,
-            [
-                userId,
-                file.originalname,
-                file.path,
-                file.size,
-                file.mimetype,
-                rawText
-            ]
+            [userId, file.originalname, file.path, file.size, file.mimetype, rawText]
         );
 
         const resume = insertResult.rows[0];
         const resumeId = resume.id;
 
-        // 4, 5, 6 — only if AI returned a result
         if (aiResult) {
-
-            // 4. Insert ATS score
             await client.query(
                 `INSERT INTO ats_scores (
                     resume_id, user_id, overall_score,
@@ -104,15 +88,13 @@ export const uploadResumeService = async ({ userId, file, rawText, jdText }) => 
                  )
                  VALUES ($1, $2, $3, $4, $5)`,
                 [
-                    resumeId,
-                    userId,
+                    resumeId, userId,
                     aiResult.ats_score,
                     aiResult.job_match_score,
                     JSON.stringify(aiResult.missing_skills)
                 ]
             );
 
-            // 5. Insert skill gap
             await client.query(
                 `INSERT INTO skill_gaps (
                     user_id, resume_id, match_percentage,
@@ -120,20 +102,18 @@ export const uploadResumeService = async ({ userId, file, rawText, jdText }) => 
                  )
                  VALUES ($1, $2, $3, $4, $5)`,
                 [
-                    userId,
-                    resumeId,
+                    userId, resumeId,
                     aiResult.job_match_score,
                     JSON.stringify(aiResult.missing_skills),
                     JSON.stringify(aiResult.resume_skills)
                 ]
             );
 
-            // 6. Bulk insert user skills — single query, no N+1
             if (aiResult.resume_skills?.length > 0) {
                 await client.query(
                     `INSERT INTO user_skills (user_id, resume_id, name)
-         SELECT $1, $2, unnest($3::text[])
-         ON CONFLICT (user_id, resume_id, name) DO NOTHING`,
+                     SELECT $1, $2, unnest($3::text[])
+                     ON CONFLICT (user_id, resume_id, name) DO NOTHING`,
                     [userId, resumeId, aiResult.resume_skills]
                 );
             }
@@ -141,7 +121,6 @@ export const uploadResumeService = async ({ userId, file, rawText, jdText }) => 
 
         await client.query('COMMIT');
 
-        // ── Return structured response
         return {
             resume,
             analysis: aiResult
@@ -150,6 +129,7 @@ export const uploadResumeService = async ({ userId, file, rawText, jdText }) => 
                     match_score: aiResult.job_match_score,
                     missing_skills: aiResult.missing_skills,
                     skills: aiResult.resume_skills,
+                    strengths: aiResult.resume_skills,
                     courses: aiResult.courses,
                     projects: aiResult.projects
                 }
@@ -158,9 +138,9 @@ export const uploadResumeService = async ({ userId, file, rawText, jdText }) => 
 
     } catch (err) {
         await client.query('ROLLBACK');
-        throw err;                  // bubble up to catchAsync → global handler
+        throw err;
     } finally {
-        client.release();           // always return connection to pool
+        client.release();
     }
 };
 
@@ -194,8 +174,6 @@ export const getResumeAnalysisService = async (resumeId, userId) => {
     const gapRow = gaps.rows[0] ?? null;
     const skillList = skills.rows.map(s => s.name);
 
-    // Format using the shared mapper so the frontend gets
-    // { atsScore: { overall, breakdown, grade }, targetRoleComparison, ... }
     const formatted = formatAnalysisResponse(resume, atsRow, gapRow);
 
     return {
@@ -214,32 +192,77 @@ export const getResumeAnalysisService = async (resumeId, userId) => {
 
 // ─────────────────────────────────────────────
 // 3. SCORE (re-score with a new JD)
+//    isAuto: true  → LLM generates the real JD from the role title
+//    isAuto: false → jdText is used as-is (manual paste)
 // ─────────────────────────────────────────────
-export const scoreResumeService = async (resumeId, userId, jdText) => {
-    const resume = await resolveResume(resumeId, userId);       // ← shared helper
+export const scoreResumeService = async (resumeId, userId, jdText, isAuto = false) => {
+    const resume = await resolveResume(resumeId, userId);
     const resolvedId = resume.id;
 
-    const jdHash = crypto.createHash('sha256').update(jdText.trim()).digest('hex');
+    // ── Step 1: Resolve the actual JD text ──────────────────────────────
+    let resolvedJD = jdText;          // default: use what the user provided
+    let generatedJD = null;           // only set when isAuto === true
 
-    // Return cached score for identical JD
-    const existing = await query(
-        `SELECT * FROM ats_scores
-         WHERE resume_id = $1 AND jd_hash = $2
-         ORDER BY scored_at DESC LIMIT 1`,
-        [resolvedId, jdHash]
-    );
-    if (existing.rows.length) return existing.rows[0];
+    if (isAuto) {
+        // jdText here is just the target role title (e.g. "Senior React Developer")
+        logger.info('[SCORE] isAuto=true — calling LLM to generate JD', { targetRole: jdText });
 
-    // Call AI
+        try {
+            generatedJD = await generateAutoJobDescription(jdText, resume.raw_text);
+            resolvedJD = generatedJD;
+            logger.info('[SCORE] LLM JD generated', { chars: resolvedJD.length });
+        } catch (llmErr) {
+            // ── Graceful fallback: if OpenRouter is down, score against the
+            //    role title as plain text rather than crashing the request.
+            logger.warn('[SCORE] LLM failed — falling back to raw jdText', {
+                error: llmErr.message,
+            });
+            // resolvedJD already equals jdText, so no change needed
+        }
+    }
+
+    // ── Step 2: Hash the *resolved* JD for cache lookup ─────────────────
+    //    Auto JDs are never cached (different resume context each time),
+    //    but manual JDs can still hit the cache.
+    const jdHash = isAuto
+        ? null   // skip cache for auto mode — LLM output is always unique
+        : crypto.createHash('sha256').update(resolvedJD.trim()).digest('hex');
+
+    if (jdHash) {
+        const existing = await query(
+            `SELECT * FROM ats_scores
+             WHERE resume_id = $1 AND jd_hash = $2
+             ORDER BY scored_at DESC LIMIT 1`,
+            [resolvedId, jdHash]
+        );
+        if (existing.rows.length) {
+            logger.info('[SCORE] Cache hit — returning existing score');
+            return { score: existing.rows[0], generatedJD: null };
+        }
+    }
+
+    // ── Step 3: Call Python ML scorer ────────────────────────────────────
     let aiResult;
     try {
-        aiResult = await analyzeResume(resume.raw_text, jdText);
+        aiResult = await analyzeResume(resume.raw_text, resolvedJD);
     } catch (err) {
-        console.error('[SCORE AI ERROR]', err.message);
+        logger.error('[SCORE AI ERROR]', { error: err.message });
         throw errors.internal('AI service unavailable');
     }
 
     const mapped = mapAIToATS(aiResult);
+
+    // ── Step 4: Persist the score row ────────────────────────────────────
+    
+    // Ensure target_role doesn't exceed the database varchar(255) limit.
+    // When isAuto=false, jdText is the FULL pasted job description, so taking jdText directly crashes the DB.
+    let finalTargetRole = aiResult.target_role;
+    if (!finalTargetRole) {
+        finalTargetRole = isAuto ? jdText : 'Custom Job Description';
+    }
+    if (finalTargetRole.length > 255) {
+        finalTargetRole = finalTargetRole.substring(0, 252) + '...';
+    }
 
     const result = await query(
         `INSERT INTO ats_scores (
@@ -257,12 +280,16 @@ export const scoreResumeService = async (resumeId, userId, jdText) => {
             mapped.formatting_score,
             mapped.experience_score,
             JSON.stringify(mapped.missing_keywords),
-            aiResult.target_role ?? null,
+            finalTargetRole,
             jdHash
         ]
     );
 
-    return result.rows[0];
+    // ── Step 5: Return score + optionally the generated JD text ──────────
+    return {
+        score: result.rows[0],
+        generatedJD,   // null for manual mode; full text for auto mode
+    };
 };
 
 
@@ -292,7 +319,6 @@ export const getResumeHistoryService = async (userId) => {
         uploadedAt: r.uploaded_at,
         atsScore: r.overall_score ?? null,
         status: r.is_active ? 'current' : 'archived',
-        // Serve through a protected endpoint, not a raw disk path
         fileUrl: `/api/v1/resumes/${r.id}/file`
     }));
 };
@@ -308,13 +334,11 @@ export const deleteResumeService = async (resumeId, userId) => {
     if (resume.user_id !== userId) throw errors.forbidden('Unauthorized');
     if (resume.is_active) throw errors.badRequest('Cannot delete active resume. Upload a new resume first to archive this one.');
 
-    // Delete file from disk (non-fatal if already gone)
     if (resume.file_path) {
         await fs.unlink(resume.file_path).catch(err =>
             console.warn('[FILE DELETE WARN]', err.message)
         );
     }
 
-    // Cascades to ats_scores, skill_gaps, user_skills via FK ON DELETE CASCADE
     await query(`DELETE FROM resumes WHERE id = $1`, [resumeId]);
 };
