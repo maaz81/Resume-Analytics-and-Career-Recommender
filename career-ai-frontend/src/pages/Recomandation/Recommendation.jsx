@@ -1,212 +1,73 @@
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 
-// ─── Data ───────────────────────────────────────────────────────────────────
+// ─── API Config ───────────────────────────────────────────────────────────────
+// Set this to your backend base URL (e.g. http://localhost:5000/api/v1)
+const API_BASE = "http://localhost:5000/api/v1";
 
-const courses = [
-    {
-        id: 1,
-        tag: "Beginner",
-        tagColor: "bg-status-success-light text-status-success-dark",
-        title: "React Fundamentals",
-        description: "Master component design, hooks, and state management from the ground up.",
-        lessons: 24,
-        hours: "12h 30m",
-        level: "Beginner",
-        icon: "⚛",
-    },
-    {
-        id: 2,
-        tag: "Intermediate",
-        tagColor: "bg-status-info-light text-status-info-dark",
-        title: "Node.js & Express API",
-        description: "Build scalable RESTful APIs with authentication, middleware, and databases.",
-        lessons: 31,
-        hours: "18h 45m",
-        level: "Intermediate",
-        icon: "🟢",
-    },
-    {
-        id: 3,
-        tag: "Advanced",
-        tagColor: "bg-status-warning-light text-status-warning-dark",
-        title: "System Design Mastery",
-        description: "Design high-traffic distributed systems — caching, queues, sharding, and more.",
-        lessons: 18,
-        hours: "22h 00m",
-        level: "Advanced",
-        icon: "🏗",
-    },
-    {
-        id: 4,
-        tag: "Beginner",
-        tagColor: "bg-status-success-light text-status-success-dark",
-        title: "TypeScript Deep Dive",
-        description: "From basic types to generics, decorators, and real-world patterns.",
-        lessons: 20,
-        hours: "10h 15m",
-        level: "Beginner",
-        icon: "🔷",
-    },
-    {
-        id: 5,
-        tag: "Intermediate",
-        tagColor: "bg-status-info-light text-status-info-dark",
-        title: "PostgreSQL & Prisma ORM",
-        description: "Relational database design, query optimization, and ORM patterns.",
-        lessons: 27,
-        hours: "14h 20m",
-        level: "Intermediate",
-        icon: "🐘",
-    },
-    {
-        id: 6,
-        tag: "Advanced",
-        tagColor: "bg-status-warning-light text-status-warning-dark",
-        title: "DevOps & CI/CD Pipelines",
-        description: "Docker, Kubernetes, GitHub Actions, and production deployment strategies.",
-        lessons: 22,
-        hours: "19h 50m",
-        level: "Advanced",
-        icon: "🚀",
-    },
-];
+/**
+ * Generic fetch helper — attaches the JWT stored in localStorage,
+ * throws on non-2xx, and returns parsed JSON data payload.
+ */
+async function apiFetch(path, options = {}) {
+    const token = localStorage.getItem("auth_token");
+    const res = await fetch(`${API_BASE}${path}`, {
+        ...options,
+        headers: {
+            "Content-Type": "application/json",
+            ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            ...options.headers,
+        },
+    });
 
-const projects = [
-    {
-        id: 1,
-        title: "Full-Stack E-Commerce",
-        description: "Build a production-ready store with cart, payments (Stripe), auth, and admin dashboard.",
-        stack: ["React", "Node.js", "PostgreSQL", "Stripe"],
-        difficulty: "Advanced",
-        color: "border-l-brand-accent",
-        accent: "#FF8C42",
-    },
-    {
-        id: 2,
-        title: "Real-Time Chat App",
-        description: "WebSocket-powered chat with rooms, DMs, typing indicators, and file sharing.",
-        stack: ["React", "Socket.io", "Express", "Redis"],
-        difficulty: "Intermediate",
-        color: "border-l-brand-primary",
-        accent: "#3F76FF",
-    },
-    {
-        id: 3,
-        title: "AI Content Dashboard",
-        description: "Integrate OpenAI API to generate, edit, and manage AI-assisted content at scale.",
-        stack: ["Next.js", "OpenAI", "Prisma", "Tailwind"],
-        difficulty: "Intermediate",
-        color: "border-l-status-success",
-        accent: "#16A34A",
-    },
-    {
-        id: 4,
-        title: "DevOps Monitoring Stack",
-        description: "Set up Prometheus, Grafana, and alerting for a Node.js microservices cluster.",
-        stack: ["Docker", "Prometheus", "Grafana", "Node.js"],
-        difficulty: "Advanced",
-        color: "border-l-status-error",
-        accent: "#EF4444",
-    },
-];
+    if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `HTTP ${res.status}`);
+    }
 
-const roadmapSteps = [
-    {
-        phase: "Phase 1",
-        title: "Web Foundations",
-        duration: "4 weeks",
-        items: ["HTML5 & CSS3", "JavaScript ES6+", "Git & GitHub", "Command Line Basics"],
-    },
-    {
-        phase: "Phase 2",
-        title: "Frontend Development",
-        duration: "6 weeks",
-        items: ["React.js", "TypeScript", "State Management", "REST APIs & Fetch"],
-    },
-    {
-        phase: "Phase 3",
-        title: "Backend Development",
-        duration: "6 weeks",
-        items: ["Node.js & Express", "PostgreSQL", "Authentication (JWT)", "API Design"],
-    },
-    {
-        phase: "Phase 4",
-        title: "Full-Stack Projects",
-        duration: "4 weeks",
-        items: ["E-Commerce App", "Real-Time Features", "Testing & QA", "Deployment"],
-    },
-    {
-        phase: "Phase 5",
-        title: "DevOps & Scale",
-        duration: "4 weeks",
-        items: ["Docker & Kubernetes", "CI/CD Pipelines", "Monitoring", "System Design"],
-    },
-];
+    const json = await res.json();
+    // Backend wraps responses: { success, data, message }
+    return json.data ?? json;
+}
 
-const jobs = [
-    {
-        id: 1,
-        title: "Senior Frontend Engineer",
-        company: "Stripe",
-        location: "Remote",
-        type: "Full-time",
-        salary: "$140k – $180k",
-        tags: ["React", "TypeScript", "GraphQL"],
-        posted: "2 days ago",
-        logo: "S",
-        logoColor: "bg-[#635BFF] text-white",
-    },
-    {
-        id: 2,
-        title: "Node.js Backend Developer",
-        company: "Vercel",
-        location: "San Francisco, CA",
-        type: "Full-time",
-        salary: "$130k – $170k",
-        tags: ["Node.js", "PostgreSQL", "AWS"],
-        posted: "1 day ago",
-        logo: "V",
-        logoColor: "bg-surface-dark text-text-inverse",
-    },
-    {
-        id: 3,
-        title: "Full-Stack Engineer",
-        company: "Linear",
-        location: "Remote",
-        type: "Full-time",
-        salary: "$120k – $160k",
-        tags: ["React", "Node.js", "Prisma"],
-        posted: "3 days ago",
-        logo: "L",
-        logoColor: "bg-brand-primary text-white",
-    },
-    {
-        id: 4,
-        title: "React Native Developer",
-        company: "Notion",
-        location: "New York, NY",
-        type: "Full-time",
-        salary: "$125k – $155k",
-        tags: ["React Native", "TypeScript", "Redux"],
-        posted: "5 days ago",
-        logo: "N",
-        logoColor: "bg-text-primary text-text-inverse",
-    },
-    {
-        id: 5,
-        title: "DevOps / Platform Engineer",
-        company: "PlanetScale",
-        location: "Remote",
-        type: "Contract",
-        salary: "$95/hr",
-        tags: ["Docker", "Kubernetes", "CI/CD"],
-        posted: "1 week ago",
-        logo: "P",
-        logoColor: "bg-brand-accent text-white",
-    },
-];
+// ─── Custom Hooks ─────────────────────────────────────────────────────────────
 
-// ─── Sub-components ──────────────────────────────────────────────────────────
+/**
+ * Generic data-fetching hook.
+ * Returns { data, loading, error, refetch }
+ */
+function useApi(fetcher, deps = []) {
+    const [data, setData] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    const run = useCallback(async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const result = await fetcher();
+            setData(result);
+        } catch (e) {
+            setError(e.message);
+        } finally {
+            setLoading(false);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, deps);
+
+    useEffect(() => { run(); }, [run]);
+
+    return { data, loading, error, refetch: run };
+}
+
+// ─── Level Meta (mirrors backend) ────────────────────────────────────────────
+
+const LEVEL_META = {
+    Beginner: { tagColor: "bg-status-success-light text-status-success-dark", icon: "📗" },
+    Intermediate: { tagColor: "bg-status-info-light text-status-info-dark", icon: "📘" },
+    Advanced: { tagColor: "bg-status-warning-light text-status-warning-dark", icon: "📕" },
+};
+
+// ─── Shared UI Primitives ─────────────────────────────────────────────────────
 
 function SectionHeader({ label, title, subtitle }) {
     return (
@@ -220,25 +81,81 @@ function SectionHeader({ label, title, subtitle }) {
     );
 }
 
+function Spinner() {
+    return (
+        <div className="flex justify-center items-center py-20">
+            <svg className="animate-spin h-8 w-8 text-brand-primary" viewBox="0 0 24 24" fill="none">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+            </svg>
+        </div>
+    );
+}
+
+function ErrorBanner({ message, onRetry }) {
+    return (
+        <div className="flex flex-col items-center gap-3 py-16 text-center">
+            <span className="text-3xl">⚠️</span>
+            <p className="text-text-secondary text-sm max-w-sm">{message}</p>
+            {onRetry && (
+                <button
+                    onClick={onRetry}
+                    className="mt-2 px-4 py-2 text-sm font-medium rounded bg-brand-primary text-white hover:bg-opacity-90 transition-all"
+                >
+                    Try Again
+                </button>
+            )}
+        </div>
+    );
+}
+
+function EmptyState({ message }) {
+    return (
+        <div className="text-center py-12 text-text-muted text-sm">{message}</div>
+    );
+}
+
+// ─── Course Card ──────────────────────────────────────────────────────────────
+
 function CourseCard({ course }) {
     const [saved, setSaved] = useState(false);
+    const meta = LEVEL_META[course.level] || LEVEL_META["Beginner"];
+
     return (
         <div className="bg-surface-card border border-border rounded-lg p-5 flex flex-col gap-4 hover:shadow-md transition-shadow duration-200 group">
             <div className="flex items-start justify-between">
-                <span className="text-2xl">{course.icon}</span>
-                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${course.tagColor}`}>
-                    {course.tag}
+                {/* Show thumbnail for YouTube results, emoji icon for static */}
+                {course.thumbnail ? (
+                    <img
+                        src={course.thumbnail}
+                        alt={course.title}
+                        className="w-14 h-10 object-cover rounded"
+                    />
+                ) : (
+                    <span className="text-2xl">{course.icon || meta.icon}</span>
+                )}
+                <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${course.tagColor || meta.tagColor}`}>
+                    {course.tag || course.level}
                 </span>
             </div>
+
             <div>
-                <h3 className="text-base font-semibold text-text-primary mb-1 group-hover:text-brand-primary transition-colors">
+                <h3 className="text-base font-semibold text-text-primary mb-1 group-hover:text-brand-primary transition-colors line-clamp-2">
                     {course.title}
                 </h3>
-                <p className="text-sm text-text-secondary leading-relaxed">{course.description}</p>
+                <p className="text-sm text-text-secondary leading-relaxed line-clamp-3">
+                    {course.description}
+                </p>
             </div>
+
             <div className="flex items-center gap-4 text-xs text-text-muted mt-auto pt-2 border-t border-border-light">
-                <span>📚 {course.lessons} lessons</span>
-                <span>⏱ {course.hours}</span>
+                {course.lessons && <span>📚 {course.lessons} lessons</span>}
+                {course.hours && <span>⏱ {course.hours}</span>}
+                {course.channelTitle && (
+                    <span className="truncate max-w-[120px]" title={course.channelTitle}>
+                        📺 {course.channelTitle}
+                    </span>
+                )}
                 <button
                     onClick={() => setSaved(!saved)}
                     className="ml-auto text-text-muted hover:text-brand-accent transition-colors"
@@ -247,12 +164,20 @@ function CourseCard({ course }) {
                     {saved ? "♥" : "♡"}
                 </button>
             </div>
-            <button className="w-full py-2 text-sm font-medium rounded bg-brand-primary text-white hover:bg-opacity-90 active:scale-95 transition-all">
+
+            <a
+                href={course.videoUrl || "#"}
+                target={course.videoUrl ? "_blank" : undefined}
+                rel="noopener noreferrer"
+                className="w-full py-2 text-sm font-medium rounded bg-brand-primary text-white hover:bg-opacity-90 active:scale-95 transition-all text-center"
+            >
                 Start Course →
-            </button>
+            </a>
         </div>
     );
 }
+
+// ─── Project Card ─────────────────────────────────────────────────────────────
 
 function ProjectCard({ project }) {
     return (
@@ -263,10 +188,7 @@ function ProjectCard({ project }) {
             <div className="flex items-center justify-between">
                 <span
                     className="text-xs font-semibold px-2.5 py-1 rounded-full"
-                    style={{
-                        background: project.accent + "18",
-                        color: project.accent,
-                    }}
+                    style={{ background: project.accent + "18", color: project.accent }}
                 >
                     {project.difficulty}
                 </span>
@@ -276,10 +198,7 @@ function ProjectCard({ project }) {
             <p className="text-sm text-text-secondary leading-relaxed">{project.description}</p>
             <div className="flex flex-wrap gap-2 mt-1">
                 {project.stack.map((s) => (
-                    <span
-                        key={s}
-                        className="text-xs bg-surface-alt text-text-secondary px-2 py-0.5 rounded-sm font-mono"
-                    >
+                    <span key={s} className="text-xs bg-surface-alt text-text-secondary px-2 py-0.5 rounded-sm font-mono">
                         {s}
                     </span>
                 ))}
@@ -291,20 +210,15 @@ function ProjectCard({ project }) {
     );
 }
 
-
+// ─── Job Card ─────────────────────────────────────────────────────────────────
 
 function JobCard({ job }) {
     const [applied, setApplied] = useState(false);
     return (
         <div className="bg-surface-card border border-border rounded-lg p-5 flex flex-col sm:flex-row gap-4 hover:shadow-md transition-shadow duration-200 hover:border-brand-primary">
-            {/* Logo */}
-            <div
-                className={`w-12 h-12 rounded-lg flex items-center justify-center text-base font-bold flex-shrink-0 ${job.logoColor}`}
-            >
+            <div className={`w-12 h-12 rounded-lg flex items-center justify-center text-base font-bold flex-shrink-0 ${job.logoColor}`}>
                 {job.logo}
             </div>
-
-            {/* Info */}
             <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-start gap-2 mb-1">
                     <h3 className="text-base font-semibold text-text-primary">{job.title}</h3>
@@ -312,15 +226,10 @@ function JobCard({ job }) {
                         {job.type}
                     </span>
                 </div>
-                <p className="text-sm text-text-secondary mb-2">
-                    {job.company} · {job.location}
-                </p>
+                <p className="text-sm text-text-secondary mb-2">{job.company} · {job.location}</p>
                 <div className="flex flex-wrap gap-2 mb-3">
                     {job.tags.map((t) => (
-                        <span
-                            key={t}
-                            className="text-xs font-mono bg-surface-alt text-text-secondary px-2 py-0.5 rounded-sm"
-                        >
+                        <span key={t} className="text-xs font-mono bg-surface-alt text-text-secondary px-2 py-0.5 rounded-sm">
                             {t}
                         </span>
                     ))}
@@ -343,7 +252,7 @@ function JobCard({ job }) {
     );
 }
 
-// ─── Nav ─────────────────────────────────────────────────────────────────────
+// ─── Navbar ───────────────────────────────────────────────────────────────────
 
 const NAV_ITEMS = ["Courses", "Projects", "Roadmap", "Jobs"];
 
@@ -351,8 +260,6 @@ function Navbar({ active, setActive }) {
     return (
         <header className="sticky top-0 z-sticky bg-surface-default border-b border-border shadow-sm">
             <div className="max-w-6xl mx-auto px-4 sm:px-8 flex items-center justify-center h-16">
-
-                {/* Nav links */}
                 <nav className="hidden sm:flex items-center gap-10">
                     {NAV_ITEMS.map((item) => (
                         <button
@@ -367,11 +274,7 @@ function Navbar({ active, setActive }) {
                         </button>
                     ))}
                 </nav>
-
-
             </div>
-
-            {/* Mobile nav */}
             <div className="sm:hidden flex border-t border-border-light">
                 {NAV_ITEMS.map((item) => (
                     <button
@@ -390,13 +293,31 @@ function Navbar({ active, setActive }) {
     );
 }
 
-// ─── Sections ────────────────────────────────────────────────────────────────
+// ─── Courses Section ──────────────────────────────────────────────────────────
 
 function CoursesSection() {
     const [filter, setFilter] = useState("All");
+    const [query, setQuery] = useState("programming course");
+    const [input, setInput] = useState("programming course");
+
     const levels = ["All", "Beginner", "Intermediate", "Advanced"];
+
+    const { data, loading, error, refetch } = useApi(
+        () => apiFetch(`/recommendations/courses?q=${encodeURIComponent(query)}&max=12`),
+        [query]
+    );
+
+    const courses = data?.courses ?? [];
+
     const filtered =
-        filter === "All" ? courses : courses.filter((c) => c.level === filter);
+        filter === "All"
+            ? courses
+            : courses.filter((c) => (c.level || c.tag) === filter);
+
+    function handleSearch(e) {
+        e.preventDefault();
+        setQuery(input.trim() || "programming course");
+    }
 
     return (
         <section>
@@ -405,6 +326,25 @@ function CoursesSection() {
                 title="Courses"
                 subtitle="Structured, project-driven courses to take you from zero to production-ready developer."
             />
+
+            {/* Search bar — hits GET /recommendations/courses?q=... */}
+            <form onSubmit={handleSearch} className="flex gap-2 mb-6">
+                <input
+                    type="text"
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="Search courses…"
+                    className="flex-1 px-4 py-2 text-sm border border-border rounded-lg bg-surface-card text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                />
+                <button
+                    type="submit"
+                    className="px-4 py-2 text-sm font-medium rounded-lg bg-brand-primary text-white hover:bg-opacity-90 transition-all"
+                >
+                    Search
+                </button>
+            </form>
+
+            {/* Level filter pills */}
             <div className="flex gap-2 mb-6 flex-wrap">
                 {levels.map((l) => (
                     <button
@@ -419,16 +359,32 @@ function CoursesSection() {
                     </button>
                 ))}
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {filtered.map((course) => (
-                    <CourseCard key={course.id} course={course} />
-                ))}
-            </div>
+
+            {loading && <Spinner />}
+            {!loading && error && <ErrorBanner message={error} onRetry={refetch} />}
+            {!loading && !error && filtered.length === 0 && (
+                <EmptyState message={`No ${filter === "All" ? "" : filter + " "}courses found.`} />
+            )}
+            {!loading && !error && filtered.length > 0 && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+                    {filtered.map((course, i) => (
+                        <CourseCard key={course.id || i} course={course} />
+                    ))}
+                </div>
+            )}
         </section>
     );
 }
 
+// ─── Projects Section ─────────────────────────────────────────────────────────
+
 function ProjectsSection() {
+    const { data, loading, error, refetch } = useApi(
+        () => apiFetch("/recommendations/projects")
+    );
+
+    const projects = data?.projects ?? [];
+
     return (
         <section>
             <SectionHeader
@@ -436,16 +392,26 @@ function ProjectsSection() {
                 title="Projects"
                 subtitle="Real-world projects that belong in your portfolio. Each one ships with a guided walkthrough."
             />
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                {projects.map((p) => (
-                    <ProjectCard key={p.id} project={p} />
-                ))}
-            </div>
+            {loading && <Spinner />}
+            {!loading && error && <ErrorBanner message={error} onRetry={refetch} />}
+            {!loading && !error && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                    {projects.map((p) => <ProjectCard key={p.id} project={p} />)}
+                </div>
+            )}
         </section>
     );
 }
 
+// ─── Roadmap Section ──────────────────────────────────────────────────────────
+
 function RoadmapSection() {
+    const { data, loading, error, refetch } = useApi(
+        () => apiFetch("/recommendations/roadmap")
+    );
+
+    const roadmapSteps = data?.roadmapSteps ?? [];
+
     return (
         <section>
             <SectionHeader
@@ -453,52 +419,51 @@ function RoadmapSection() {
                 title="Roadmap"
                 subtitle="A clear, phase-by-phase journey from web fundamentals to full-stack mastery."
             />
-
-            <div className="relative border-l border-border ml-3">
-                {roadmapSteps.map((step, index) => (
-                    <div key={index} className="mb-10 ml-6">
-
-                        {/* Dot */}
-                        <span className="absolute -left-3 flex items-center justify-center w-6 h-6 bg-brand-primary rounded-full text-white text-xs font-bold">
-                            {index + 1}
-                        </span>
-
-                        {/* Card */}
-                        <div className="bg-surface-card border border-border rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow">
-
-                            {/* Header */}
-                            <div className="flex items-center justify-between mb-2">
-                                <h3 className="text-lg font-semibold text-text-primary">
-                                    {step.title}
-                                </h3>
-                                <span className="text-xs px-2 py-1 rounded bg-surface-alt text-text-secondary">
-                                    {step.duration}
-                                </span>
+            {loading && <Spinner />}
+            {!loading && error && <ErrorBanner message={error} onRetry={refetch} />}
+            {!loading && !error && (
+                <div className="relative border-l border-border ml-3">
+                    {roadmapSteps.map((step, index) => (
+                        <div key={index} className="mb-10 ml-6">
+                            <span className="absolute -left-3 flex items-center justify-center w-6 h-6 bg-brand-primary rounded-full text-white text-xs font-bold">
+                                {index + 1}
+                            </span>
+                            <div className="bg-surface-card border border-border rounded-lg p-5 shadow-sm hover:shadow-md transition-shadow">
+                                <div className="flex items-center justify-between mb-2">
+                                    <h3 className="text-lg font-semibold text-text-primary">{step.title}</h3>
+                                    <span className="text-xs px-2 py-1 rounded bg-surface-alt text-text-secondary">
+                                        {step.duration}
+                                    </span>
+                                </div>
+                                <p className="text-xs text-brand-primary font-semibold mb-3">{step.phase}</p>
+                                <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-text-secondary">
+                                    {step.items.map((item, i) => (
+                                        <li key={i} className="flex items-center gap-2">
+                                            <span className="text-brand-primary">✔</span>
+                                            {item}
+                                        </li>
+                                    ))}
+                                </ul>
                             </div>
-
-                            {/* Phase */}
-                            <p className="text-xs text-brand-primary font-semibold mb-3">
-                                {step.phase}
-                            </p>
-
-                            {/* Items */}
-                            <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-text-secondary">
-                                {step.items.map((item, i) => (
-                                    <li key={i} className="flex items-center gap-2">
-                                        <span className="text-brand-primary">✔</span>
-                                        {item}
-                                    </li>
-                                ))}
-                            </ul>
                         </div>
-                    </div>
-                ))}
-            </div>
+                    ))}
+                </div>
+            )}
         </section>
     );
 }
+
+// ─── Jobs Section ─────────────────────────────────────────────────────────────
+
 function JobsSection() {
     const [search, setSearch] = useState("");
+
+    const { data, loading, error, refetch } = useApi(
+        () => apiFetch("/recommendations/jobs")
+    );
+
+    const jobs = data?.jobs ?? [];
+
     const filtered = jobs.filter(
         (j) =>
             j.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -514,20 +479,33 @@ function JobsSection() {
                 subtitle="Curated developer roles matched to your skill level and stack preferences."
             />
 
-            <div className="flex flex-col gap-4">
-                {filtered.length > 0 ? (
-                    filtered.map((job) => <JobCard key={job.id} job={job} />)
-                ) : (
-                    <div className="text-center py-12 text-text-muted text-sm">
-                        No jobs found for "{search}"
-                    </div>
-                )}
+            {/* Client-side filter — no extra API call needed */}
+            <div className="mb-6">
+                <input
+                    type="text"
+                    value={search}
+                    onChange={(e) => setSearch(e.target.value)}
+                    placeholder="Filter by title, company, or skill…"
+                    className="w-full sm:max-w-sm px-4 py-2 text-sm border border-border rounded-lg bg-surface-card text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-brand-primary"
+                />
             </div>
+
+            {loading && <Spinner />}
+            {!loading && error && <ErrorBanner message={error} onRetry={refetch} />}
+            {!loading && !error && (
+                <div className="flex flex-col gap-4">
+                    {filtered.length > 0 ? (
+                        filtered.map((job) => <JobCard key={job.id} job={job} />)
+                    ) : (
+                        <EmptyState message={search ? `No jobs found for "${search}"` : "No jobs available."} />
+                    )}
+                </div>
+            )}
         </section>
     );
 }
 
-// ─── Page ────────────────────────────────────────────────────────────────────
+// ─── Page Root ────────────────────────────────────────────────────────────────
 
 export default function Recommendation() {
     const [active, setActive] = useState("Courses");
