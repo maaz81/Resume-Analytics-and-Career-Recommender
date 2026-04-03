@@ -203,9 +203,7 @@ function ProjectCard({ project }) {
                     </span>
                 ))}
             </div>
-            <button className="mt-auto text-sm font-medium text-brand-primary hover:underline text-left">
-                View Project →
-            </button>
+
         </div>
     );
 }
