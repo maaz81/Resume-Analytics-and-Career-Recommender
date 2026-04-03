@@ -1,0 +1,52 @@
+{
+  "user_skills": [
+    {
+      "conname": "user_skills_pkey",
+      "def": "PRIMARY KEY (id)"
+    },
+    {
+      "conname": "user_skills_user_id_name_key",
+      "def": "UNIQUE (user_id, name)"
+    },
+    {
+      "conname": "user_skills_user_id_fkey",
+      "def": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+    },
+    {
+      "conname": "user_skills_resume_id_fkey",
+      "def": "FOREIGN KEY (resume_id) REFERENCES resumes(id) ON DELETE CASCADE"
+    },
+    {
+      "conname": "user_skills_user_id_resume_id_name_key",
+      "def": "UNIQUE (user_id, resume_id, name)"
+    }
+  ],
+  "ats_scores": [
+    {
+      "conname": "ats_scores_pkey",
+      "def": "PRIMARY KEY (id)"
+    },
+    {
+      "conname": "ats_scores_resume_id_fkey",
+      "def": "FOREIGN KEY (resume_id) REFERENCES resumes(id) ON DELETE CASCADE"
+    },
+    {
+      "conname": "ats_scores_user_id_fkey",
+      "def": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+    }
+  ],
+  "skill_gaps": [
+    {
+      "conname": "skill_gaps_pkey",
+      "def": "PRIMARY KEY (id)"
+    },
+    {
+      "conname": "skill_gaps_user_id_fkey",
+      "def": "FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE"
+    },
+    {
+      "conname": "skill_gaps_resume_id_fkey",
+      "def": "FOREIGN KEY (resume_id) REFERENCES resumes(id) ON DELETE CASCADE"
+    }
+  ]
+}

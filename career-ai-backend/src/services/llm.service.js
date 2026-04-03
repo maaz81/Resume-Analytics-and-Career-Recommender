@@ -18,7 +18,7 @@ const DEFAULT_MODEL = 'mistralai/mistral-7b-instruct';
 // ─────────────────────────────────────────────
 // CORE — raw OpenRouter call
 // ─────────────────────────────────────────────
-const callOpenRouter = async (messages, model = DEFAULT_MODEL) => {
+export const callOpenRouter = async (messages, model = DEFAULT_MODEL) => {
     if (!OPENROUTER_API_KEY) {
         throw new Error('OPENROUTER_API_KEY is not set in environment variables');
     }
