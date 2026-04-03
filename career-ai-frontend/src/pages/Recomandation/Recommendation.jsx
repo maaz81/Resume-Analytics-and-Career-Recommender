@@ -254,7 +254,7 @@ function JobCard({ job }) {
 
 // ─── Navbar ───────────────────────────────────────────────────────────────────
 
-const NAV_ITEMS = ["Courses", "Projects", "Roadmap", "Jobs"];
+const NAV_ITEMS = ["Courses", "Projects", "Roadmap"];
 
 function Navbar({ active, setActive }) {
     return (
