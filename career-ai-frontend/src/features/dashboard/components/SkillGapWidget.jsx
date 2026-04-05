@@ -4,14 +4,14 @@ import {
   Target,
   ArrowRight,
   AlertTriangle,
-  CheckCircle2,
-  MinusCircle,
+  Lightbulb,
+  Zap
 } from "lucide-react";
 
 import Card, { CardHeader, CardTitle, CardContent } from "@common/Card";
 import Button from "@common/Button";
 import Badge from "@common/Badge";
-import ProgressBar from "@common/ProgressBar";
+import { CircularProgress } from "@common/ProgressBar";
 
 import { ROUTES } from "@constants/routes";
 
@@ -22,191 +22,146 @@ const SkillGapWidget = () => {
 
   if (!skillGap) {
     return (
-      <Card>
-        <CardContent className="p-6 text-center text-text-muted">
-          Skill analysis not available yet
+      <Card className="h-full border-border/50 shadow-sm transition-all duration-300 hover:shadow-md">
+        <CardContent className="h-full flex flex-col items-center justify-center p-6 text-center text-text-muted space-y-4 min-h-[350px]">
+          <div className="w-16 h-16 rounded-full bg-surface-alt flex items-center justify-center animate-pulse">
+            <Target className="w-8 h-8 text-text-muted/50" />
+          </div>
+          <p>Analyzing skill gaps...</p>
         </CardContent>
       </Card>
     );
   }
 
-  const getStatusIcon = (status) => {
-    switch (status) {
-      case "strong":
-        return <CheckCircle2 className="w-4 h-4 text-status-success" />;
-      case "weak":
-        return <MinusCircle className="w-4 h-4 text-status-warning" />;
-      case "missing":
-        return <AlertTriangle className="w-4 h-4 text-status-error" />;
-      default:
-        return null;
-    }
-  };
+  // Handle both real backend format and old mock format
+  const matchPercentage = skillGap.matchPercentage ?? 0;
+  const gapScore = skillGap.gapScore ?? 0;
 
-  const getStatusLabel = (status) => {
-    switch (status) {
-      case "strong":
-        return "Strong";
-      case "weak":
-        return "Needs Work";
-      case "missing":
-        return "Missing";
-      default:
-        return status;
-    }
-  };
+  // Extract top missing skills or default to empty
+  const missingSkills = skillGap.topMissingSkills || [];
+  const immediateActions = skillGap.immediateActions || [];
 
-  const getStatusColor = (status) => {
-    switch (status) {
-      case "strong":
-        return "success";
-      case "weak":
-        return "warning";
-      case "missing":
+  // If there are no missing skills from backend but we have mock prioritySkills, use those
+  const displaySkills = missingSkills.length > 0
+    ? missingSkills
+    : (skillGap.prioritySkills || []).map(s => ({ name: s.skill, priority: s.priority }));
+
+  const getPriorityColor = (priority) => {
+    switch (priority?.toLowerCase()) {
+      case "core":
+      case "high":
+      case "critical":
         return "error";
+      case "nice-to-have":
+      case "medium":
+      case "important":
+        return "warning";
       default:
-        return "default";
+        return "info";
     }
   };
 
   return (
-    <Card className="h-full">
-      <CardHeader>
+    <Card className="h-full border-border/50 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col">
+      <CardHeader className="pb-2">
         <div className="flex items-start justify-between">
           <div>
-            <CardTitle>Skill Gap Analysis</CardTitle>
-            <p className="text-sm text-text-muted mt-1">
-              {skillGap.totalGaps} skills to improve
+            <CardTitle className="text-sm text-black">
+              Skill Gap Analysis
+            </CardTitle>
+            <p className="text-xs text-text-muted mt-1 font-medium">
+              {displaySkills.length} skills to improve
             </p>
           </div>
-          <Target className="w-5 h-5 text-text-muted" />
+          <div className="p-2 bg-brand-primary/10 rounded-lg">
+            <Target className="w-5 h-5 text-brand-primary" />
+          </div>
         </div>
       </CardHeader>
 
-      <CardContent>
-        <div className="space-y-6">
+      <CardContent className="flex-1 flex flex-col justify-between">
+        <div className="space-y-5">
 
-          {/* Summary Stats */}
-          <div className="grid grid-cols-3 gap-3">
-            <div className="p-3 rounded-lg bg-status-error-light border border-status-error/20">
-              <p className="text-2xl font-bold text-status-error-dark">
-                {skillGap.critical}
-              </p>
-              <p className="text-xs text-status-error-dark mt-1">Critical</p>
+          {/* Match Overview Section */}
+          <div className="flex items-center gap-6 p-4 rounded-xl bg-surface-alt/30 border border-border/50">
+            <div className="relative transform hover:scale-105 transition-transform duration-300">
+              <CircularProgress
+                value={matchPercentage}
+                size={100}
+                strokeWidth={8}
+                variant={matchPercentage >= 70 ? 'success' : matchPercentage >= 40 ? 'warning' : 'error'}
+                label="Match"
+              />
             </div>
 
-            <div className="p-3 rounded-lg bg-status-warning-light border border-status-warning/20">
-              <p className="text-2xl font-bold text-status-warning-dark">
-                {skillGap.important}
-              </p>
-              <p className="text-xs text-status-warning-dark mt-1">Important</p>
-            </div>
-
-            <div className="p-3 rounded-lg bg-status-info-light border border-status-info/20">
-              <p className="text-2xl font-bold text-status-info-dark">
-                {skillGap.optional}
-              </p>
-              <p className="text-xs text-status-info-dark mt-1">Optional</p>
-            </div>
-          </div>
-
-          {/* Core Skills */}
-          <div>
-            <h4 className="text-sm font-semibold text-text-primary mb-3">
-              Core Skills Status
-            </h4>
-
-            <div className="space-y-3">
-              {skillGap.coreSkills?.map((item) => (
-                <div key={item.skill}>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <div className="flex items-center gap-2">
-                      {getStatusIcon(item.status)}
-                      <span className="text-sm font-medium text-text-primary">
-                        {item.skill}
-                      </span>
-                    </div>
-
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-text-muted">
-                        {item.proficiency}%
-                      </span>
-
-                      <Badge variant={getStatusColor(item.status)} size="sm">
-                        {getStatusLabel(item.status)}
-                      </Badge>
-                    </div>
-                  </div>
-
-                  <ProgressBar
-                    value={item.proficiency}
-                    size="sm"
-                    variant={
-                      item.status === "strong"
-                        ? "success"
-                        : item.status === "weak"
-                          ? "warning"
-                          : "error"
-                    }
-                  />
+            <div className="flex-1 space-y-3">
+              <div className="p-3 bg-surface border border-border rounded-lg flex items-center justify-between group hover:border-brand-primary/50 transition-colors">
+                <div className="flex items-center gap-2">
+                  <Zap className="w-4 h-4 text-status-warning" />
+                  <span className="text-sm font-medium text-text-secondary">Gap Score</span>
                 </div>
-              ))}
+                <span className="text-lg font-bold text-text-primary">{gapScore}%</span>
+              </div>
             </div>
           </div>
 
-          {/* Divider */}
-          <div className="border-t border-border" />
-
-          {/* Priority Skills */}
+          {/* Learn Next / Top Missing Skills */}
           <div>
-            <h4 className="text-sm font-semibold text-text-primary mb-3">
-              Learn Next
+            <h4 className="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
+              <Lightbulb className="w-4 h-4 text-brand-primary" />
+              Prioritized Skills to Learn
             </h4>
 
             <div className="space-y-2">
-              {skillGap.prioritySkills?.map((item, index) => (
-                <div
-                  key={item.skill}
-                  className="flex items-center justify-between p-3 rounded-lg bg-surface-alt cursor-pointer"
-                  onClick={() => navigate(ROUTES.SKILL_GAP)}
-                >
-                  <div className="flex items-center gap-3">
-                    <div className="w-6 h-6 rounded-full bg-brand-primary text-white flex items-center justify-center text-xs font-semibold">
-                      {index + 1}
-                    </div>
-
-                    <div>
-                      <p className="text-sm font-medium text-text-primary">
-                        {item.skill}
-                      </p>
-
-                      <p className="text-xs text-text-muted">
-                        {item.timeToLearn}
-                      </p>
-                    </div>
-                  </div>
-
-                  <Badge
-                    variant={item.priority === "high" ? "error" : "warning"}
-                    size="sm"
-                  >
-                    {item.priority}
-                  </Badge>
+              {displaySkills.length === 0 ? (
+                <div className="p-4 bg-surface-alt rounded-xl text-center">
+                  <p className="text-sm font-medium text-text-primary">You have all core skills!</p>
                 </div>
-              ))}
+              ) : (
+                displaySkills.slice(0, 3).map((item, index) => (
+                  <div
+                    key={item.name || index}
+                    className="group flex items-center justify-between p-3 rounded-lg border border-border/50 bg-surface hover:bg-brand-primary/5 hover:border-brand-primary/30 cursor-pointer transition-all duration-300"
+                    onClick={() => navigate(ROUTES.SKILL_GAP)}
+                  >
+                    <div className="flex items-center gap-3">
+                      <div className="w-6 h-6 rounded-md bg-surface-alt flex items-center justify-center text-xs font-bold text-text-primary group-hover:bg-brand-primary group-hover:text-white transition-colors">
+                        {index + 1}
+                      </div>
+
+                      <p className="text-sm font-medium text-text-primary group-hover:text-brand-primary transition-colors line-clamp-1">
+                        {item.name}
+                      </p>
+                    </div>
+
+                    <Badge
+                      variant={getPriorityColor(item.priority)}
+                      size="sm"
+                      className="capitalize text-[10px]"
+                    >
+                      {item.priority || "Medium"}
+                    </Badge>
+                  </div>
+                ))
+              )}
             </div>
           </div>
 
+        </div>
+
+        {/* Full width button nicely placed at bottom */}
+        <div className="mt-5 pt-4 border-t border-border/50">
           <Button
             variant="primary"
             fullWidth
             onClick={() => navigate(ROUTES.SKILL_GAP)}
-            rightIcon={<ArrowRight className="w-4 h-4" />}
+            className="group transition-all duration-300 shadow-sm hover:shadow-md hover:translate-y-[-2px]"
+            rightIcon={<ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
           >
-            View All Skills
+            Review Skill Gaps
           </Button>
-
         </div>
+
       </CardContent>
     </Card>
   );
