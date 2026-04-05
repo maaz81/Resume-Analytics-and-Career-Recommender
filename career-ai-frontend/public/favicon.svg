@@ -1,0 +1,34 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
+  <!-- Background rounded square -->
+  <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#grad)" />
+
+  <!-- Document body -->
+  <path d="M20 14h14l10 10v26a2 2 0 0 1-2 2H20a2 2 0 0 1-2-2V16a2 2 0 0 1 2-2z" fill="white" fill-opacity="0.95"/>
+  <!-- Document fold -->
+  <path d="M34 14v8a2 2 0 0 0 2 2h8" fill="none" stroke="url(#grad)" stroke-width="1.5" stroke-linecap="round"/>
+
+  <!-- Lines on document -->
+  <rect x="23" y="29" width="16" height="2" rx="1" fill="#c7d2fe"/>
+  <rect x="23" y="34" width="12" height="2" rx="1" fill="#c7d2fe"/>
+  <rect x="23" y="39" width="14" height="2" rx="1" fill="#c7d2fe"/>
+
+  <!-- AI Sparkle (bottom-right) -->
+  <g transform="translate(40, 38)">
+    <!-- Star burst -->
+    <path d="M8 0 L9.5 5.5 L16 8 L9.5 10.5 L8 16 L6.5 10.5 L0 8 L6.5 5.5 Z" fill="#facc15" />
+    <!-- Inner glow -->
+    <circle cx="8" cy="8" r="2.5" fill="white" fill-opacity="0.9"/>
+  </g>
+
+  <!-- Small sparkle accent -->
+  <g transform="translate(46, 30)">
+    <path d="M3 0 L3.8 2.2 L6 3 L3.8 3.8 L3 6 L2.2 3.8 L0 3 L2.2 2.2 Z" fill="#facc15" fill-opacity="0.7" />
+  </g>
+
+  <defs>
+    <linearGradient id="grad" x1="4" y1="4" x2="60" y2="60" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#6366f1"/>
+      <stop offset="100%" stop-color="#4f46e5"/>
+    </linearGradient>
+  </defs>
+</svg>
