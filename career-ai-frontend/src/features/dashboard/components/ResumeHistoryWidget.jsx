@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
     FileText,
@@ -17,6 +17,8 @@ import Badge from '@common/Badge';
 import { formatDate } from '@utils/helpers';
 import { cn } from '@utils/helpers';
 import { ROUTES } from '@constants/routes';
+import { getResumeHistoryService } from '../../resume/services/resumeService';
+import Spinner from '@common/Spinner';
 
 /**
  * ResumeHistoryWidget
@@ -29,37 +31,6 @@ import { ROUTES } from '@constants/routes';
  *   onDownload   – (resume) => void
  *   onDelete     – (resume) => void
  */
-
-// ── Mock data — replace with real API data ─────────────────────────────────────
-const MOCK_RESUMES = [
-    {
-        id: 'r3',
-        version: 3,
-        fileName: 'Resume_v3_Final.pdf',
-        uploadedAt: '2024-02-01T10:30:00Z',
-        atsScore: 84,
-        changes: 'Added TypeScript projects, updated skills section',
-        isCurrent: true,
-    },
-    {
-        id: 'r2',
-        version: 2,
-        fileName: 'Resume_v2.pdf',
-        uploadedAt: '2024-01-15T09:00:00Z',
-        atsScore: 71,
-        changes: 'Rewrote summary, added measurable impact numbers',
-        isCurrent: false,
-    },
-    {
-        id: 'r1',
-        version: 1,
-        fileName: 'Resume_original.pdf',
-        uploadedAt: '2024-01-02T14:20:00Z',
-        atsScore: 58,
-        changes: null,
-        isCurrent: false,
-    },
-];
 
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
@@ -262,15 +233,38 @@ function ScoreTrendSummary({ resumes }) {
 // ── Widget root ────────────────────────────────────────────────────────────────
 
 const ResumeHistoryWidget = ({
-    resumes = MOCK_RESUMES,
     onView,
     onDownload,
     onDelete,
 }) => {
     const navigate = useNavigate();
+    const [resumes, setResumes] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    // Sort newest → oldest
-    const sorted = [...resumes].sort((a, b) => b.version - a.version);
+    useEffect(() => {
+        const fetchHistory = async () => {
+            try {
+                const data = await getResumeHistoryService();
+                const resumesArray = data?.resumes || [];
+                if (Array.isArray(resumesArray)) {
+                    const mappedData = resumesArray.map(r => ({
+                        ...r,
+                        isCurrent: r.status === 'current',
+                        atsScore: typeof r.atsScore === 'number' ? Math.round(r.atsScore) : 0,
+                    }));
+                    setResumes(mappedData);
+                }
+            } catch (error) {
+                console.error('Failed to fetch resume history:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchHistory();
+    }, []);
+
+    // Sort newest → oldest and take last 3
+    const sorted = [...resumes].sort((a, b) => b.version - a.version).slice(0, 3);
 
     const handleView = (r) => onView?.(r);
     const handleDownload = (r) => onDownload?.(r);
@@ -293,23 +287,35 @@ const ResumeHistoryWidget = ({
             </CardHeader>
 
             <CardContent className="flex-1 flex flex-col">
-                {/* Trend strip */}
-                <ScoreTrendSummary resumes={sorted} />
+                {loading ? (
+                    <div className="flex-1 flex items-center justify-center py-8">
+                        <Spinner size="md" className="text-brand-primary" />
+                    </div>
+                ) : sorted.length === 0 ? (
+                    <div className="flex-1 flex items-center justify-center py-8 text-sm text-text-muted">
+                        No resumes uploaded yet.
+                    </div>
+                ) : (
+                    <>
+                        {/* Trend strip */}
+                        <ScoreTrendSummary resumes={sorted} />
 
-                {/* Timeline */}
-                <div className="flex-1">
-                    {sorted.map((resume, index) => (
-                        <ResumeEntry
-                            key={resume.id}
-                            resume={resume}
-                            previousScore={sorted[index + 1]?.atsScore ?? null}
-                            isLast={index === sorted.length - 1}
-                            onView={handleView}
-                            onDownload={handleDownload}
-                            onDelete={handleDelete}
-                        />
-                    ))}
-                </div>
+                        {/* Timeline */}
+                        <div className="flex-1">
+                            {sorted.map((resume, index) => (
+                                <ResumeEntry
+                                    key={resume.id}
+                                    resume={resume}
+                                    previousScore={sorted[index + 1]?.atsScore ?? null}
+                                    isLast={index === sorted.length - 1}
+                                    onView={handleView}
+                                    onDownload={handleDownload}
+                                    onDelete={handleDelete}
+                                />
+                            ))}
+                        </div>
+                    </>
+                )}
 
                 {/* Footer CTA */}
                 <div className="mt-2 pt-4 border-t border-border-light">

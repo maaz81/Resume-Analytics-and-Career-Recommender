@@ -7,7 +7,6 @@ import ResumeHealthWidget from './ResumeHealthWidget';
 import SkillGapWidget from './SkillGapWidget';
 import RecommendationsWidget from './ResumeHistoryWidget.jsx'; // ← swapped
 import Spinner from '@common/Spinner';
-import Alert from '@common/Alert';
 import { useDashboard } from '../hooks/useDashboard';
 import { ROUTES } from '@constants/routes';
 
