@@ -296,10 +296,13 @@ const ResumeHistoryWidget = ({ onView, onDownload, onDelete }) => {
 
                 <div className="mt-2 pt-4 border-t border-border-light">
                     <Button
-                        variant="primary"
+                        variant="outline"
                         fullWidth
                         onClick={() => navigate(ROUTES.RESUME_HISTORY)}
-                        rightIcon={<ArrowRight className="w-4 h-4" />}
+                        className="group hover:bg-brand-primary hover:text-white hover:border-brand-primary transition-all duration-300"
+                        rightIcon={
+                            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        }
                     >
                         View Full History
                     </Button>

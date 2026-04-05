@@ -58,9 +58,10 @@ export default class DashboardService {
           : null,
         skillGap: latestSkillGap
           ? {
-              gapScore: latestSkillGap.gap_score,
-              matchPercentage: latestSkillGap.match_percentage,
+              gapScore: latestSkillGap.gap_score ?? Math.max(0, Math.round(100 - (latestSkillGap.match_percentage || 0))),
+              matchPercentage: latestSkillGap.match_percentage || 0,
               topMissingSkills: this.getTopMissingSkills(latestSkillGap.missing_skills, 5),
+              resumeSkills: this.getResumeSkills(latestSkillGap.resume_skills, 5),
               immediateActions: latestSkillGap.immediate_actions,
               analyzedAt: latestSkillGap.analyzed_at,
             }
@@ -191,24 +192,51 @@ export default class DashboardService {
 
   /**
    * Extract top missing skills
+   * Handles both plain string arrays ["Docker", "AWS"] and
+   * object arrays [{ name: "Docker", priority: "core" }]
    */
   static getTopMissingSkills(missingSkillsJson, count = 5) {
     if (!missingSkillsJson) return [];
 
-    const skills = Array.isArray(missingSkillsJson) ? missingSkillsJson : [];
+    let skills = Array.isArray(missingSkillsJson) ? missingSkillsJson : [];
+
+    // If stored as JSON string (postgres sometimes returns JSONB as string)
+    if (typeof missingSkillsJson === 'string') {
+      try { skills = JSON.parse(missingSkillsJson); } catch(e) { return []; }
+    }
 
     return skills
-      .sort((a, b) => {
-        // Sort by priority: core > nice-to-have > emerging
-        const priorityOrder = { core: 0, 'nice-to-have': 1, emerging: 2 };
-        return (priorityOrder[a.priority] || 99) - (priorityOrder[b.priority] || 99);
-      })
       .slice(0, count)
-      .map((skill) => ({
-        name: skill.skill_name || skill.name,
-        priority: skill.priority,
-        category: skill.category,
-      }));
+      .map((skill, index) => {
+        // Handle plain strings: ["Docker", "AWS"]
+        if (typeof skill === 'string') {
+          return { name: skill, priority: index < 2 ? 'core' : index < 4 ? 'nice-to-have' : 'emerging', category: null };
+        }
+        // Handle objects: [{ name, skill_name, priority, category }]
+        return {
+          name: skill.skill_name || skill.name || String(skill),
+          priority: skill.priority || 'nice-to-have',
+          category: skill.category || null,
+        };
+      });
+  }
+
+  /**
+   * Extract resume skills the user already has
+   * Handles both plain string arrays and object arrays
+   */
+  static getResumeSkills(resumeSkillsJson, count = 5) {
+    if (!resumeSkillsJson) return [];
+
+    let skills = Array.isArray(resumeSkillsJson) ? resumeSkillsJson : [];
+
+    if (typeof resumeSkillsJson === 'string') {
+      try { skills = JSON.parse(resumeSkillsJson); } catch(e) { return []; }
+    }
+
+    return skills
+      .slice(0, count)
+      .map((skill) => typeof skill === 'string' ? skill : (skill.name || skill.skill_name || String(skill)));
   }
 
   /**
