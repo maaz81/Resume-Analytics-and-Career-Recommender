@@ -20,18 +20,6 @@ import { ROUTES } from '@constants/routes';
 import { getResumeHistoryService } from '../../resume/services/resumeService';
 import Spinner from '@common/Spinner';
 
-/**
- * ResumeHistoryWidget
- * Compact dashboard widget — vertical timeline of resume versions
- * with ATS score trend bar, delta indicator, and hover quick-actions.
- *
- * Props:
- *   resumes      – array of resume objects (defaults to mock data)
- *   onView       – (resume) => void
- *   onDownload   – (resume) => void
- *   onDelete     – (resume) => void
- */
-
 // ── Helpers ────────────────────────────────────────────────────────────────────
 
 function getScoreStyle(score) {
@@ -39,7 +27,6 @@ function getScoreStyle(score) {
         return {
             bar: 'bg-status-success',
             text: 'text-status-success',
-            badge: 'success',
             bg: 'bg-status-success-light',
             border: 'border-status-success/30',
         };
@@ -47,14 +34,12 @@ function getScoreStyle(score) {
         return {
             bar: 'bg-status-warning',
             text: 'text-status-warning',
-            badge: 'warning',
             bg: 'bg-status-warning-light',
             border: 'border-status-warning/30',
         };
     return {
         bar: 'bg-status-error',
         text: 'text-status-error',
-        badge: 'error',
         bg: 'bg-status-error-light',
         border: 'border-status-error/30',
     };
@@ -67,7 +52,7 @@ function ScoreDelta({ current, previous }) {
     const delta = current - previous;
     if (delta === 0)
         return (
-            <span className="flex items-center gap-0.5 text-xs text-text-muted">
+            <span className="flex items-center gap-0.5 text-xs text-text-muted whitespace-nowrap">
                 <Minus className="w-3 h-3" /> 0
             </span>
         );
@@ -75,17 +60,12 @@ function ScoreDelta({ current, previous }) {
     return (
         <span
             className={cn(
-                'flex items-center gap-0.5 text-xs font-bold',
+                'flex items-center gap-0.5 text-xs font-bold whitespace-nowrap',
                 positive ? 'text-status-success' : 'text-status-error'
             )}
         >
-            {positive ? (
-                <TrendingUp className="w-3 h-3" />
-            ) : (
-                <TrendingDown className="w-3 h-3" />
-            )}
-            {positive ? '+' : ''}
-            {delta}
+            {positive ? <TrendingUp className="w-3 h-3" /> : <TrendingDown className="w-3 h-3" />}
+            {positive ? '+' : ''}{delta}
         </span>
     );
 }
@@ -102,7 +82,7 @@ function ScoreBar({ score }) {
                     style={{ width: `${score}%` }}
                 />
             </div>
-            <span className={cn('text-xs font-bold tabular-nums w-8 text-right', style.text)}>
+            <span className={cn('text-xs font-bold tabular-nums w-8 text-right flex-shrink-0', style.text)}>
                 {score}%
             </span>
         </div>
@@ -116,9 +96,9 @@ function ResumeEntry({ resume, previousScore, isLast }) {
     const style = getScoreStyle(resume.atsScore);
 
     return (
-        <div className="flex gap-3 group">
-            {/* Spine */}
-            <div className="flex flex-col items-center flex-shrink-0 pt-0.5">
+        <div className="flex gap-3">
+            {/* Timeline spine */}
+            <div className="flex flex-col items-center flex-shrink-0 pt-1">
                 <div
                     className={cn(
                         'w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold border-2 flex-shrink-0 transition-all',
@@ -130,14 +110,14 @@ function ResumeEntry({ resume, previousScore, isLast }) {
                     v{resume.version}
                 </div>
                 {!isLast && (
-                    <div className="w-px flex-1 bg-border-light mt-1 mb-0" style={{ minHeight: '16px' }} />
+                    <div className="w-px flex-1 bg-border-light mt-1" style={{ minHeight: '16px' }} />
                 )}
             </div>
 
-            {/* Entry card */}
+            {/* Entry card — key fix: overflow-hidden on the card itself */}
             <div
                 className={cn(
-                    'flex-1 mb-3 p-3 rounded-lg border transition-all duration-200 cursor-default',
+                    'flex-1 min-w-0 mb-3 p-3 rounded-lg border transition-all duration-200 cursor-default overflow-hidden',
                     resume.isCurrent
                         ? 'border-brand-primary/40 bg-brand-primary/5'
                         : 'border-border bg-surface-card hover:border-brand-primary/30 hover:shadow-sm'
@@ -145,15 +125,21 @@ function ResumeEntry({ resume, previousScore, isLast }) {
                 onMouseEnter={() => setHovered(true)}
                 onMouseLeave={() => setHovered(false)}
             >
-                {/* Header row */}
-                <div className="flex items-start justify-between gap-2 mb-0.5">
-                    <div className="flex items-center gap-1.5 min-w-0">
+                {/* ── Row 1: filename (left, truncated) + badges (right, fixed width) ── */}
+                <div className="flex items-start gap-2 w-full">
+                    {/* Left: icon + filename — takes remaining space, truncates */}
+                    <div className="flex items-center gap-1.5 min-w-0 flex-1">
                         <FileText className="w-3.5 h-3.5 text-brand-primary flex-shrink-0" />
-                        <p className="text-sm font-semibold text-text-primary truncate leading-snug">
+                        <p
+                            className="text-sm font-semibold text-text-primary truncate"
+                            title={resume.fileName}
+                        >
                             {resume.fileName}
                         </p>
                     </div>
-                    <div className="flex items-center gap-1.5 flex-shrink-0">
+
+                    {/* Right: delta + current badge — never shrinks, never wraps */}
+                    <div className="flex items-center gap-1.5 flex-shrink-0 ml-1">
                         <ScoreDelta current={resume.atsScore} previous={previousScore} />
                         {resume.isCurrent && (
                             <Badge variant="success" size="xs">
@@ -163,30 +149,40 @@ function ResumeEntry({ resume, previousScore, isLast }) {
                     </div>
                 </div>
 
-                {/* Upload date */}
-                <p className="flex items-center gap-1 text-xs text-text-muted mb-1.5">
-                    <Clock className="w-3 h-3" />
-                    {formatDate(resume.uploadedAt)}
+                {/* ── Row 2: Upload date ── */}
+                <p className="flex items-center gap-1 text-xs text-text-muted mt-1 mb-0.5">
+                    <Clock className="w-3 h-3 flex-shrink-0" />
+                    <span className="truncate">{formatDate(resume.uploadedAt)}</span>
                 </p>
 
-                {/* ATS bar */}
+                {/* ── Row 3: ATS score bar ── */}
                 <ScoreBar score={resume.atsScore} />
 
-                {/* Changes note */}
+                {/* ── Row 4: Changes note ── */}
                 {resume.changes && (
-                    <p className="mt-2 text-xs text-text-secondary leading-relaxed line-clamp-2">
+                    <p className="mt-1.5 text-xs text-text-secondary leading-relaxed line-clamp-2">
                         {resume.changes}
                     </p>
                 )}
 
-                {/* Hover quick-actions */}
+                {/* ── Row 5: Hover quick-actions ── */}
                 <div
                     className={cn(
                         'flex items-center gap-1 mt-2 transition-all duration-200 overflow-hidden',
                         hovered ? 'max-h-8 opacity-100' : 'max-h-0 opacity-0'
                     )}
                 >
-
+                    <button className="flex items-center gap-1 text-xs text-text-secondary hover:text-brand-primary transition-colors px-2 py-1 rounded hover:bg-brand-primary/5">
+                        <Eye className="w-3 h-3" /> View
+                    </button>
+                    <button className="flex items-center gap-1 text-xs text-text-secondary hover:text-brand-primary transition-colors px-2 py-1 rounded hover:bg-brand-primary/5">
+                        <Download className="w-3 h-3" /> Download
+                    </button>
+                    {!resume.isCurrent && (
+                        <button className="flex items-center gap-1 text-xs text-text-secondary hover:text-status-error transition-colors px-2 py-1 rounded hover:bg-status-error-light ml-auto">
+                            <Trash2 className="w-3 h-3" /> Delete
+                        </button>
+                    )}
                 </div>
             </div>
         </div>
@@ -212,19 +208,14 @@ function ScoreTrendSummary({ resumes }) {
             </div>
             <span
                 className={cn(
-                    'flex items-center gap-1 text-sm font-bold px-3 py-1.5 rounded-full',
+                    'flex items-center gap-1 text-sm font-bold px-3 py-1.5 rounded-full flex-shrink-0',
                     positive
                         ? 'text-status-success bg-status-success-light'
                         : 'text-status-error bg-status-error-light'
                 )}
             >
-                {positive ? (
-                    <TrendingUp className="w-3.5 h-3.5" />
-                ) : (
-                    <TrendingDown className="w-3.5 h-3.5" />
-                )}
-                {positive ? '+' : ''}
-                {delta} pts
+                {positive ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
+                {positive ? '+' : ''}{delta} pts
             </span>
         </div>
     );
@@ -232,11 +223,7 @@ function ScoreTrendSummary({ resumes }) {
 
 // ── Widget root ────────────────────────────────────────────────────────────────
 
-const ResumeHistoryWidget = ({
-    onView,
-    onDownload,
-    onDelete,
-}) => {
+const ResumeHistoryWidget = ({ onView, onDownload, onDelete }) => {
     const navigate = useNavigate();
     const [resumes, setResumes] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -263,24 +250,20 @@ const ResumeHistoryWidget = ({
         fetchHistory();
     }, []);
 
-    // Sort newest → oldest and take last 3
+    // Sort newest → oldest, show last 3
     const sorted = [...resumes].sort((a, b) => b.version - a.version).slice(0, 3);
-
-    const handleView = (r) => onView?.(r);
-    const handleDownload = (r) => onDownload?.(r);
-    const handleDelete = (r) => onDelete?.(r);
 
     return (
         <Card className="h-full flex flex-col">
             <CardHeader>
                 <div className="flex items-start justify-between">
-                    <div>
+                    <div className="min-w-0 flex-1">
                         <CardTitle>Resume History</CardTitle>
                         <p className="text-sm text-text-muted mt-1">
                             {resumes.length} version{resumes.length !== 1 ? 's' : ''} · hover to act
                         </p>
                     </div>
-                    <div className="w-9 h-9 rounded-lg bg-brand-primary/10 flex items-center justify-center flex-shrink-0">
+                    <div className="w-9 h-9 rounded-lg bg-brand-primary/10 flex items-center justify-center flex-shrink-0 ml-3">
                         <FileText className="w-4 h-4 text-brand-primary" />
                     </div>
                 </div>
@@ -297,10 +280,7 @@ const ResumeHistoryWidget = ({
                     </div>
                 ) : (
                     <>
-                        {/* Trend strip */}
                         <ScoreTrendSummary resumes={sorted} />
-
-                        {/* Timeline */}
                         <div className="flex-1">
                             {sorted.map((resume, index) => (
                                 <ResumeEntry
@@ -308,16 +288,12 @@ const ResumeHistoryWidget = ({
                                     resume={resume}
                                     previousScore={sorted[index + 1]?.atsScore ?? null}
                                     isLast={index === sorted.length - 1}
-                                    onView={handleView}
-                                    onDownload={handleDownload}
-                                    onDelete={handleDelete}
                                 />
                             ))}
                         </div>
                     </>
                 )}
 
-                {/* Footer CTA */}
                 <div className="mt-2 pt-4 border-t border-border-light">
                     <Button
                         variant="primary"
