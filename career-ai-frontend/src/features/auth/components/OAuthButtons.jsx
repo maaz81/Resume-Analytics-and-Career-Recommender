@@ -61,7 +61,7 @@ const OAuthButtons = () => {
       </Button>
 
       {/* GitHub OAuth */}
-      <Button
+      {/* <Button
         type="button"
         variant="outline"
         fullWidth
@@ -71,7 +71,7 @@ const OAuthButtons = () => {
         disabled={loadingProvider !== null}
       >
         Continue with GitHub
-      </Button>
+      </Button> */}
     </div>
   );
 };

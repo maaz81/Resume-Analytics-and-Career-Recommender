@@ -52,6 +52,7 @@ CREATE TABLE IF NOT EXISTS "ats_scores" (
     "missing_keywords" JSONB,
     "weak_action_verbs" JSONB,
     "target_role" VARCHAR(255),
+    "jd_hash" VARCHAR(255),
     "ai_model_version" VARCHAR(50),
     "scored_at" TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
