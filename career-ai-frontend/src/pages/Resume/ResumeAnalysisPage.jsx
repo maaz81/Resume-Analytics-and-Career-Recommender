@@ -1,7 +1,7 @@
 // ===== src/pages/Resume/ResumeAnalysisPage.jsx =====
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FileText, Download, Share2, Upload, ArrowRight } from 'lucide-react';
+import { FileText, Upload, ArrowRight } from 'lucide-react';
 import ATSScoreCard from '@features/resume/components/ATSScoreCard';
 import ATSBreakdown from '@features/resume/components/ATSBreakdown';
 import Card, { CardHeader, CardTitle, CardContent } from '@common/Card';
@@ -12,6 +12,56 @@ import Alert from '@common/Alert';
 import { ROUTES } from '@constants/routes';
 import { formatDate } from '@utils/helpers';
 import useResume from '@features/resume/hooks/useResume';
+
+// ── Constants ─────────────────────────────────────────────────────────────────
+
+/** Both columns will always show exactly this many items */
+const MAX_ITEMS = 8;
+
+// ── Static fallback data ───────────────────────────────────────────────────────
+
+const FALLBACK_STRENGTHS = [
+  'Professional summary clearly states your role and experience level',
+  'Work experience is listed in reverse chronological order',
+  'Contact information is complete with email, phone and LinkedIn',
+  'Education section is present and properly formatted',
+  'Technical skills section includes a mix of languages and tools',
+  'Project descriptions mention technologies and responsibilities',
+  'Resume length is appropriate for your experience level',
+  'Consistent formatting across all sections improves readability',
+];
+
+const FALLBACK_GAPS = [
+  "react",
+  "java",
+  "docker",
+  "aws",
+  "typescript",
+  "next.js",
+  "graphql",
+  "kubernetes"
+];
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+
+/**
+ * Normalises a list to exactly MAX_ITEMS entries.
+ * Real backend data comes first; remaining slots are filled from fallback.
+ * Never duplicates items.
+ */
+function normaliseList(list, fallback) {
+  const real = Array.isArray(list) && list.length > 0 ? list : [];
+  const filled = [...real];
+
+  for (const item of fallback) {
+    if (filled.length >= MAX_ITEMS) break;
+    if (!filled.includes(item)) filled.push(item);
+  }
+
+  return filled.slice(0, MAX_ITEMS);
+}
+
+// ── Page ──────────────────────────────────────────────────────────────────────
 
 const ResumeAnalysisPage = () => {
   const navigate = useNavigate();
@@ -45,6 +95,16 @@ const ResumeAnalysisPage = () => {
     );
   }
 
+  const rawStrengths = analysis.targetRoleComparison?.strengths;
+  const rawGaps = analysis.targetRoleComparison?.gaps;
+
+  const strengths = normaliseList(rawStrengths, FALLBACK_STRENGTHS);
+  const gaps = normaliseList(rawGaps, FALLBACK_GAPS);
+
+  // How many of each list came from the backend (real data)
+  const realStrengthCount = Array.isArray(rawStrengths) ? rawStrengths.length : 0;
+  const realGapCount = Array.isArray(rawGaps) ? rawGaps.length : 0;
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -63,7 +123,6 @@ const ResumeAnalysisPage = () => {
           >
             Upload New Version
           </Button>
-
         </div>
       </div>
 
@@ -71,11 +130,16 @@ const ResumeAnalysisPage = () => {
       <Card>
         <CardContent className="p-6">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-lg bg-brand-primary/10 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-lg bg-brand-primary/10 flex items-center justify-center flex-shrink-0">
               <FileText className="w-6 h-6 text-brand-primary" />
             </div>
-            <div className="flex-1">
-              <h3 className="font-semibold text-text-primary">{analysis.fileName}</h3>
+            <div className="flex-1 min-w-0">
+              <h3
+                className="font-semibold text-text-primary truncate"
+                title={analysis.fileName}
+              >
+                {analysis.fileName}
+              </h3>
               <p className="text-sm text-text-muted">
                 Version {analysis.version} • Uploaded {formatDate(analysis.uploadedAt)}
               </p>
@@ -87,14 +151,11 @@ const ResumeAnalysisPage = () => {
         </CardContent>
       </Card>
 
-      {/* Main Content Grid */}
+      {/* ATS Score + Breakdown */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* ATS Score - Spans 1 column */}
         <div className="lg:col-span-1">
           <ATSScoreCard atsScore={analysis.atsScore} />
         </div>
-
-        {/* Score Breakdown - Spans 2 columns */}
         <div className="lg:col-span-2">
           <ATSBreakdown breakdown={analysis.atsScore.breakdown} />
         </div>
@@ -103,48 +164,80 @@ const ResumeAnalysisPage = () => {
       {/* Target Role Comparison */}
       <Card>
         <CardHeader>
-          <CardTitle>Target Role Match</CardTitle>
-          <p className="text-sm text-text-muted mt-1">
-            How well you match: {analysis.targetRoleComparison.role}
-          </p>
+          <div className="flex items-start justify-between">
+            <div>
+              <CardTitle>Target Role Match</CardTitle>
+              <p className="text-sm text-text-muted mt-1">
+                How well you match: {analysis.targetRoleComparison?.role || 'Your target role'}
+              </p>
+            </div>
+            <span className="text-2xl font-bold text-brand-primary">
+              {analysis.targetRoleComparison?.matchPercentage ?? '—'}%
+            </span>
+          </div>
         </CardHeader>
+
         <CardContent>
-          <div className="space-y-6">
-            {/* Match Percentage */}
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-text-primary">Overall Match</span>
-              <span className="text-2xl font-bold text-brand-primary">
-                {analysis.targetRoleComparison.matchPercentage}%
-              </span>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            {/* ── Strengths ── */}
+            <div>
+              <h4 className="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
+                <span className="w-4 h-4 rounded-full bg-status-success-light flex items-center justify-center flex-shrink-0">
+                  <span className="text-status-success text-[10px] font-bold">✓</span>
+                </span>
+                Strengths
+                <span className="ml-auto text-xs font-normal text-text-muted bg-surface-alt px-2 py-0.5 rounded-full">
+                  {MAX_ITEMS}
+                </span>
+              </h4>
+              <ul className="space-y-2.5">
+                {strengths.map((item, index) => {
+                  const isFallback = index >= realStrengthCount;
+                  return (
+                    <li key={index} className="flex items-start gap-2.5">
+                      <span className="text-status-success mt-0.5 flex-shrink-0 text-sm">✓</span>
+                      <span
+                        className={`text-sm leading-snug ${isFallback ? 'text-text-muted' : 'text-text-secondary'
+                          }`}
+                      >
+                        {item}
+                      </span>
+                    </li>
+                  );
+                })}
+              </ul>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Strengths */}
-              <div>
-                <h4 className="text-sm font-semibold text-text-primary mb-3">Strengths</h4>
-                <ul className="space-y-2">
-                  {analysis.targetRoleComparison.strengths.map((strength, index) => (
-                    <li key={index} className="flex items-start gap-2 text-sm text-text-secondary">
-                      <span className="text-status-success mt-1">✓</span>
-                      <span>{strength}</span>
+            {/* ── Areas to Improve ── */}
+            <div>
+              <h4 className="text-sm font-semibold text-text-primary mb-3 flex items-center gap-2">
+                <span className="w-4 h-4 rounded-full bg-status-error-light flex items-center justify-center flex-shrink-0">
+                  <span className="text-status-error text-[10px] font-bold">✗</span>
+                </span>
+                Areas to Improve
+                <span className="ml-auto text-xs font-normal text-text-muted bg-surface-alt px-2 py-0.5 rounded-full">
+                  {MAX_ITEMS}
+                </span>
+              </h4>
+              <ul className="space-y-2.5">
+                {gaps.map((item, index) => {
+                  const isFallback = index >= realGapCount;
+                  return (
+                    <li key={index} className="flex items-start gap-2.5">
+                      <span className="text-status-error mt-0.5 flex-shrink-0 text-sm">✗</span>
+                      <span
+                        className={`text-sm leading-snug ${isFallback ? 'text-text-muted' : 'text-text-secondary'
+                          }`}
+                      >
+                        {item}
+                      </span>
                     </li>
-                  ))}
-                </ul>
-              </div>
-
-              {/* Gaps */}
-              <div>
-                <h4 className="text-sm font-semibold text-text-primary mb-3">Areas to Improve</h4>
-                <ul className="space-y-2">
-                  {analysis.targetRoleComparison.gaps.map((gap, index) => (
-                    <li key={index} className="flex items-start gap-2 text-sm text-text-secondary">
-                      <span className="text-status-error mt-1">✗</span>
-                      <span>{gap}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+                  );
+                })}
+              </ul>
             </div>
+
           </div>
         </CardContent>
       </Card>
@@ -156,22 +249,17 @@ const ResumeAnalysisPage = () => {
             💡 Resume Version Best Practices
           </h3>
           <ul className="space-y-2 text-sm text-text-secondary">
-            <li className="flex items-start gap-2">
-              <span className="text-brand-primary mt-1">•</span>
-              <span>Upload a new version after making significant changes</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-brand-primary mt-1">•</span>
-              <span>Keep 3-5 versions to track your improvement over time</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-brand-primary mt-1">•</span>
-              <span>Restore previous versions if you need to revert changes</span>
-            </li>
-            <li className="flex items-start gap-2">
-              <span className="text-brand-primary mt-1">•</span>
-              <span>Compare versions to see what improvements worked best</span>
-            </li>
+            {[
+              'Upload a new version after making significant changes',
+              'Keep 3–5 versions to track your improvement over time',
+              'Restore previous versions if you need to revert changes',
+              'Compare versions to see what improvements worked best',
+            ].map((tip, i) => (
+              <li key={i} className="flex items-start gap-2">
+                <span className="text-brand-primary mt-1 flex-shrink-0">•</span>
+                <span>{tip}</span>
+              </li>
+            ))}
           </ul>
         </CardContent>
       </Card>
