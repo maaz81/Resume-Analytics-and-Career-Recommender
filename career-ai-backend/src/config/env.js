@@ -70,6 +70,11 @@ const config = {
         },
     },
 
+    // YouTube Data API
+    youtube: {
+        apiKey: process.env.YOUTUBE_API_KEY || '',
+    },
+
     // CORS
     cors: {
         origin: process.env.FRONTEND_URL || 'http://localhost:3000',

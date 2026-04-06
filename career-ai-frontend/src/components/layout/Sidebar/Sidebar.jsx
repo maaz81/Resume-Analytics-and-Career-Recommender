@@ -9,7 +9,7 @@ const navigation = [
   { name: 'Dashboard', href: ROUTES.DASHBOARD, icon: LayoutDashboard },
   { name: 'Resume Analysis', href: ROUTES.RESUME_ANALYSIS, icon: FileText },
   { name: 'Skill Gap', href: ROUTES.SKILL_GAP, icon: Target },
-  { name: 'Recamendation', href: ROUTES.RECOMANDATION, icon: Map },
+  { name: 'Recommendation', href: ROUTES.RECOMMENDATIONS, icon: Map },
   { name: 'Resume History', href: ROUTES.RESUME_HISTORY, icon: Map },
   { name: 'Chat Bot', href: ROUTES.CHAT_BOT, icon: Map },
   { name: 'Profile', href: ROUTES.PROFILE, icon: User },

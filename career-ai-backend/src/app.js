@@ -3,6 +3,8 @@
 // ============================================
 
 import express from 'express';
+import path from 'path';
+import { fileURLToPath } from 'url';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
@@ -24,9 +26,13 @@ import aiRoutes from './routes/v1/ai.routes.js';
 import profileRoutes from './routes/v1/profile.route.js'
 import dashboardRoutes from './routes/v1/dashboard.routes.js'
 import chatMainRoutes from './routes/v1/chatMain.routes.js'
+import recommendationRoutes from './routes/v1/recommendation.routes.js'
 
 // Import Oauth
 import passport from './config/passport.js'
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 // Create Express app
 const app = express();
@@ -35,8 +41,12 @@ const app = express();
 // SECURITY MIDDLEWARE
 // ============================================
 
-// Helmet - security headers
-app.use(helmet());
+// Helmet - security headers (relaxed for cross-origin PDF loading)
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: 'cross-origin' },
+    crossOriginEmbedderPolicy: false,
+    contentSecurityPolicy: false,
+}));
 
 // CORS
 app.use(
@@ -47,6 +57,15 @@ app.use(
         allowedHeaders: ['Content-Type', 'Authorization'],
     })
 );
+
+// ============================================
+// STATIC FILES
+// ============================================
+app.use('/uploads', (req, res, next) => {
+    res.setHeader('Cross-Origin-Resource-Policy', 'cross-origin');
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    next();
+}, express.static(path.join(__dirname, '../', config.upload.dir)));
 
 // ============================================
 // BODY PARSING MIDDLEWARE
@@ -119,6 +138,7 @@ app.use(`${API_PREFIX}/roadmaps`, roadmapRoutes);
 app.use(`${API_PREFIX}/ai`, aiRoutes);
 app.use(`${API_PREFIX}/profile`, profileRoutes);
 app.use(`${API_PREFIX}/chat`, chatMainRoutes);
+app.use(`${API_PREFIX}/recommendations`, recommendationRoutes);
 
 // ============================================
 // ERROR HANDLING

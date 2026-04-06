@@ -12,6 +12,9 @@ const onboardingSlice = createSlice({
     setCareerGoal: (state, action) => {
       state.careerGoal = action.payload;
     },
+    setStep: (state, action) => {
+      state.currentStep = action.payload;
+    },
     nextStep: (state) => {
       state.currentStep += 1;
     },
@@ -29,6 +32,6 @@ const onboardingSlice = createSlice({
   },
 });
 
-export const { setCareerGoal, nextStep, previousStep, completeOnboarding, resetOnboarding } = onboardingSlice.actions;
+export const { setCareerGoal, setStep, nextStep, previousStep, completeOnboarding, resetOnboarding } = onboardingSlice.actions;
 export default onboardingSlice.reducer;
 

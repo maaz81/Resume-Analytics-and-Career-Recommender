@@ -14,6 +14,7 @@ export const ROUTES = {
   // Onboarding Flow
   ONBOARDING_CAREER_GOAL: '/onboarding/career-goal',
   ONBOARDING_RESUME_UPLOAD: '/onboarding/resume-upload',
+  ONBOARDING_JOB_DESCRIPTION: '/onboarding/job-description',
 
   // Dashboard
   DASHBOARD: '/dashboard',
@@ -28,7 +29,7 @@ export const ROUTES = {
   SKILL_PRIORITY: '/skills/priority',
 
   // Recomandations Routes
-  RECOMMENDATIONS: '/recomadation',
+  RECOMMENDATIONS: '/recommendation',
 
   // Chat Bot Routes
   CHAT_BOT: '/chat-bot',
@@ -67,7 +68,7 @@ export const ROUTE_GROUPS = {
     ROUTES.RESUME_HISTORY,
     ROUTES.SKILL_GAP,
     ROUTES.SKILL_PRIORITY,
-    ROUTES.RECOMANDATION,
+    ROUTES.RECOMMENDATIONS,
     ROUTES.CHAT_BOT,
     ROUTES.PROFILE,
   ],

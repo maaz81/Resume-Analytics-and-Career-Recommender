@@ -1,12 +1,12 @@
-import { FileText, Target, Map, Briefcase } from 'lucide-react';
+import { FileText, Target, Map, Briefcase, Upload } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import Button from '@common/Button';
 import StatsCard from './StatsCard';
 import NextActionCard from './NextActionCard';
 import ResumeHealthWidget from './ResumeHealthWidget';
 import SkillGapWidget from './SkillGapWidget';
-import LearningProgressWidget from './LearningProgressWidget';
+import RecommendationsWidget from './ResumeHistoryWidget.jsx'; // ← swapped
 import Spinner from '@common/Spinner';
-import Alert from '@common/Alert';
 import { useDashboard } from '../hooks/useDashboard';
 import { ROUTES } from '@constants/routes';
 
@@ -38,13 +38,24 @@ const DashboardOverview = () => {
   return (
     <div className="space-y-6">
       {/* Welcome Header */}
-      <div>
-        <h1 className="text-3xl font-bold text-text-primary">
-          Welcome back, {firstName}!
-        </h1>
-        <p className="text-text-secondary mt-1">
-          Here's your career progress at a glance
-        </p>
+      <div className='flex items-start justify-between'>
+        <div>
+          <h1 className="text-3xl font-bold text-text-primary">
+            Welcome back, {firstName}!
+          </h1>
+          <p className="text-text-secondary mt-1">
+            Here's your career progress at a glance
+          </p>
+        </div>
+        <div className="flex gap-3">
+          <Button
+            variant="primary"
+            leftIcon={<Upload className="w-4 h-4" />}
+            onClick={() => navigate(ROUTES.ONBOARDING_CAREER_GOAL)}
+          >
+            Upload New Version
+          </Button>
+        </div>
       </div>
 
       {/* Stats Cards Grid */}
@@ -70,65 +81,61 @@ const DashboardOverview = () => {
           variant="success"
         />
         <StatsCard
-          title="Job Matches"
-          value={24}
+          title="Recommendations"
+          value={12}
           icon={Briefcase}
           variant="default"
         />
       </div>
 
-      {/* Next Action Card */}
-      <NextActionCard />
-
       {/* Main Widgets Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Resume Health - Full width on mobile, spans 1 col on desktop */}
+        {/* Resume Health */}
         <div className="lg:col-span-1">
           <ResumeHealthWidget />
         </div>
 
-        {/* Skill Gap - Full width on mobile, spans 1 col on desktop */}
+        {/* Skill Gap */}
         <div className="lg:col-span-1">
           <SkillGapWidget />
         </div>
 
-        {/* Learning Progress - Full width on mobile, spans 1 col on desktop */}
+        {/* Recommendations — replaces LearningProgressWidget */}
         <div className="lg:col-span-1">
-          <LearningProgressWidget />
+          <RecommendationsWidget />
         </div>
       </div>
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <button className="p-4 rounded-lg border border-border hover:border-brand-primary hover:bg-brand-primary/5 transition-all text-left group" onClick={() => navigate(ROUTES.ONBOARDING_RESUME_UPLOAD)}>
+        <button
+          className="p-4 rounded-lg border border-border hover:border-brand-primary hover:bg-brand-primary/5 transition-all text-left group"
+          onClick={() => navigate(ROUTES.ONBOARDING_CAREER_GOAL)}
+        >
           <FileText className="w-6 h-6 text-brand-primary mb-2" />
           <h4 className="font-semibold text-text-primary group-hover:text-brand-primary transition-colors">
             Upload New Resume
           </h4>
-          <p className="text-sm text-text-muted mt-1">
-            Get instant ATS analysis
-          </p>
+          <p className="text-sm text-text-muted mt-1">Get instant ATS analysis</p>
         </button>
 
-        <button className="p-4 rounded-lg border border-border hover:border-brand-primary hover:bg-brand-primary/5 transition-all text-left group"
-          onClick={() => navigate(ROUTES.SKILL_GAP)}>
+        <button
+          className="p-4 rounded-lg border border-border hover:border-brand-primary hover:bg-brand-primary/5 transition-all text-left group"
+          onClick={() => navigate(ROUTES.SKILL_GAP)}
+        >
           <Target className="w-6 h-6 text-brand-primary mb-2" />
           <h4 className="font-semibold text-text-primary group-hover:text-brand-primary transition-colors">
             Explore Skills
           </h4>
-          <p className="text-sm text-text-muted mt-1">
-            View all skill gaps
-          </p>
+          <p className="text-sm text-text-muted mt-1">View all skill gaps</p>
         </button>
 
-        <button className="p-4 rounded-lg border border-border hover:border-brand-primary hover:bg-brand-primary/5 transition-all text-left group">
+        <button className="p-4 rounded-lg border border-border hover:border-brand-primary hover:bg-brand-primary/5 transition-all text-left group" onClick={() => navigate(ROUTES.RECOMMENDATIONS)}>
           <Briefcase className="w-6 h-6 text-brand-primary mb-2" />
           <h4 className="font-semibold text-text-primary group-hover:text-brand-primary transition-colors">
-            Browse Jobs
+            Browse Recommendations
           </h4>
-          <p className="text-sm text-text-muted mt-1">
-            24 matches available
-          </p>
+          <p className="text-sm text-text-muted mt-1">12+ Recommendations</p>
         </button>
       </div>
     </div>

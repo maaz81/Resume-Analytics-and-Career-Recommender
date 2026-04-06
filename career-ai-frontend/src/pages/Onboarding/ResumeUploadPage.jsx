@@ -1,16 +1,21 @@
 // ===== src/pages/Onboarding/ResumeUploadPage.jsx =====
+import { useEffect } from 'react';
 import Card, { CardContent } from '@common/Card';
 import ProgressIndicator from '@features/onboarding/components/ProgressIndicator';
 import ResumeUpload from '@features/onboarding/components/ResumeUpload';
 import { useOnboarding } from '@features/onboarding/hooks/useOnboarding';
 
 const ResumeUploadPage = () => {
-  const { currentStep, finishOnboarding, goToPreviousStep } = useOnboarding();
+  const { currentStep, setStep, goToNextStep, goToPreviousStep } = useOnboarding();
+
+  useEffect(() => {
+    setStep(2);
+  }, [setStep]);
 
   return (
     <div className="w-full max-w-3xl mx-auto space-y-8 py-8">
       {/* Progress Indicator */}
-      <ProgressIndicator currentStep={currentStep} totalSteps={2} />
+      <ProgressIndicator currentStep={currentStep} totalSteps={3} />
 
       {/* Header */}
       <div className="text-center space-y-2">
@@ -26,7 +31,7 @@ const ResumeUploadPage = () => {
       <Card className="shadow-lg">
         <CardContent className="p-8">
           <ResumeUpload
-            onComplete={finishOnboarding}
+            onComplete={goToNextStep}
             onBack={goToPreviousStep}
           />
         </CardContent>

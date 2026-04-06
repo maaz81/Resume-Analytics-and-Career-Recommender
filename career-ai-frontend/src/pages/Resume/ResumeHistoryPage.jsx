@@ -9,11 +9,14 @@ import Spinner from '@common/Spinner';
 import Alert from '@common/Alert';
 import { ROUTES } from '@constants/routes';
 import useResume from '@features/resume/hooks/useResume';
+import { BACKEND_URL } from '@features/auth/services/api';
+import PDFPreviewModal from '@common/Pdf/PDFPreviewModal';
 
 const ResumeHistoryPage = () => {
   const navigate = useNavigate();
-  const { isLoading, error, getResumeHistory } = useResume();
+  const { isLoading, error, getResumeHistory, deleteResumeService } = useResume();
   const [historyData, setHistoryData] = useState(null);
+  const [previewUrl, setPreviewUrl] = useState(null);
 
   useEffect(() => {
     const loadHistory = async () => {
@@ -25,21 +28,103 @@ const ResumeHistoryPage = () => {
     loadHistory();
   }, []);
 
-  const handleView = (resume) => {
-    navigate(ROUTES.RESUME_ANALYSIS);
+  const handleView = async (resume) => {
+    if (!resume.fileUrl) {
+      alert("No file path found for this resume.");
+      return;
+    }
+    try {
+      const fullUrl = resume.fileUrl.startsWith('http')
+        ? resume.fileUrl
+        : `${BACKEND_URL}${resume.fileUrl}`;
+
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch(fullUrl, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) throw new Error('Failed to load file');
+
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      setPreviewUrl(blobUrl);
+    } catch (err) {
+      console.error("View failed:", err);
+      alert("Failed to load resume file");
+    }
+  };
+
+  const handleViewAnalysis = (resume) => {
+    navigate(ROUTES.RESUME_ANALYSIS, {
+      state: { resumeId: resume.id }
+    });
+  };
+
+  const handleDelete = async (resume) => {
+    const confirmDelete = window.confirm(
+      `Delete ${resume.fileName}? This action cannot be undone.`
+    );
+
+    if (!confirmDelete) return;
+
+    try {
+      const result = await deleteResumeService(resume.id);
+
+      if (result.success) {
+        // ✅ Remove from UI instantly
+        setHistoryData(prev =>
+          prev.filter(item => item.id !== resume.id)
+        );
+      } else {
+        alert(result.message || "Delete failed");
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    }
+  };
+
+  const handleDownload = async (resume) => {
+    try {
+      if (!resume.fileUrl) {
+        alert("No file available");
+        return;
+      }
+
+      const fullUrl = resume.fileUrl.startsWith('http')
+        ? resume.fileUrl
+        : `${BACKEND_URL}${resume.fileUrl}`;
+
+      const token = localStorage.getItem('auth_token');
+      const response = await fetch(`${fullUrl}?download=true`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+
+      if (!response.ok) throw new Error('Download failed');
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = resume.fileName || 'resume.pdf';
+      document.body.appendChild(a);
+      a.click();
+
+      a.remove();
+      window.URL.revokeObjectURL(url);
+
+    } catch (err) {
+      console.error("Download failed:", err);
+      alert("Failed to download file");
+    }
   };
 
   const handleRestore = (resume) => {
     if (window.confirm(`Restore ${resume.fileName} as current version?`)) {
       // In real app, call API to restore
       alert('Resume restored successfully!');
-    }
-  };
-
-  const handleDelete = (resume) => {
-    if (window.confirm(`Delete ${resume.fileName}? This action cannot be undone.`)) {
-      // In real app, call API to delete
-      alert('Resume deleted successfully!');
     }
   };
 
@@ -208,6 +293,8 @@ const ResumeHistoryPage = () => {
               resume={resume}
               isCurrent={resume.status === 'current'}
               onView={handleView}
+              onDownload={handleDownload}
+              onAnalysis={handleViewAnalysis} // new
               onRestore={handleRestore}
               onDelete={handleDelete}
             />
@@ -241,8 +328,16 @@ const ResumeHistoryPage = () => {
           </ul>
         </CardContent>
       </Card>
+
+      {/* ✅ ADD MODAL HERE */}
+      <PDFPreviewModal
+        isOpen={!!previewUrl}
+        fileUrl={previewUrl}
+        onClose={() => setPreviewUrl(null)}
+      />
     </div>
   );
 };
+
 
 export default ResumeHistoryPage;

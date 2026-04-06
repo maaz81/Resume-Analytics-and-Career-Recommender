@@ -1,15 +1,20 @@
+import { useEffect } from 'react';
 import Card, { CardContent } from '@common/Card';
 import ProgressIndicator from '@features/onboarding/components/ProgressIndicator';
 import CareerGoalForm from '@features/onboarding/components/CareerGoalForm';
 import { useOnboarding } from '@features/onboarding/hooks/useOnboarding';
 
 const CareerGoalPage = () => {
-  const { currentStep, goToNextStep } = useOnboarding();
+  const { currentStep, setStep, goToNextStep } = useOnboarding();
+
+  useEffect(() => {
+    setStep(1);
+  }, [setStep]);
 
   return (
     <div className="w-full max-w-3xl mx-auto space-y-8 py-8">
       {/* Progress Indicator */}
-      <ProgressIndicator currentStep={currentStep} totalSteps={2} />
+      <ProgressIndicator currentStep={currentStep} totalSteps={3} />
 
       {/* Header */}
       <div className="text-center space-y-2">

@@ -14,6 +14,7 @@ import LoginPage from '@pages/Auth/LoginPage';
 import SignupPage from '@pages/Auth/SignupPage';
 import CareerGoalPage from '@pages/Onboarding/CareerGoalPage';
 import ResumeUploadPage from '@pages/Onboarding/ResumeUploadPage';
+import JobDescriptionPage from '@pages/Onboarding/JobDescriptionPage';
 import DashboardPage from '@pages/Dashboard/DashboardPage';
 import ResumeAnalysisPage from '@pages/Resume/ResumeAnalysisPage';
 import ResumeIssuesPage from '@pages/Resume/ResumeIssuesPage';
@@ -24,6 +25,7 @@ import ProfilePage from '@pages/Profile/ProfilePage';
 import NotFoundPage from '@pages/NotFound/NotFoundPage';
 import OAuthSuccess from './OAuthSuccess';
 import ChatBotPage from '@pages/ChatBot/ChatBotPage';
+import RecommendationPage from '@pages/Recomandation/Recommendation';
 
 /**
  * Application Routes Configuration
@@ -72,6 +74,16 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <AuthLayout>
               <ResumeUploadPage />
+            </AuthLayout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path={ROUTES.ONBOARDING_JOB_DESCRIPTION}
+        element={
+          <ProtectedRoute>
+            <AuthLayout>
+              <JobDescriptionPage />
             </AuthLayout>
           </ProtectedRoute>
         }
@@ -145,6 +157,17 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <AppLayout>
               <ProfilePage />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path={ROUTES.RECOMMENDATIONS}
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <RecommendationPage />
             </AppLayout>
           </ProtectedRoute>
         }
