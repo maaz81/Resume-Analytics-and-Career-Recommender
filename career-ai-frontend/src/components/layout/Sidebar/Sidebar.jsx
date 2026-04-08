@@ -1,7 +1,7 @@
 
 // ===== src/components/layout/Sidebar/Sidebar.jsx =====
 import { href, Link, useLocation } from 'react-router-dom';
-import { X, LayoutDashboard, FileText, Target, Map, User } from 'lucide-react';
+import { X, LayoutDashboard, FileText, Target, User, Compass, History, Bot } from 'lucide-react';
 import { ROUTES } from '@constants/routes';
 import { cn } from '@utils/helpers';
 
@@ -9,9 +9,9 @@ const navigation = [
   { name: 'Dashboard', href: ROUTES.DASHBOARD, icon: LayoutDashboard },
   { name: 'Resume Analysis', href: ROUTES.RESUME_ANALYSIS, icon: FileText },
   { name: 'Skill Gap', href: ROUTES.SKILL_GAP, icon: Target },
-  { name: 'Recommendation', href: ROUTES.RECOMMENDATIONS, icon: Map },
-  { name: 'Resume History', href: ROUTES.RESUME_HISTORY, icon: Map },
-  { name: 'Chat Bot', href: ROUTES.CHAT_BOT, icon: Map },
+  { name: 'Recommendation', href: ROUTES.RECOMMENDATIONS, icon: Compass },
+  { name: 'Resume History', href: ROUTES.RESUME_HISTORY, icon: History },
+  { name: 'Chat Bot', href: ROUTES.CHAT_BOT, icon: Bot },
   { name: 'Profile', href: ROUTES.PROFILE, icon: User },
 ];
 

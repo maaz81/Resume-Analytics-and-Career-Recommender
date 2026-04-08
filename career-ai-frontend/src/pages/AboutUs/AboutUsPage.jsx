@@ -1,9 +1,11 @@
 import React from 'react';
-import { Mail, Github, Linkedin, Twitter, Layout, Cpu, Sparkles, Zap, Database, ArrowRight } from 'lucide-react';
+import { Mail, Github, Linkedin, Globe, Layout, Cpu, Sparkles, Zap, Database, ArrowRight } from 'lucide-react';
 import Card, { CardHeader, CardTitle, CardContent } from '@common/Card';
 import Badge from '@common/Badge';
+import YashImg from '../../assets/yash.jpg';
+import MaazImg from '../../assets/maaz.jpg';
 
-const TeamMemberCard = ({ name, role, tags, icon: Icon, delay }) => (
+const TeamMemberCard = ({ name, role, tags, icon: Icon, delay, socials = [], image }) => (
   <Card className={`relative overflow-hidden group animate-slideInUp border-2 hover:border-brand-primary/50 transition-all duration-500`} style={{ animationDelay: delay }}>
     {/* Subtle Accent Line */}
     <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-brand-primary via-brand-info to-brand-accent transform origin-left scale-x-0 group-hover:scale-x-100 transition-transform duration-500"></div>
@@ -12,10 +14,14 @@ const TeamMemberCard = ({ name, role, tags, icon: Icon, delay }) => (
       <div className="flex flex-col items-center text-center">
         {/* Avatar */}
         <div className="relative mb-6">
-          <div className="w-24 h-24 rounded-full bg-brand-primary/10 flex items-center justify-center border-4 border-surface-background shadow-md group-hover:scale-105 transition-transform duration-300">
-             <span className="text-4xl font-bold text-brand-primary">
-              {name.charAt(0)}
-             </span>
+          <div className="w-24 h-24 rounded-full bg-brand-primary/10 flex items-center justify-center border-4 border-surface-background shadow-md group-hover:scale-105 transition-transform duration-300 overflow-hidden">
+             {image ? (
+               <img src={image} alt={name} className="w-full h-full object-cover" />
+             ) : (
+               <span className="text-4xl font-bold text-brand-primary">
+                {name.charAt(0)}
+               </span>
+             )}
           </div>
           <div className="absolute -bottom-2 -right-2 w-10 h-10 bg-surface-card rounded-full flex items-center justify-center border border-border shadow-sm text-text-secondary group-hover:text-brand-primary transition-colors">
              <Icon size={20} />
@@ -43,11 +49,14 @@ const TeamMemberCard = ({ name, role, tags, icon: Icon, delay }) => (
 
         {/* Socials */}
         <div className="flex justify-center gap-4">
-          {[Github, Linkedin, Twitter, Mail].map((SocialIcon, idx) => (
-            <button key={idx} className="w-10 h-10 rounded-full bg-surface-background flex items-center justify-center text-text-secondary hover:bg-brand-primary hover:text-white transition-all shadow-sm">
-              <SocialIcon size={18} />
-            </button>
-          ))}
+          {socials.map((social, idx) => {
+            const SocialIcon = social.icon;
+            return (
+              <a key={idx} href={social.url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full bg-surface-background flex items-center justify-center text-text-secondary hover:bg-brand-primary hover:text-white transition-all shadow-sm">
+                <SocialIcon size={18} />
+              </a>
+            );
+          })}
         </div>
       </div>
     </CardContent>
@@ -91,6 +100,12 @@ const AboutUsPage = () => {
           tags={['UI/UX Design', 'React Router', 'Tailwind CSS', 'Frontend Systems']}
           icon={Layout}
           delay="0s"
+          image={YashImg}
+          socials={[
+            { icon: Linkedin, url: 'https://www.linkedin.com/in/yash-bhagwatkar-b8432632b' },
+            { icon: Github, url: 'https://github.com/YashBhagwatkar' },
+            { icon: Mail, url: 'mailto:yashbhagwatkar820@gmail.com' }
+          ]}
         />
         <TeamMemberCard 
           name="Maaz Khan" 
@@ -98,6 +113,13 @@ const AboutUsPage = () => {
           tags={['Machine Learning', 'Node.js Backend', 'Python', 'System Architecture']}
           icon={Cpu}
           delay="0.1s"
+          image={MaazImg}
+          socials={[
+            { icon: Linkedin, url: 'https://www.linkedin.com/in/maazak90' },
+            { icon: Github, url: 'https://github.com/maaz81' },
+            { icon: Globe, url: 'https://maaz-portfolio-xi.vercel.app/' },
+            { icon: Mail, url: 'mailto:khanmaazahmad7@gmail.com' }
+          ]}
         />
       </div>
 
