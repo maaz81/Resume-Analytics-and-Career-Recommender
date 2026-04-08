@@ -26,6 +26,7 @@ import NotFoundPage from '@pages/NotFound/NotFoundPage';
 import OAuthSuccess from './OAuthSuccess';
 import ChatBotPage from '@pages/ChatBot/ChatBotPage';
 import RecommendationPage from '@pages/Recomandation/Recommendation';
+import AboutUsPage from '@pages/AboutUs/AboutUsPage';
 
 /**
  * Application Routes Configuration
@@ -157,6 +158,17 @@ const AppRoutes = () => {
           <ProtectedRoute>
             <AppLayout>
               <ProfilePage />
+            </AppLayout>
+          </ProtectedRoute>
+        }
+      />
+
+      <Route
+        path={ROUTES.ABOUT_US}
+        element={
+          <ProtectedRoute>
+            <AppLayout>
+              <AboutUsPage />
             </AppLayout>
           </ProtectedRoute>
         }

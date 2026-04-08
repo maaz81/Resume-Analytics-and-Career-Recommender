@@ -12,6 +12,7 @@ import { loadProfile, updateProfile } from '@features/profile/slices/profileSlic
 import { useNavigate } from 'react-router-dom';
 import { ROUTES } from '@constants/routes';
 import { formatDate, getInitials } from '@utils/helpers';
+import AboutCreatorsCard from '@features/profile/components/AboutCreatorsCard';
 
 const ProfilePage = () => {
   const dispatch = useDispatch();
@@ -158,6 +159,9 @@ const ProfilePage = () => {
           </div>
         </CardContent>
       </Card>
+
+      {/* About Creators Section (Ultra Premium) */}
+      <AboutCreatorsCard />
 
       {/* Danger Zone */}
       <Card className="border-2 border-status-error/30">

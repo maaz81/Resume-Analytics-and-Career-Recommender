@@ -39,6 +39,9 @@ export const ROUTES = {
 
   // Error Routes
   NOT_FOUND: '*',
+
+  // About Us
+  ABOUT_US: '/about',
 };
 
 /**
@@ -71,5 +74,6 @@ export const ROUTE_GROUPS = {
     ROUTES.RECOMMENDATIONS,
     ROUTES.CHAT_BOT,
     ROUTES.PROFILE,
+    ROUTES.ABOUT_US,
   ],
 };
