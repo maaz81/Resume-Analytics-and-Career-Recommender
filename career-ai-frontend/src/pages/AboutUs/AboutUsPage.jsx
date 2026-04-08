@@ -2,7 +2,7 @@ import React from 'react';
 import { Mail, Github, Linkedin, Globe, Layout, Cpu, Sparkles, Zap, Database, ArrowRight } from 'lucide-react';
 import Card, { CardHeader, CardTitle, CardContent } from '@common/Card';
 import Badge from '@common/Badge';
-import YashImg from '../../assets/yash.jpg';
+import YashImg from '../../assets/yash.jpeg';
 import MaazImg from '../../assets/maaz.jpg';
 
 const TeamMemberCard = ({ name, role, tags, icon: Icon, delay, socials = [], image }) => (
