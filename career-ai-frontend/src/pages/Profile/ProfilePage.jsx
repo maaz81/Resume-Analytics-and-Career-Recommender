@@ -1,7 +1,7 @@
 // ===== src/pages/Profile/ProfilePage.jsx =====
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { Shield, Bell, Palette, LogOut, Trash2 } from 'lucide-react';
+import { Shield, Bell, Palette, LogOut, Trash2, Info } from 'lucide-react';
 import ProfileForm from '@features/profile/components/ProfileForm';
 import Card, { CardHeader, CardTitle, CardContent } from '@common/Card';
 import Button from '@common/Button';
@@ -155,6 +155,32 @@ const ProfilePage = () => {
               </label>
             </div>
 
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* About Application */}
+      <Card>
+        <CardHeader>
+          <div className="flex items-center gap-2">
+            <Info className="w-5 h-5 text-brand-primary" />
+            <CardTitle>About Application</CardTitle>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 rounded-lg bg-surface-alt/50 border border-border/50 hover:border-brand-primary/30 transition-colors">
+              <div>
+                <h4 className="font-medium text-text-primary">Learn More About Us</h4>
+                <p className="text-sm text-text-muted mt-1">Discover our mission, vision, and the team behind the application.</p>
+              </div>
+              <Button
+                variant="primary"
+                onClick={() => navigate(ROUTES.ABOUT)}
+              >
+                Go to About Page
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>

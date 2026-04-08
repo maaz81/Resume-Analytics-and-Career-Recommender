@@ -37,6 +37,9 @@ export const ROUTES = {
   // Profile Routes
   PROFILE: '/profile',
 
+  // About Routes
+  ABOUT: '/about',
+
   // Error Routes
   NOT_FOUND: '*',
 };
