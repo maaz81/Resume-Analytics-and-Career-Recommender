@@ -2,6 +2,7 @@ import { FileText, Target, Map, Briefcase, Upload } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import Button from '@common/Button';
 import StatsCard from './StatsCard';
+import Alert from '@common/Alert';
 import NextActionCard from './NextActionCard';
 import ResumeHealthWidget from './ResumeHealthWidget';
 import SkillGapWidget from './SkillGapWidget';
