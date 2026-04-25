@@ -22,9 +22,9 @@ const config = {
         user: process.env.DB_USER || 'postgres',
         password: process.env.DB_PASSWORD || '',
         ssl: process.env.DB_SSL === 'true',
-        max: 20, // Connection pool size
+        max: 10,
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 2000,
+        connectionTimeoutMillis: 10000, // ✅ 2000 → 10000
     },
 
     // JWT

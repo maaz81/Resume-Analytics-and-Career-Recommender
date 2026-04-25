@@ -18,7 +18,10 @@ const pool = new Pool({
     max: config.database.max,
     idleTimeoutMillis: config.database.idleTimeoutMillis,
     connectionTimeoutMillis: config.database.connectionTimeoutMillis,
-    ssl: config.database.ssl ? { rejectUnauthorized: false } : false,
+    // ✅ Neon ke liye SSL fix
+    ssl: config.database.ssl
+        ? { rejectUnauthorized: false }
+        : false,
 });
 
 // Connection event handlers

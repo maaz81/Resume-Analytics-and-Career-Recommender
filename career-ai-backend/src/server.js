@@ -16,6 +16,18 @@ let isRedisConnected = false;
 
 const startServer = async () => {
     try {
+        // ✅ Add karo - Render logs mein dikhega
+        console.log('=== STARTUP ENV CHECK ===');
+        console.log('NODE_ENV:', process.env.NODE_ENV);
+        console.log('PORT:', process.env.PORT);
+        console.log('DB_HOST:', process.env.DB_HOST);
+        console.log('DB_SSL:', process.env.DB_SSL);
+        console.log('DB_NAME:', process.env.DB_NAME);
+        console.log('DB_USER:', process.env.DB_USER);
+        console.log('DB_PASSWORD exists:', !!process.env.DB_PASSWORD);
+        console.log('JWT_SECRET exists:', !!process.env.JWT_SECRET);
+        console.log('========================');
+
         // 1. Test database connection
         logger.info('Testing database connection...');
         await testConnection();
