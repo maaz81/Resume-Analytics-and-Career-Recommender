@@ -47,42 +47,42 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
 }
 
 
-// ================= GITHUB =================
-if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
-    passport.use(new GitHubStrategy(
-        {
-            clientID: process.env.GITHUB_CLIENT_ID,
-            clientSecret: process.env.GITHUB_CLIENT_SECRET,
-            callbackURL: process.env.GITHUB_CALLBACK_URL,
-        },
-        async (accessToken, refreshToken, profile, done) => {
-            try {
-                const email = profile.emails?.[0]?.value;
+// // ================= GITHUB =================
+// if (process.env.GITHUB_CLIENT_ID && process.env.GITHUB_CLIENT_SECRET) {
+//     passport.use(new GitHubStrategy(
+//         {
+//             clientID: process.env.GITHUB_CLIENT_ID,
+//             clientSecret: process.env.GITHUB_CLIENT_SECRET,
+//             callbackURL: process.env.GITHUB_CALLBACK_URL,
+//         },
+//         async (accessToken, refreshToken, profile, done) => {
+//             try {
+//                 const email = profile.emails?.[0]?.value;
 
-                let user = await User.findByOAuth('github', profile.id);
+//                 let user = await User.findByOAuth('github', profile.id);
 
-                if (!user) {
-                    user = await User.findByEmail(email);
+//                 if (!user) {
+//                     user = await User.findByEmail(email);
 
-                    if (user) {
-                        await User.attachOAuth(user.id, 'github', profile.id);
-                    } else {
-                        user = await User.create({
-                            email,
-                            fullName: profile.displayName || profile.username,
-                            oauthProvider: 'github',
-                            oauthId: profile.id,
-                        });
-                    }
-                }
+//                     if (user) {
+//                         await User.attachOAuth(user.id, 'github', profile.id);
+//                     } else {
+//                         user = await User.create({
+//                             email,
+//                             fullName: profile.displayName || profile.username,
+//                             oauthProvider: 'github',
+//                             oauthId: profile.id,
+//                         });
+//                     }
+//                 }
 
-                return done(null, user);
-            } catch (err) {
-                return done(err, null);
-            }
-        }));
-} else {
-    console.warn('⚠️  GitHub OAuth not configured — GITHUB_CLIENT_ID or GITHUB_CLIENT_SECRET missing');
-}
+//                 return done(null, user);
+//             } catch (err) {
+//                 return done(err, null);
+//             }
+//         }));
+// } else {
+//     console.warn('⚠️  GitHub OAuth not configured — GITHUB_CLIENT_ID or GITHUB_CLIENT_SECRET missing');
+// }
 
 export default passport;
