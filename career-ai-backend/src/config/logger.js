@@ -52,14 +52,12 @@ const logger = winston.createLogger({
     ],
 });
 
-// Add console transport in development
-if (config.env !== 'production') {
-    logger.add(
-        new winston.transports.Console({
-            format: consoleFormat,
-        })
-    );
-}
+// Add console transport (always, so we can see logs in Render)
+logger.add(
+    new winston.transports.Console({
+        format: consoleFormat,
+    })
+);
 
 // Create logs directory if it doesn't exist
 import fs from 'fs';

@@ -10,14 +10,18 @@ let redisClient = null;
 
 // Create Redis client
 const createRedisClient = () => {
-    const client = createClient({
-        socket: {
-            host: config.redis.host,
-            port: config.redis.port,
-        },
-        password: config.redis.password,
-        database: config.redis.db,
-    });
+    const clientOptions = config.redis.url 
+        ? { url: config.redis.url }
+        : {
+            socket: {
+                host: config.redis.host,
+                port: config.redis.port,
+            },
+            password: config.redis.password,
+            database: config.redis.db,
+        };
+
+    const client = createClient(clientOptions);
 
     // Event handlers
     client.on('connect', () => {
@@ -54,15 +58,9 @@ export const connectRedis = async () => {
         return redisClient;
     } catch (error) {
         logger.error('❌ Failed to connect to Redis:', error.message);
-
-        // In development, continue without Redis
-        if (config.env === 'development') {
-            logger.warn('⚠️ Redis unavailable - continuing without cache in development mode');
-            redisClient = null;
-            return null;
-        }
-
-        throw error; // In production, throw error
+        logger.warn('⚠️ Redis unavailable - continuing without cache');
+        redisClient = null;
+        return null;
     }
 };
 
