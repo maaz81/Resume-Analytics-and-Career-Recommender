@@ -62,8 +62,8 @@ const LoginForm = () => {
         </Alert>
       )}
 
-      {/* Demo Credentials Info
-      <Alert variant="info" className="mb-6">
+      {/* Demo Credentials Info */}
+      {/* <Alert variant="info" className="mb-6">
         <p className="text-sm font-medium mb-1">Demo Credentials:</p>
         <p className="text-sm">Email: john@example.com</p>
         <p className="text-sm">Password: password123</p>
