@@ -83,7 +83,7 @@ const DashboardOverview = () => {
         />
         <StatsCard
           title="Recommendations"
-          value={12}
+          value={12 || 0}
           icon={Briefcase}
           variant="default"
         />
