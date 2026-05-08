@@ -1,12 +1,8 @@
 🚀 Resume Analytics and Career Recommender with AI Interview Assistant
-<div align="center">
-![Python](https://img.shields.io/badge/Python-3.10-blue?style=for-the-badge)
-![Flask](https://img.shields.io/badge/Flask-WebApp-black?style=for-the-badge)
-![Machine Learning](https://img.shields.io/badge/Machine-Learning-green?style=for-the-badge)
-![NLP](https://img.shields.io/badge/NLP-AI-orange?style=for-the-badge)
+
 🎓 Final Year B.E Project
 📚 Academic Major Project for Engineering Students
-</div>
+
 ---
 
 📌 Project Title
@@ -34,6 +30,7 @@ Traditional resume checking methods are manual, time-consuming, and often inaccu
 ---
 
 
+
 💡 Proposed Solution
 To overcome these issues, we developed an intelligent web-based system that:
 ✅ Analyzes uploaded resumes automatically
@@ -48,6 +45,8 @@ The system acts as a complete career-support assistant for students and professi
 ---
 
 
+
+
 🎯 Objectives of the Project
 To automate resume analysis using AI
 To recommend suitable careers based on user skills
@@ -59,6 +58,8 @@ To improve placement readiness among students
 ---
 
 
+
+
 ✨ Key Features
 📄 Resume Analysis
 Upload Resume (PDF/DOCX)
@@ -66,15 +67,18 @@ Resume Parsing
 ATS-based Resume Insights
 Resume Quality Analysis
 
+
 🧠 Skill Extraction
 Technical Skill Detection
 Soft Skill Identification
 Keyword Extraction
 
+
 🎯 Career Recommendation
 Job Role Prediction
 Career Domain Suggestion
 Personalized Recommendations
+
 
 🤖 AI Chatbot Assistant
 Answers career-related queries
@@ -84,10 +88,12 @@ Technical interview guidance
 Resume-building support
 Confidence-building suggestions
 
+
 📊 Analytics Dashboard
 Skill Visualization
 Resume Statistics
 Career Analytics Reports
+
 
 🔐 User Friendly System
 Simple Interface
@@ -105,6 +111,7 @@ Limited skill analysis	Advanced NLP-based skill extraction
 Manual resume review	Automated smart analytics
 Generic suggestions	Customized improvement tips
 ---
+
 
 
 
@@ -135,21 +142,27 @@ Charts & Analytics Dashboard
 ---
 
 
+
 🧩 System Modules
 1️⃣ Resume Upload Module
 Allows users to upload resumes in PDF or DOCX format.
+
 2️⃣ Resume Parsing Module
 Extracts text and important information from resumes.
+
 3️⃣ Skill Extraction Module
 Uses NLP techniques to identify skills and technologies.
+
 4️⃣ Career Recommendation Module
 Suggests suitable job roles and career paths.
+
 5️⃣ AI Chatbot Module
 Provides:
 Interview preparation
 Career guidance
 Resume-related help
 User query support
+
 6️⃣ Analytics Dashboard
 Displays skill analytics and recommendations visually.
 ---
@@ -270,6 +283,7 @@ Machine Learning
 Natural Language Processing
 Web Development
 Data Analytics
+
 It is suitable for:
 ✅ Final Year B.E Projects  
 ✅ Computer Engineering Projects  
@@ -288,6 +302,7 @@ Online Mock Interviews
 Multi-language Resume Support
 Deep Learning Career Prediction Models
 ---
+
 👨‍💻 Team Work & Contribution
 This project was developed through collaborative teamwork where every team member contributed to different modules such as:
 Frontend Development
