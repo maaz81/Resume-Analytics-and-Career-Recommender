@@ -195,8 +195,8 @@ export const signupService = async (userData) => {
 
 // OAUTH LOGIN
 export const oauthLoginService = async (provider) => {
-  // Redirect to backend OAuth route
-  window.location.href = `http://localhost:5000/api/v1/auth/${provider}`;
+  // Redirect to backend OAuth route (uses VITE_API_URL env variable in production)
+  window.location.href = `${BACKEND_URL}/api/v1/auth/${provider}`;
 };
 
 // LOGOUT
