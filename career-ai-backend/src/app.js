@@ -49,14 +49,27 @@ app.use(helmet({
 }));
 
 // CORS
-app.use(
-    cors({
-        origin: config.cors.origin,
-        credentials: config.cors.credentials,
-        methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-        allowedHeaders: ['Content-Type', 'Authorization'],
-    })
-);
+const allowedOrigins = config.cors.origin; // array from env.js (FRONTEND_URL split by comma)
+
+const corsOptions = {
+    origin: (origin, callback) => {
+        // Allow requests without origin (e.g. mobile apps, curl, server-to-server)
+        if (!origin) return callback(null, true);
+
+        if (allowedOrigins.includes(origin)) return callback(null, true);
+
+        return callback(new Error(`Not allowed by CORS: ${origin}`));
+    },
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization'],
+    optionsSuccessStatus: 204,
+};
+
+app.use(cors(corsOptions));
+
+// Respond 204 to ALL preflight OPTIONS requests immediately
+app.options('*', cors(corsOptions));
 
 // ============================================
 // STATIC FILES
