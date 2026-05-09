@@ -54,13 +54,9 @@ console.log('[CORS] Allowed origins:', allowedOrigins); // visible in Render log
 
 const corsOptions = {
     origin: (origin, callback) => {
-        // Allow requests without origin (mobile apps, curl, server-to-server)
-        if (!origin) return callback(null, true);
-
-        if (allowedOrigins.includes(origin)) return callback(null, true);
-
-        // Do NOT throw an Error — that strips CORS headers from the error response.
-        return callback(null, false);
+        // Allow all origins. The cors middleware will reflect the incoming Origin 
+        // back in the Access-Control-Allow-Origin header, which is required when credentials: true.
+        return callback(null, true);
     },
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

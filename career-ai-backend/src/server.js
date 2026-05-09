@@ -43,7 +43,7 @@ const startServer = async () => {
         }
 
         // 3. Start Express server
-        server = app.listen(config.port, () => {
+        server = app.listen(config.port, '0.0.0.0', () => {
             const redisStatus = isRedisConnected ? 'Redis Connected ✅' : 'Redis Disabled ⚠️';
 
             logger.info(`
