@@ -3,8 +3,11 @@ import config from '../config/env.js';
 import logger from '../config/logger.js';
 import { errors } from '../middleware/errorHandler.js';
 
-// Consolidated AI service URL
-const AI_BASE_URL = 'http://localhost:8000';
+// ML service runs as a single FastAPI service on Render.
+// Use ML_SERVICE_URL env var (set in Render dashboard), fallback to localhost for local dev.
+const AI_BASE_URL = process.env.ML_SERVICE_URL || config.ai.parserUrl || 'http://localhost:8000';
+
+logger.info(`[AI SERVICE] Using ML backend: ${AI_BASE_URL}`);
 
 /**
  * Generic AI call
@@ -22,10 +25,12 @@ export const callAIService = async (endpoint, payload) => {
     } catch (error) {
         logger.error('AI call failed', {
             endpoint,
+            url: `${AI_BASE_URL}${endpoint}`,
             error: error.message,
+            code: error.code,
         });
 
-        if (error.code === 'ECONNREFUSED') {
+        if (error.code === 'ECONNREFUSED' || error.code === 'ENOTFOUND') {
             throw errors.serviceUnavailable('AI service unavailable');
         }
 

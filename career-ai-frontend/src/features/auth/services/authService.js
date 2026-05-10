@@ -166,6 +166,7 @@
 // };
 
 import API from './api';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 // LOGIN
 export const loginService = async (email, password) => {

@@ -1,1 +1,7 @@
-uvicorn app:app --host [IP_ADDRESS] --port $PORT
+services:
+  - type: web
+    name: career-ai-ml
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn app:app --host 0.0.0.0 --port $PORT
+    plan: free
