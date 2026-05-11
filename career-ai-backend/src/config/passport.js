@@ -3,14 +3,34 @@ import { Strategy as GoogleStrategy } from 'passport-google-oauth20';
 import { Strategy as GitHubStrategy } from 'passport-github2';
 import User from '../models/User.js';
 
+// Resolve the Google OAuth callback URL.
+// Priority:
+//   1. GOOGLE_CALLBACK_URL env var (explicit override)
+//   2. BACKEND_URL env var + path  (Render / other PaaS sets this)
+//   3. Localhost fallback (local dev)
+const resolveCallbackURL = () => {
+    const explicit = process.env.GOOGLE_CALLBACK_URL;
+    if (explicit && !explicit.includes('localhost')) {
+        return explicit; // already a production URL
+    }
+    const backendUrl = process.env.BACKEND_URL; // e.g. https://your-app.onrender.com
+    if (backendUrl) {
+        return `${backendUrl}/api/v1/auth/google/callback`;
+    }
+    return explicit || 'http://localhost:5000/api/v1/auth/google/callback';
+};
+
 
 // ================= GOOGLE =================
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    const callbackURL = resolveCallbackURL();
+    console.log('[Passport] Google callbackURL:', callbackURL);
+
     passport.use(new GoogleStrategy(
         {
             clientID: process.env.GOOGLE_CLIENT_ID,
             clientSecret: process.env.GOOGLE_CLIENT_SECRET,
-            callbackURL: process.env.GOOGLE_CALLBACK_URL,
+            callbackURL,
         },
         async (accessToken, refreshToken, profile, done) => {
             try {

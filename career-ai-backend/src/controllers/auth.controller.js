@@ -266,7 +266,20 @@ export const oauthSuccess = catchAsync(async (req, res) => {
     await User.updateLastLogin(user.id);
 
     // Redirect to frontend with token — JSON won't work here since
-    // the browser navigated away from the SPA during the OAuth flow
-    const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:3000';
+    // the browser navigated away from the SPA during the OAuth flow.
+    // Priority: VERCEL_FRONTEND_URL (prod) → FRONTEND_URL → localhost fallback
+    const isProduction = process.env.NODE_ENV === 'production';
+    let frontendUrl;
+
+    if (isProduction) {
+        frontendUrl = process.env.VERCEL_FRONTEND_URL || process.env.FRONTEND_URL;
+    } else {
+        frontendUrl = process.env.FRONTEND_URL || process.env.VERCEL_FRONTEND_URL;
+    }
+
+    frontendUrl = frontendUrl || 'http://localhost:5173';
+
+    logger.info('OAuth success — redirecting to frontend', { userId: user.id, frontendUrl });
+
     res.redirect(`${frontendUrl}/oauth-success?token=${tokens.accessToken}`);
 });
