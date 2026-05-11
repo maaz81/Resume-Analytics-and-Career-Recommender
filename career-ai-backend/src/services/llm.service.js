@@ -13,7 +13,7 @@ const OPENROUTER_API_KEY = process.env.OPENROUTER_API_KEY;
 
 // Free/cheap model that's great at structured text generation.
 // Swap to 'openai/gpt-4o' or 'anthropic/claude-3-haiku' if you prefer.
-const DEFAULT_MODEL = 'mistralai/mistral-7b-instruct';
+const DEFAULT_MODEL = 'openai/gpt-oss-120b:free';
 
 // ─────────────────────────────────────────────
 // CORE — raw OpenRouter call

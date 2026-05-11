@@ -49,7 +49,7 @@ export const uploadResumeService = async ({ userId, file, rawText, jdText }) => 
             aiResult = await analyzeResume(rawText, jdText);
         } catch (err) {
             console.error('[AI SERVICE ERROR]', err.message);
-            throw errors.internal('AI service unavailable');
+            throw new Error('AI service unavailable');
         }
     }
 
@@ -247,13 +247,13 @@ export const scoreResumeService = async (resumeId, userId, jdText, isAuto = fals
         aiResult = await analyzeResume(resume.raw_text, resolvedJD);
     } catch (err) {
         logger.error('[SCORE AI ERROR]', { error: err.message });
-        throw errors.internal('AI service unavailable');
+        throw new Error('AI service unavailable');
     }
 
     const mapped = mapAIToATS(aiResult);
 
     // ── Step 4: Persist the score row ────────────────────────────────────
-    
+
     // Ensure target_role doesn't exceed the database varchar(255) limit.
     // When isAuto=false, jdText is the FULL pasted job description, so taking jdText directly crashes the DB.
     let finalTargetRole = aiResult.target_role;
