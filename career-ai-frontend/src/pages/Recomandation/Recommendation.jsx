@@ -1,8 +1,9 @@
 import { useState, useEffect, useCallback } from "react";
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 // ─── API Config ───────────────────────────────────────────────────────────────
 // Set this to your backend base URL (e.g. http://localhost:5000/api/v1)
-const API_BASE = "http://localhost:5000/api/v1";
+const API_BASE = `${BACKEND_URL}/api/v1`;
 
 /**
  * Generic fetch helper — attaches the JWT stored in localStorage,
