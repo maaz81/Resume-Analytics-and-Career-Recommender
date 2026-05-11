@@ -5,6 +5,7 @@
  * automatically attaches the Bearer token via its request interceptor.
  */
 import API from '../../auth/services/api';
+export const BACKEND_URL = import.meta.env.VITE_BACKEND_URL;
 
 // ─── Create a new conversation ────────────────────────────────────────────────
 export const createConversationAPI = async () => {
@@ -45,7 +46,7 @@ export const sendMessageStreaming = async ({
 }) => {
     try {
         const token = localStorage.getItem('auth_token');
-        const baseURL = 'http://localhost:5000/api/v1';
+        const baseURL = BACKEND_URL;
 
         const response = await fetch(
             `${baseURL}/chat/conversations/${conversationId}/stream`,
