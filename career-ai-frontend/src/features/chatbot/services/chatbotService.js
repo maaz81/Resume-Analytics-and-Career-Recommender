@@ -49,7 +49,7 @@ export const sendMessageStreaming = async ({
         const baseURL = BACKEND_URL;
 
         const response = await fetch(
-            `${baseURL}/chat/conversations/${conversationId}/stream`,
+            `${baseURL}/api/v1/chat/conversations/${conversationId}/stream`,
             {
                 method: 'POST',
                 headers: {
