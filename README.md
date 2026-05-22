@@ -1,354 +1,256 @@
-🚀 Resume Analytics and Career Recommender with AI Interview Assistant
+<div align="center">
+  <h1>🚀 Career AI: Resume Analytics & Career Recommender</h1>
+  <p><strong>Intelligent AI-powered career intelligence platform with ATS scoring, skill gap analysis, and personalized career pathways.</strong></p>
 
-🎓 Final Year B.E Project
-📚 Academic Major Project for Engineering Students
+  [![React](https://img.shields.io/badge/React-19.0+-blue?style=for-the-badge&logo=react)](https://react.dev/)
+  [![Node.js](https://img.shields.io/badge/Node.js-18.0+-green?style=for-the-badge&logo=nodedotjs)](https://nodejs.org/)
+  [![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-teal?style=for-the-badge&logo=fastapi)](https://fastapi.tiangolo.com/)
+  [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-15.0+-blue?style=for-the-badge&logo=postgresql)](https://www.postgresql.org/)
+  [![Redis](https://img.shields.io/badge/Redis-Cache-red?style=for-the-badge&logo=redis)](https://redis.io/)
+</div>
 
 ---
 
-📌 Project Title
-AI-Powered Resume Analytics and Career Recommender System with Interview Preparation Chatbot
+## 📌 Professional Overview
+**Career AI** is a production-grade microservices-based career intelligence platform. It bridges the gap between job seekers and the modern ATS (Applicant Tracking System) environment. The platform intelligently parses resumes, extracts core skills via Natural Language Processing (NLP), and recommends personalized career trajectories using vector-based skill matching. 
+
+A built-in AI assistant helps users prepare for interviews, answers career queries, and guides them on optimizing their resumes based on real-time market data.
+
 ---
 
-🧠 Project Introduction
-In today’s competitive world, students and job seekers often struggle to create professional resumes, identify suitable career paths, and prepare confidently for interviews.
-Our Final Year B.E Project focuses on solving these problems using Artificial Intelligence, Machine Learning, and Natural Language Processing (NLP).
-The system analyzes resumes, extracts technical skills, recommends career domains, and provides personalized suggestions for improvement. Additionally, the platform includes an AI Chatbot Assistant that helps users with interview preparation, career guidance, resume-related queries, and confidence-building support.
-This project was developed as a collaborative team effort to demonstrate practical implementation of modern AI technologies in the recruitment and career guidance domain.
+## ❗ Problem Statement
+Job seekers frequently struggle to get past automated Applicant Tracking Systems (ATS) due to poor resume formatting, lack of target keywords, and generalized skill presentation. Furthermore, candidates lack personalized insights into skill gaps preventing them from transitioning into higher-level roles. Manual resume reviews are slow, biased, and generic.
+
 ---
 
+## ✨ Features
+- **Intelligent Resume Parsing:** Native PDF extraction using Python and SpaCy NLP models.
+- **ATS Health Scoring:** Automated evaluation of resume structure, keyword density, and formatting.
+- **Semantic Skill Extraction:** Contextual skill extraction to identify both hard technical skills and soft skills.
+- **Personalized Career Onboarding:** Define career goals, target companies, and remote work preferences to tailor the dashboard experience.
+- **AI Career Chatbot:** Conversational assistant for interview prep, HR questions, and dynamic career guidance.
+- **OAuth Authentication:** Secure JWT-based authentication combined with Google/GitHub OAuth integrations.
+- **Real-Time Analytics Dashboard:** Visual skill gaps, resume progression metrics, and predictive job matches.
 
-❗ Problem Statement
-Many students and fresh graduates face the following challenges:
-Difficulty creating ATS-friendly resumes
-Lack of knowledge about suitable career domains
-No proper guidance for improving resumes
-Confusion in selecting technical skills
-Limited interview preparation support
-No personalized career recommendations
-Lack of confidence during placements
-Traditional resume checking methods are manual, time-consuming, and often inaccurate.
 ---
 
+## 🛠️ Tech Stack
 
+### Frontend Architecture
+- **Framework:** React 19 (via Vite)
+- **State Management:** Redux Toolkit (`@reduxjs/toolkit`)
+- **Styling:** Tailwind CSS (with Forms, Typography, Aspect-Ratio plugins)
+- **PDF Rendering:** `react-pdf`
+- **Routing:** React Router v7
 
-💡 Proposed Solution
-To overcome these issues, we developed an intelligent web-based system that:
-✅ Analyzes uploaded resumes automatically
-✅ Extracts technical and soft skills using NLP
-✅ Recommends suitable career paths and job roles
-✅ Provides resume improvement suggestions
-✅ Predicts career domains based on skills
-✅ Includes an AI Chatbot for interview preparation
-✅ Helps users prepare for placement interviews
-✅ Provides personalized career guidance
-The system acts as a complete career-support assistant for students and professionals.
+### Backend Microservices
+- **Server Environment:** Node.js & Express.js
+- **Database:** PostgreSQL (with raw PG pooling & transaction safety)
+- **Caching & Queues:** Redis (for caching & future job queuing)
+- **Authentication:** Passport.js (JWT, Google OAuth, GitHub OAuth)
+- **File Uploads:** Multer (with limits & extension validation)
+
+### Machine Learning / AI Services
+- **Framework:** Python & FastAPI
+- **NLP & AI:** SpaCy, Scikit-learn, Pandas, OpenAI API
+- **Model Deployment:** Uvicorn (ASGI web server)
+
 ---
 
+## ⚙️ Architecture / Workflow
 
-
-
-🎯 Objectives of the Project
-To automate resume analysis using AI
-To recommend suitable careers based on user skills
-To help students improve their resumes
-To provide interview preparation support
-To create a user-friendly intelligent system
-To reduce manual career counseling efforts
-To improve placement readiness among students
----
-
-
-
-
-✨ Key Features
-📄 Resume Analysis
-Upload Resume (PDF/DOCX)
-Resume Parsing
-ATS-based Resume Insights
-Resume Quality Analysis
-
-
-🧠 Skill Extraction
-Technical Skill Detection
-Soft Skill Identification
-Keyword Extraction
-
-
-🎯 Career Recommendation
-Job Role Prediction
-Career Domain Suggestion
-Personalized Recommendations
-
-
-🤖 AI Chatbot Assistant
-Answers career-related queries
-Helps users prepare for interviews
-Provides HR interview questions
-Technical interview guidance
-Resume-building support
-Confidence-building suggestions
-
-
-📊 Analytics Dashboard
-Skill Visualization
-Resume Statistics
-Career Analytics Reports
-
-
-🔐 User Friendly System
-Simple Interface
-Fast Processing
-Easy Navigation
----
-
-
-🔥 How Our Project is Different from Existing Systems
-Existing Systems	Our System
-Only checks resume keywords	Intelligent AI-based analysis
-No personalized guidance	Personalized career recommendations
-No interview preparation	AI Interview Preparation Chatbot
-Limited skill analysis	Advanced NLP-based skill extraction
-Manual resume review	Automated smart analytics
-Generic suggestions	Customized improvement tips
----
-
-
-
-
-🛠️ Technologies Used
-
-💻 Frontend
-HTML5
-CSS3
-JavaScript
-Bootstrap
-⚙️ Backend
-Python
-Flask Framework
-
-🤖 Machine Learning & AI
-Scikit-learn
-NLP Techniques
-TF-IDF Vectorizer
-NLTK
-Pandas
-NumPy
-
-🗄️ Database
-SQLite / MongoDB
-📈 Visualization
-Matplotlib
-Charts & Analytics Dashboard
----
-
-
-
-🧩 System Modules
-1️⃣ Resume Upload Module
-Allows users to upload resumes in PDF or DOCX format.
-
-2️⃣ Resume Parsing Module
-Extracts text and important information from resumes.
-
-3️⃣ Skill Extraction Module
-Uses NLP techniques to identify skills and technologies.
-
-4️⃣ Career Recommendation Module
-Suggests suitable job roles and career paths.
-
-5️⃣ AI Chatbot Module
-Provides:
-Interview preparation
-Career guidance
-Resume-related help
-User query support
-
-6️⃣ Analytics Dashboard
-Displays skill analytics and recommendations visually.
----
-
-
-📊 Machine Learning Workflow
-```text
-Resume Upload
-      ↓
-Text Extraction
-      ↓
-Data Cleaning
-      ↓
-NLP Processing
-      ↓
-Skill Extraction
-      ↓
-Feature Engineering
-      ↓
-Career Prediction
-      ↓
-Recommendation Generation
-      ↓
-Analytics & Chatbot Support
+```mermaid
+graph TD
+    Client[React Frontend] -->|REST API| API[Express API Gateway]
+    API --> Auth[Auth Service / Passport]
+    API --> DB[(PostgreSQL)]
+    API --> Cache[(Redis Cache)]
+    
+    API -->|PDF Buffer / Raw Data| ML[FastAPI ML Service]
+    ML --> NLP[SpaCy NLP Engine]
+    ML --> Scorer[ATS Scoring Logic]
+    ML --> LLM[OpenAI / LLM Integration]
+    
+    NLP --> ML
+    Scorer --> ML
+    LLM --> ML
+    
+    ML -->|Parsed Data & Scores| API
+    API -->|Dashboard Data| Client
 ```
+
 ---
 
+## 📂 Folder Structure
 
-📂 Project Structure
 ```bash
-Resume-Analytics-and-Career-Recommender/
-│
-├── static/                 # CSS, JS, Images
-├── templates/              # HTML Templates
-├── model/                  # ML Models
-├── dataset/                # Datasets
-├── chatbot/                # AI Chatbot Module
-├── uploads/                # Uploaded Resumes
-├── app.py                  # Main Flask App
-├── requirements.txt
-├── README.md
-└── ...
+Ai-Powered-Resume-Analysis/
+├── career-ai-backend/          # Express.js API & Database Logic
+│   ├── src/                    # Controllers, Services, Mappers, Routes
+│   ├── prisma/                 # ORM/Schema (if integrated later)
+│   ├── migrations/             # SQL DB Migrations
+│   ├── uploads/                # Temporary local storage for resumes
+│   └── package.json            
+├── career-ai-frontend/         # React + Vite Client
+│   ├── src/                    # React Components, Redux Slices, Hooks
+│   ├── public/                 # Static assets
+│   ├── tailwind.config.js      # Styling configuration
+│   └── vite.config.js          
+└── career-ai-ml-services/      # Python AI/ML Microservice
+    ├── app.py / main.py        # FastAPI Application Entry
+    ├── modules/                # Skill extraction, parsing scripts
+    ├── data/                   # ML training datasets
+    └── requirements.txt        
 ```
+
 ---
 
+## 🚀 Installation & Setup
 
+### Prerequisites
+- Node.js (v18.0+)
+- Python (3.10+)
+- PostgreSQL (running locally or in the cloud)
+- Redis (optional, for caching)
 
-⚙️ Installation Steps
-1️⃣ Clone the Repository
-```bash
-git clone https://github.com/maaz81/Resume-Analytics-and-Career-Recommender.git
+### 1. Database Setup
+Ensure PostgreSQL is running. Create a new database:
+```sql
+CREATE DATABASE career_ai_db;
 ```
----
 
-2️⃣ Navigate to Project Directory
+### 2. Machine Learning Service (FastAPI)
 ```bash
-cd Resume-Analytics-and-Career-Recommender
-```
----
-
-3️⃣ Create Virtual Environment
-```bash
+cd career-ai-ml-services
 python -m venv venv
-```
----
-
-4️⃣ Activate Environment
-Windows
-```bash
-venv\Scripts\activate
-```
-
-Linux / Mac
-```bash
-source venv/bin/activate
-```
----
-
-5️⃣ Install Required Libraries
-```bash
+source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
+uvicorn main:app --reload --port 8001
 ```
 
----
-6️⃣ Run the Project
+### 3. Backend Setup (Node.js)
 ```bash
-python app.py
+cd career-ai-backend
+npm install
+# Copy env file and fill values
+cp .env.example .env 
+npm run dev
 ```
----
 
-
-🌐 Working of the System
-User uploads resume
-System extracts text using NLP
-Skills are identified automatically
-AI model predicts suitable careers
-Analytics dashboard displays insights
-Chatbot helps users with interview preparation
-Users receive personalized suggestions
----
-
-
-📸 Suggested Screenshots for README
-Add screenshots of:
-Home Page
-Resume Upload Interface
-Skill Analysis Dashboard
-Career Recommendation Result
-AI Chatbot Interface
-Interview Preparation Section
----
-
-
-🎓 Academic Relevance
-This project demonstrates practical implementation of:
-Artificial Intelligence
-Machine Learning
-Natural Language Processing
-Web Development
-Data Analytics
-
-It is suitable for:
-✅ Final Year B.E Projects  
-✅ Computer Engineering Projects  
-✅ AI & ML Academic Projects  
-✅ Placement Preparation Systems
----
-
-
-🚀 Future Enhancements
-Real-Time Job Portal Integration
-LinkedIn Profile Analysis
-Voice-based AI Interview Assistant
-AI Resume Builder
-Resume Score Prediction
-Online Mock Interviews
-Multi-language Resume Support
-Deep Learning Career Prediction Models
----
-
-👨‍💻 Team Work & Contribution
-This project was developed through collaborative teamwork where every team member contributed to different modules such as:
-Frontend Development
-Backend Integration
-Machine Learning Model Development
-NLP Processing
-Database Management
-Chatbot Integration
-Testing & Documentation
-The project reflects strong teamwork, communication, problem-solving, and technical implementation skills.
----
-
-
-🤝 Contribution
-Contributions and suggestions are welcome.
-Fork the repository
-Create your feature branch
-Commit changes
-Push to branch
-Open Pull Request
-
+### 4. Frontend Setup (React/Vite)
+```bash
+cd career-ai-frontend
+npm install
+# Configure your VITE_BACKEND_URL in .env
+npm run dev
+```
 
 ---
-📝 License
-This project is developed for educational and academic purposes.
+
+## 🔐 Environment Variables
+
+### Backend (`career-ai-backend/.env`)
+```ini
+NODE_ENV=development
+PORT=5000
+DB_HOST=localhost
+DB_PORT=5432
+DB_NAME=career_ai_db
+DB_USER=postgres
+DB_PASSWORD=yourpassword
+
+JWT_SECRET=your-super-secret-jwt-key
+JWT_EXPIRE=7d
+
+REDIS_HOST=localhost
+REDIS_PORT=6379
+
+# AI Microservices
+AI_PARSER_URL=http://localhost:8001
+OPENROUTER_API_KEY=your_openrouter_key
+
+# OAuth Integrations
+GOOGLE_CLIENT_ID=your_google_client_id
+GOOGLE_CLIENT_SECRET=your_google_client_secret
+```
+
+### Frontend (`career-ai-frontend/.env`)
+```ini
+VITE_BACKEND_URL=http://localhost:5000
+```
+
 ---
 
-👨‍💻 Developed By
-Final Year B.E Students Team
-🎓 Department of Engineering  
-💻 AI & ML / Computer Engineering Project
+## 🔌 API Endpoints Table
+
+| Category | Method | Endpoint | Description | Auth Required |
+|----------|--------|----------|-------------|:---:|
+| **Auth** | POST | `/api/v1/auth/login` | Email/Password Login | ❌ |
+| **Auth** | POST | `/api/v1/auth/signup` | Register new user | ❌ |
+| **Auth** | POST | `/api/v1/auth/oauth` | Google/GitHub SSO login | ❌ |
+| **Auth** | GET | `/api/v1/auth/me` | Fetch active user session | ✅ |
+| **Onboarding** | POST | `/api/v1/onboarding/career-goal` | Save target career data | ✅ |
+| **Onboarding** | POST | `/api/v1/onboarding/resume` | Upload PDF Resume (Multer) | ✅ |
+| **Dashboard** | GET | `/api/v1/dashboard` | Fetch ATS, skill gaps, & metrics | ✅ |
+| **Dashboard** | GET | `/api/v1/dashboard/quick-stats` | Fetch lightweight navbar stats | ✅ |
+| **Chat** | POST | `/api/v1/chat/message` | Send prompt to AI Interview bot | ✅ |
+| **Chat** | GET | `/api/v1/chat/suggestions` | Get contextual prompt suggestions | ✅ |
+
+### Example Request (Career Goal)
+```json
+POST /api/v1/onboarding/career-goal
+{
+  "targetRole": "senior-software-engineer",
+  "experienceLevel": "mid",
+  "targetCompanies": ["Google", "Microsoft"],
+  "location": "India",
+  "remotePreference": "flexible"
+}
+```
+
 ---
 
-⭐ Support
-If you like this project:
-⭐ Star the Repository  
-🍴 Fork the Project  
-📢 Share with Others
+## 🤖 Machine Learning Workflow
+The AI service is decoupled to isolate heavy NLP processing from the main transactional web server.
+1. **Resume Ingestion:** PDF buffer is received by FastAPI.
+2. **Layout Parsing:** Extracts logical sections (Experience, Education, Skills) preserving context.
+3. **NLP Extraction:** Spacy models identify domain-specific terminology (e.g. `React`, `Python`, `Agile`).
+4. **Vector Matching:** Recommender algorithms match extracted vectors against known job description vectors.
+5. **Scoring:** ML models generate a JSON dictionary of `formatting_score`, `experience_score`, and missing skills.
+
 ---
 
-📬 Contact
-For queries or suggestions regarding this project, feel free to connect through GitHub.
-GitHub Repository:  
-https://github.com/maaz81/Resume-Analytics-and-Career-Recommender
+## ⚡ Performance / Optimization Highlights
+- **Transaction Safety:** Multi-step database writes (like saving a resume, extracting skills, and creating a log) are wrapped in `BEGIN` / `COMMIT` blocks to prevent dirty reads.
+- **Asynchronous AI Calling:** The system connects with AI Services outside the Postgres transaction scope, ensuring DB connections are not held hostage by external HTTP latency.
+- **Bulk Insertions:** Uses Postgres `unnest($3::text[])` for array operations to avoid N+1 query performance degradation.
+- **Parallel Fetching:** Employs `Promise.all` across the Dashboard services to concurrently query multiple metrics.
+
+---
+
+## 🚢 Deployment Instructions
+The application is designed for cloud-native deployments.
+
+### Frontend Deployment (Vercel)
+The `vercel.json` ensures single-page application routing behaves correctly:
+```json
+{
+  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
+}
+```
+Deploy via Vercel CLI or connect the GitHub repository directly to Vercel.
+
+### Backend & ML Service Deployment (Render / Railway)
+- Use the provided `render.yaml` inside `career-ai-ml-services` to orchestrate FastAPI.
+- Node.js Backend can be deployed via Docker or directly as a Web Service on Render with environment variables mapped to managed PostgreSQL/Redis instances.
+
+---
+
+## 📄 License
+This project is open-source and available under the **MIT License**.
+
 ---
 
 <div align="center">
-🌟 “Empowering Students with AI-Driven Career Guidance” 🌟
+  🌟 <i>Empowering the next generation of engineers with AI-driven career guidance</i> 🌟
 </div>
