@@ -23,6 +23,17 @@ Job seekers frequently struggle to get past automated Applicant Tracking Systems
 
 ---
 
+## 🌐 Live Links
+
+| Service | URL |
+|---|---|
+| Frontend | https://career-ai-resume-analysis.vercel.app/ |
+| Backend API | https://resume-analytics-and-career-recommender-1.onrender.com |
+| Swagger Docs | https://resume-analytics-and-career-recommender-1.onrender.com/api-docs |
+| ML Service | https://resume-analytics-and-career-recommender.onrender.com |
+
+---
+
 ## ✨ Features
 - **Intelligent Resume Parsing:** Native PDF extraction using Python and SpaCy NLP models.
 - **ATS Health Scoring:** Automated evaluation of resume structure, keyword density, and formatting.
@@ -228,26 +239,23 @@ The AI service is decoupled to isolate heavy NLP processing from the main transa
 
 ---
 
-## 🚢 Deployment Instructions
-The application is designed for cloud-native deployments.
+## 🚢 Deployed Links
 
-### Frontend Deployment (Vercel)
-The `vercel.json` ensures single-page application routing behaves correctly:
-```json
-{
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
-}
-```
-Deploy via Vercel CLI or connect the GitHub repository directly to Vercel.
+| Service | URL |
+|---|---|
+| Frontend | https://career-ai-resume-analysis.vercel.app/ |
+| Backend API | https://resume-analytics-and-career-recommender-1.onrender.com |
+| Swagger Docs | https://resume-analytics-and-career-recommender-1.onrender.com/api-docs |
+| ML Service | https://resume-analytics-and-career-recommender.onrender.com |
 
-### Backend & ML Service Deployment (Render / Railway)
-- Use the provided `render.yaml` inside `career-ai-ml-services` to orchestrate FastAPI.
-- Node.js Backend can be deployed via Docker or directly as a Web Service on Render with environment variables mapped to managed PostgreSQL/Redis instances.
 
 ---
 
-## 📄 License
-This project is open-source and available under the **MIT License**.
+## 📄 License & Usage
+
+This project is intended for learning and portfolio demonstration purposes.
+
+Unauthorized commercial use, resale, or redistribution of this project is not permitted.
 
 ---
 
