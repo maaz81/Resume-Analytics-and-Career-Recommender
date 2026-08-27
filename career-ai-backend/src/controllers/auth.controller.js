@@ -9,6 +9,8 @@ import { successResponse, createdResponse } from '../utils/response.js';
 import { errors, catchAsync } from '../middleware/errorHandler.js';
 import { cache, cacheKeys } from '../config/redis.js';
 import logger from '../config/logger.js';
+import crypto from 'crypto';
+import { sendPasswordResetEmail } from '../services/email.service.js';
 
 /**
  * Register new user
@@ -282,4 +284,150 @@ export const oauthSuccess = catchAsync(async (req, res) => {
     logger.info('OAuth success — redirecting to frontend', { userId: user.id, frontendUrl });
 
     res.redirect(`${frontendUrl}/oauth-success?token=${tokens.accessToken}`);
+});
+
+/**
+ * Forgot password
+ * POST /api/v1/auth/forgot-password
+ */
+export const forgotPassword = catchAsync(async (req, res) => {
+    const { email } = req.body;
+
+    const user = await User.findByEmail(email);
+
+    const resetToken = crypto
+        .randomBytes(32)
+        .toString('hex');
+
+    const hashedToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+
+    const expiresAt = new Date(
+        Date.now() + 15 * 60 * 1000
+    );
+
+    await User.setPasswordResetToken(
+        user.id,
+        hashedToken,
+        expiresAt
+    );
+
+    await sendPasswordResetEmail(
+        user.email,
+        resetToken
+    );
+
+    const successMessage =
+        'If an account exists with this email, a password reset link has been sent.';
+
+    // Do not reveal whether the user exists
+    if (!user) {
+        return successResponse(
+            res,
+            null,
+            successMessage
+        );
+    }
+
+    // OAuth users do not have a local password
+    if (!user.password_hash) {
+        return successResponse(
+            res,
+            null,
+            successMessage
+        );
+    }
+
+    // Save hashed token to database
+    await User.setPasswordResetToken(
+        user.id,
+        hashedToken,
+        expiresAt
+    );
+
+    // Send email containing RAW token
+    await sendPasswordResetEmail(
+        user.email,
+        resetToken
+    );
+
+    // Audit log
+    await AuditLog.create({
+        userId: user.id,
+        action: 'user.password_reset_requested',
+        ipAddress: req.ip,
+        userAgent: req.get('user-agent'),
+    });
+
+    logger.info('Password reset requested', {
+        userId: user.id,
+    });
+
+    return successResponse(
+        res,
+        null,
+        successMessage
+    );
+});
+
+
+/**
+ * Reset password
+ * POST /api/v1/auth/reset-password
+ */
+export const resetPassword = catchAsync(async (req, res) => {
+    const { token, newPassword } = req.body;
+
+    if (!token || !newPassword) {
+        throw errors.badRequest(
+            'Token and new password are required'
+        );
+    }
+
+    // Hash received token
+    const hashedToken = crypto
+        .createHash('sha256')
+        .update(token)
+        .digest('hex');
+
+    // Find user with valid token
+    const user = await User.findByPasswordResetToken(
+        hashedToken
+    );
+
+    if (!user) {
+        throw errors.badRequest(
+            'Invalid or expired password reset token'
+        );
+    }
+
+    // Change password
+    await User.changePassword(
+        user.id,
+        newPassword
+    );
+
+    // Optional: invalidate sessions
+    await cache.delPattern(`session:${user.id}:*`);
+
+    // Clear user cache
+    await cache.del(cacheKeys.user(user.id));
+
+    // Audit log
+    await AuditLog.create({
+        userId: user.id,
+        action: 'user.password_reset'
+    });
+
+    logger.info('Password reset successfully', {
+        userId: user.id
+    });
+
+    return successResponse(
+        res,
+        null,
+        'Password reset successfully'
+    );
 });

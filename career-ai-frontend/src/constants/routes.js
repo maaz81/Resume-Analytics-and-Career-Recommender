@@ -3,13 +3,13 @@
  * Centralized route definitions for maintainability
  */
 
-import { Routes } from "react-router-dom";
-
 export const ROUTES = {
   // Public Routes
   HOME: '/',
   LOGIN: '/login',
   SIGNUP: '/signup',
+  FORGOT_PASSWORD: '/forgot-password',
+  RESET_PASSWORD: '/reset-password',
 
   // Onboarding Flow
   ONBOARDING_CAREER_GOAL: '/onboarding/career-goal',
@@ -59,7 +59,13 @@ export const generatePath = (route, params = {}) => {
  * Route groups for navigation
  */
 export const ROUTE_GROUPS = {
-  PUBLIC: [ROUTES.HOME, ROUTES.LOGIN, ROUTES.SIGNUP],
+  PUBLIC: [
+    ROUTES.HOME,
+    ROUTES.LOGIN,
+    ROUTES.SIGNUP,
+    ROUTES.FORGOT_PASSWORD,
+    ROUTES.RESET_PASSWORD,
+  ],
   ONBOARDING: [ROUTES.ONBOARDING_CAREER_GOAL, ROUTES.ONBOARDING_RESUME_UPLOAD],
   PROTECTED: [
     ROUTES.DASHBOARD,

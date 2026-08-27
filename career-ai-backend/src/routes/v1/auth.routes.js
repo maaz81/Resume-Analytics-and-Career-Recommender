@@ -56,12 +56,23 @@ const changePasswordValidation = [
     body('currentPassword')
         .notEmpty()
         .withMessage('Current password is required'),
+
     body('newPassword')
         .isLength({ min: 8 })
-        .withMessage('New password must be at least 8 characters long')
+        .withMessage('Password must be at least 8 characters long')
         .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
-        .withMessage('Password must contain at least one uppercase letter, one lowercase letter, and one number'),
+        .withMessage(
+            'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+        ),
 ];
+
+const passwordValidation = body('newPassword')
+    .isLength({ min: 8 })
+    .withMessage('Password must be at least 8 characters long')
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+    .withMessage(
+        'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+    );
 
 // Public routes
 router.post(
@@ -121,6 +132,38 @@ router.get('/github',
 router.get('/github/callback',
     passport.authenticate('github', { session: false }),
     authController.oauthSuccess
+);
+
+// ============================================
+// Password reset routes
+// ============================================
+
+router.post(
+    '/forgot-password',
+    authLimiter,
+    body('email')
+        .isEmail()
+        .normalizeEmail()
+        .withMessage('Please provide a valid email'),
+    validate,
+    authController.forgotPassword
+);
+
+router.post(
+    '/reset-password',
+    authLimiter,
+    body('token')
+        .notEmpty()
+        .withMessage('Token is required'),
+    body('newPassword')
+        .isLength({ min: 8 })
+        .withMessage('Password must be at least 8 characters long')
+        .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/)
+        .withMessage(
+            'Password must contain at least one uppercase letter, one lowercase letter, and one number'
+        ),
+    validate,
+    authController.resetPassword
 );
 
 export default router;

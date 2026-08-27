@@ -12,6 +12,8 @@ import AppLayout from '@components/layout/AppLayout';
 // Pages
 import LoginPage from '@pages/Auth/LoginPage';
 import SignupPage from '@pages/Auth/SignupPage';
+import ForgotPasswordPage from '@pages/Auth/ForgotPasswordPage';
+import ResetPasswordPage from '@pages/Auth/ResetPasswordPage';
 import CareerGoalPage from '@pages/Onboarding/CareerGoalPage';
 import ResumeUploadPage from '@pages/Onboarding/ResumeUploadPage';
 import JobDescriptionPage from '@pages/Onboarding/JobDescriptionPage';
@@ -51,6 +53,27 @@ const AppRoutes = () => {
           <PublicRoute>
             <AuthLayout>
               <SignupPage />
+            </AuthLayout>
+          </PublicRoute>
+        }
+      />
+      <Route
+        path={ROUTES.FORGOT_PASSWORD}
+        element={
+          <PublicRoute>
+            <AuthLayout>
+              <ForgotPasswordPage />
+            </AuthLayout>
+          </PublicRoute>
+        }
+      />
+
+      <Route
+        path={ROUTES.RESET_PASSWORD}
+        element={
+          <PublicRoute>
+            <AuthLayout>
+              <ResetPasswordPage />
             </AuthLayout>
           </PublicRoute>
         }

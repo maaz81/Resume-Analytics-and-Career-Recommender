@@ -114,7 +114,7 @@ const LoginForm = () => {
           </label>
 
           <Link
-            to="#"
+            to={ROUTES.FORGOT_PASSWORD}
             className="text-sm font-medium text-brand-primary hover:text-brand-primary/80 transition-colors"
           >
             Forgot password?

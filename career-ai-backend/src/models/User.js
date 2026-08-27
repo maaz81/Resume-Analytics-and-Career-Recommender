@@ -160,7 +160,13 @@ export default class User {
         const passwordHash = await bcrypt.hash(newPassword, 12);
 
         await query(
-            'UPDATE "users" SET "password_hash" = $1, "updated_at" = NOW() WHERE "id" = $2',
+            `UPDATE "users"
+         SET
+            "password_hash" = $1,
+            "password_reset_token" = NULL,
+            "password_reset_expires" = NULL,
+            "updated_at" = NOW()
+         WHERE "id" = $2`,
             [passwordHash, id]
         );
     }
@@ -216,5 +222,51 @@ export default class User {
         );
 
         return result.rows[0] || null;
+    }
+
+    /**
+ * Save password reset token
+ */
+    static async setPasswordResetToken(id, hashedToken, expiresAt) {
+        await query(
+            `UPDATE "users"
+         SET
+            "password_reset_token" = $1,
+            "password_reset_expires" = $2,
+            "updated_at" = NOW()
+         WHERE "id" = $3`,
+            [hashedToken, expiresAt, id]
+        );
+    }
+
+    /**
+ * Find user by valid password reset token
+ */
+    static async findByPasswordResetToken(hashedToken) {
+        const result = await query(
+            `SELECT *
+         FROM "users"
+         WHERE "password_reset_token" = $1
+           AND "password_reset_expires" > NOW()
+           AND "is_active" = TRUE`,
+            [hashedToken]
+        );
+
+        return result.rows[0] || null;
+    }
+
+    /**
+ * Clear password reset token
+ */
+    static async clearPasswordResetToken(id) {
+        await query(
+            `UPDATE "users"
+         SET
+            "password_reset_token" = NULL,
+            "password_reset_expires" = NULL,
+            "updated_at" = NOW()
+         WHERE "id" = $1`,
+            [id]
+        );
     }
 }
