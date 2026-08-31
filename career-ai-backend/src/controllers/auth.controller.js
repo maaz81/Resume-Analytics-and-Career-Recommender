@@ -131,15 +131,26 @@ export const login = catchAsync(async (req, res) => {
  * GET /api/v1/auth/me
  */
 export const getMe = catchAsync(async (req, res) => {
-    const user = await User.findById(req.user.id);
+    const cacheKey = cacheKeys.user(req.user.id);
+
+    let user = await cache.get(cacheKey);
 
     if (!user) {
-        throw errors.notFound('User not found');
+        user = await User.findById(req.user.id);
+
+        if (!user) {
+            throw errors.notFound('User not found');
+        }
+
+        await cache.set(cacheKey, user, 3600);
     }
 
-    return successResponse(res, { user }, 'User retrieved successfully');
+    return successResponse(
+        res,
+        { user },
+        'User retrieved successfully'
+    );
 });
-
 /**
  * Update profile
  * PATCH /api/v1/auth/profile
