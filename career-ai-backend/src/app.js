@@ -11,6 +11,8 @@ import compression from 'compression';
 import morgan from 'morgan';
 import config from './config/env.js';
 import logger from './config/logger.js';
+import swaggerSpec from './config/swagger.js';
+import swaggerUi from 'swagger-ui-express';
 
 // Import middleware
 import { errorHandler } from './middleware/errorHandler.js';
@@ -123,6 +125,22 @@ app.get("/", (req, res) => {
 // HEALTH CHECK & INFO
 // ============================================
 
+/**
+ * @swagger
+ * /health:
+ *   get:
+ *     summary: Health check
+ *     description: Returns the current health status of the API server.
+ *     tags:
+ *       - Health
+ *     responses:
+ *       200:
+ *         description: Server is running successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/HealthResponse'
+ */
 app.get('/health', (req, res) => {
     res.status(200).json({
         status: 'success',
@@ -142,10 +160,27 @@ app.get('/api', (req, res) => {
 });
 
 // ============================================
-// API ROUTES
+// API PREFIX
 // ============================================
 
 const API_PREFIX = `/api/${config.apiVersion}`;
+
+// ============================================
+// SWAGGER API DOCUMENTATION
+// ============================================
+
+app.use(
+    `${API_PREFIX}/docs`,
+    swaggerUi.serve,
+    swaggerUi.setup(swaggerSpec, {
+        explorer: true,
+        customSiteTitle: 'Career AI Platform API Docs',
+    })
+);
+
+// ============================================
+// API ROUTES
+// ============================================
 
 app.use(`${API_PREFIX}/auth`, authRoutes);
 app.use(`${API_PREFIX}/dashboard`, dashboardRoutes);

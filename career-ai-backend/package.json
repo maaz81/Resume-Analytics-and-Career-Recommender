@@ -47,6 +47,8 @@
         "pg": "^8.11.3",
         "redis": "^4.7.1",
         "resend": "^6.24.0",
+        "swagger-jsdoc": "^6.3.0",
+        "swagger-ui-express": "^5.0.1",
         "uuid": "^9.0.1",
         "winston": "^3.11.0"
     },
