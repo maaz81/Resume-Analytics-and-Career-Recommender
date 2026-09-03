@@ -234,7 +234,7 @@ export default class SkillsService {
 
     return missingSkills
       .sort((a, b) => {
-        return (priorityOrder[a.priority] || 99) - (priorityOrder[b.priority] || 99);
+        return (priorityOrder[a.priority] ?? 99) - (priorityOrder[b.priority] ?? 99);
       })
       .map((s) => s.skill_name);
   }

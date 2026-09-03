@@ -179,7 +179,7 @@ export default class DashboardService {
       .sort((a, b) => {
         // Sort by severity: critical > high > medium > low
         const severityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
-        return (severityOrder[a.severity] || 99) - (severityOrder[b.severity] || 99);
+        return (severityOrder[a.severity] ?? 99) - (severityOrder[b.severity] ?? 99);
       })
       .slice(0, count)
       .map((issue) => ({
