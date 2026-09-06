@@ -2,11 +2,11 @@ name: ML Services CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "maaz" ]
     paths:
       - 'career-ai-ml-services/**'
   pull_request:
-    branches: [ "main" ]
+    branches: [ "maaz" ]
     paths:
       - 'career-ai-ml-services/**'
 

@@ -2,11 +2,11 @@ name: Backend CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "maaz" ]
     paths:
       - 'career-ai-backend/**'
   pull_request:
-    branches: [ "main" ]
+    branches: [ "maaz" ]
     paths:
       - 'career-ai-backend/**'
 
