@@ -1,12 +1,15 @@
 name: Backend CI
 
 on:
+  workflow_dispatch:
+
   push:
-    branches: [ "maaz" ]
+    branches: ["maaz"]
     paths:
       - 'career-ai-backend/**'
+
   pull_request:
-    branches: [ "maaz" ]
+    branches: ["maaz"]
     paths:
       - 'career-ai-backend/**'
 
