@@ -48,3 +48,4 @@ jobs:
         env:
           NODE_ENV: test
           JWT_SECRET: ci-test-secret-key
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
