@@ -10,7 +10,7 @@ import { errors, catchAsync } from '../middleware/errorHandler.js';
 import { cache, cacheKeys } from '../config/redis.js';
 import logger from '../config/logger.js';
 import crypto from 'crypto';
-import { sendPasswordResetEmail } from '../services/email.service.js';
+import { addPasswordResetEmailJob } from '../queues/email.queue.js';
 
 /**
  * Register new user
@@ -304,34 +304,11 @@ export const oauthSuccess = catchAsync(async (req, res) => {
 export const forgotPassword = catchAsync(async (req, res) => {
     const { email } = req.body;
 
-    const user = await User.findByEmail(email);
-
-    const resetToken = crypto
-        .randomBytes(32)
-        .toString('hex');
-
-    const hashedToken = crypto
-        .createHash('sha256')
-        .update(resetToken)
-        .digest('hex');
-
-    const expiresAt = new Date(
-        Date.now() + 15 * 60 * 1000
-    );
-
-    await User.setPasswordResetToken(
-        user.id,
-        hashedToken,
-        expiresAt
-    );
-
-    await sendPasswordResetEmail(
-        user.email,
-        resetToken
-    );
-
     const successMessage =
         'If an account exists with this email, a password reset link has been sent.';
+
+    // Find user
+    const user = await User.findByEmail(email);
 
     // Do not reveal whether the user exists
     if (!user) {
@@ -351,18 +328,34 @@ export const forgotPassword = catchAsync(async (req, res) => {
         );
     }
 
-    // Save hashed token to database
+    // Generate secure reset token
+    const resetToken = crypto
+        .randomBytes(32)
+        .toString('hex');
+
+    // Hash token before storing it
+    const hashedToken = crypto
+        .createHash('sha256')
+        .update(resetToken)
+        .digest('hex');
+
+    // Token expires in 15 minutes
+    const expiresAt = new Date(
+        Date.now() + 15 * 60 * 1000
+    );
+
+    // Store hashed token in database
     await User.setPasswordResetToken(
         user.id,
         hashedToken,
         expiresAt
     );
 
-    // Send email containing RAW token
-    await sendPasswordResetEmail(
-        user.email,
-        resetToken
-    );
+    await addPasswordResetEmailJob({
+        userId: user.id,
+        email: user.email,
+        resetToken,
+    });
 
     // Audit log
     await AuditLog.create({
@@ -382,7 +375,6 @@ export const forgotPassword = catchAsync(async (req, res) => {
         successMessage
     );
 });
-
 
 /**
  * Reset password

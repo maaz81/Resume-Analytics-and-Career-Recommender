@@ -35,7 +35,7 @@ export const sendPasswordResetEmail = async (email, resetToken) => {
     const { data, error } = await resend.emails.send({
         from: config.email.from,
         to: email,
-        subject: 'Reset your JobSphere password',
+        subject: 'Reset your resume.ai password',
 
         html: `
             <!DOCTYPE html>
