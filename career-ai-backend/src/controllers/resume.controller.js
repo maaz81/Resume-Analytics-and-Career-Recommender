@@ -3,7 +3,9 @@
 // ============================================
 
 import fs from 'fs';
-import pdf from 'pdf-parse';
+import { addResumeProcessingJob } from '../queues/resume.queue.js';
+import Resume from '../models/Resume.js';
+import { query } from '../config/db.js';
 
 import {
     uploadResumeService,
@@ -18,23 +20,90 @@ import { errors, catchAsync } from '../middleware/errorHandler.js';
 
 
 export const uploadResume = catchAsync(async (req, res) => {
-    if (!req.file) throw errors.badRequest('No file uploaded');
+    if (!req.file) {
+        throw errors.badRequest('No file uploaded');
+    }
 
     try {
-        const buffer = await fs.promises.readFile(req.file.path);
-        const pdfData = await pdf(buffer);
+        const userId = req.user.id;
 
-        const result = await uploadResumeService({
-            userId: req.user.id,
-            file: req.file,
-            rawText: pdfData.text,
-            jdText: req.body.jdText   // optional but recommended
+        // Deactivate previous resumes
+        await query(
+            `UPDATE resumes
+             SET is_active = false
+             WHERE user_id = $1`,
+            [userId]
+        );
+
+        // Calculate next version
+        const versionResult = await query(
+            `SELECT COALESCE(MAX(version), 0) + 1 AS next_version
+             FROM resumes
+             WHERE user_id = $1`,
+            [userId]
+        );
+
+        const nextVersion =
+            versionResult.rows[0].next_version;
+
+        // Create resume record immediately
+        const resumeResult = await query(
+            `INSERT INTO resumes (
+                user_id,
+                version,
+                original_filename,
+                file_path,
+                file_size,
+                mime_type,
+                parsing_status,
+                is_active
+             )
+             VALUES (
+                $1,
+                $2,
+                $3,
+                $4,
+                $5,
+                $6,
+                'pending',
+                true
+             )
+             RETURNING *`,
+            [
+                userId,
+                nextVersion,
+                req.file.originalname,
+                req.file.path,
+                req.file.size,
+                req.file.mimetype,
+            ]
+        );
+
+        const resume = resumeResult.rows[0];
+
+        // Add background job
+        const job = await addResumeProcessingJob({
+            resumeId: resume.id,
+            userId,
+            filePath: req.file.path,
+            jdText: req.body.jdText || null,
         });
 
-        return createdResponse(res, result, 'Resume analyzed successfully');
+        return createdResponse(
+            res,
+            {
+                resumeId: resume.id,
+                jobId: job.id,
+                status: 'pending',
+            },
+            'Resume uploaded and processing started'
+        );
 
     } catch (error) {
-        await fs.promises.unlink(req.file.path).catch(() => { });
+        await fs.promises
+            .unlink(req.file.path)
+            .catch(() => { });
+
         throw error;
     }
 });
