@@ -6,6 +6,7 @@ import fs from 'fs';
 import { addResumeProcessingJob } from '../queues/resume.queue.js';
 import Resume from '../models/Resume.js';
 import { query } from '../config/db.js';
+import { cache, cacheKeys } from '../config/redis.js';
 
 import {
     uploadResumeService,
@@ -88,6 +89,11 @@ export const uploadResume = catchAsync(async (req, res) => {
             filePath: req.file.path,
             jdText: req.body.jdText || null,
         });
+
+        // Invalidate caches so the dashboard immediately shows the pending upload
+        await cache.del(cacheKeys.dashboard(userId));
+        await cache.del(cacheKeys.userContext(userId));
+        await cache.del(cacheKeys.resumeActive(userId));
 
         return createdResponse(
             res,

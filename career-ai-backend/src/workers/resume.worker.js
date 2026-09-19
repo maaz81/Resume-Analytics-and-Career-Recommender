@@ -9,6 +9,7 @@ import logger from '../config/logger.js';
 import Resume from '../models/Resume.js';
 import { analyzeResume } from '../services/ai.service.js';
 import { query, pool } from '../config/db.js';
+import { cache, cacheKeys } from '../config/redis.js';
 
 const connection = config.redis.url
     ? new IORedis(config.redis.url, {
@@ -167,6 +168,11 @@ const resumeWorker = new Worker(
                 [resumeId, userId]
             );
 
+            // Invalidate caches so frontend sees the completed parsing
+            await cache.del(cacheKeys.dashboard(userId));
+            await cache.del(cacheKeys.userContext(userId));
+            await cache.del(cacheKeys.resumeActive(userId));
+
             logger.info('Resume processing completed', {
                 jobId: job.id,
                 resumeId,
@@ -189,6 +195,11 @@ const resumeWorker = new Worker(
                 resumeId,
                 error.message
             );
+
+            // Invalidate caches so frontend sees the parsing failure
+            await cache.del(cacheKeys.dashboard(userId));
+            await cache.del(cacheKeys.userContext(userId));
+            await cache.del(cacheKeys.resumeActive(userId));
 
             throw error;
         }

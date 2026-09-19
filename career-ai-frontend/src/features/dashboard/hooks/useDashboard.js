@@ -73,6 +73,21 @@ export const useDashboard = ({ autoLoad = true, loadQuickStatsOnly = false } = {
     }
   }, [autoLoad, loadQuickStatsOnly, loadDashboard, loadQuickStats]);
 
+  // Poll dashboard if a resume is currently being processed
+  useEffect(() => {
+    let intervalId;
+    if (resume?.parsingStatus === 'pending' || resume?.parsingStatus === 'processing') {
+      // Poll every 3 seconds to get the latest AI analysis results
+      intervalId = setInterval(() => {
+        refreshDashboard();
+      }, 3000);
+    }
+
+    return () => {
+      if (intervalId) clearInterval(intervalId);
+    };
+  }, [resume?.parsingStatus, refreshDashboard]);
+
   return {
     // Data
     stats,
