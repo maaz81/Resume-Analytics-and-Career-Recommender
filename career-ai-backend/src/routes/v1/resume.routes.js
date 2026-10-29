@@ -210,4 +210,11 @@ router.get('/:id/file', controller.serveResumeFile);
  */
 router.delete('/:id', controller.deleteResumeController);
 
+
+// ============================================
+// Polling: Resume Parsing Status
+// Works in both queue mode (poll until worker finishes) and
+// direct mode (status is 'completed' immediately after upload).
+// ============================================
+router.get('/:id/status', controller.getResumeStatus);
 export default router;

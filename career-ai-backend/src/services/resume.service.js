@@ -9,7 +9,7 @@ import Resume from '../models/Resume.js';
 import { errors } from '../middleware/errorHandler.js';
 import { query, pool } from '../config/db.js';
 import { analyzeResume } from './ai.service.js';
-import { generateAutoJobDescription } from './llm.service.js';       // ← NEW
+import { generateAutoJobDescription } from './llm.service.js';
 import { mapAIToATS, formatAnalysisResponse } from '../utils/resume.mapper.js';
 import logger from '../config/logger.js';
 
@@ -38,7 +38,7 @@ const resolveResume = async (resumeId, userId) => {
 
 
 // ─────────────────────────────────────────────
-// 1. UPLOAD + ANALYZE
+// 1. UPLOAD + ANALYZE (direct helper or batch)
 // ─────────────────────────────────────────────
 export const uploadResumeService = async ({ userId, file, rawText, jdText }) => {
 
@@ -71,7 +71,7 @@ export const uploadResumeService = async ({ userId, file, rawText, jdText }) => 
              VALUES (
                 $1,
                 COALESCE((SELECT MAX(version) FROM resumes WHERE user_id = $1), 0) + 1,
-                $2, $3, $4, $5, $6, true, 'parsed'
+                $2, $3, $4, $5, $6, true, 'completed'
              )
              RETURNING *`,
             [userId, file.originalname, file.path, file.size, file.mimetype, rawText]
@@ -199,6 +199,40 @@ export const scoreResumeService = async (resumeId, userId, jdText, isAuto = fals
     const resume = await resolveResume(resumeId, userId);
     const resolvedId = resume.id;
 
+    // ── Defensive Check & Self-Healing: Ensure raw_text is available ────
+    let rawText = resume.raw_text;
+    if (!rawText?.trim() && resume.file_path) {
+        try {
+            logger.info('[SCORE] raw_text missing on resume record, attempting self-healing PDF extraction', {
+                resumeId: resolvedId,
+                filePath: resume.file_path,
+            });
+            const buffer = await fs.readFile(resume.file_path);
+            const pdf = (await import('pdf-parse')).default;
+            const pdfData = await pdf(buffer);
+            rawText = pdfData.text?.trim() || null;
+            if (rawText) {
+                await query(
+                    `UPDATE resumes
+                     SET raw_text = $1, parsing_status = 'completed', parsed_at = NOW(), parsing_error = NULL
+                     WHERE id = $2`,
+                    [rawText, resolvedId]
+                );
+                resume.raw_text = rawText;
+                resume.parsing_status = 'completed';
+                logger.info('[SCORE] On-the-fly PDF extraction succeeded', { resumeId: resolvedId });
+            }
+        } catch (readErr) {
+            logger.warn('[SCORE] Could not extract PDF text on the fly', { error: readErr.message });
+        }
+    }
+
+    if (!resume.raw_text?.trim()) {
+        throw errors.badRequest(
+            'Resume text is not available yet. Please wait a moment for processing to complete or re-upload your resume.'
+        );
+    }
+
     // ── Step 1: Resolve the actual JD text ──────────────────────────────
     let resolvedJD = jdText;          // default: use what the user provided
     let generatedJD = null;           // only set when isAuto === true
@@ -253,9 +287,6 @@ export const scoreResumeService = async (resumeId, userId, jdText, isAuto = fals
     const mapped = mapAIToATS(aiResult);
 
     // ── Step 4: Persist the score row ────────────────────────────────────
-
-    // Ensure target_role doesn't exceed the database varchar(255) limit.
-    // When isAuto=false, jdText is the FULL pasted job description, so taking jdText directly crashes the DB.
     let finalTargetRole = aiResult.target_role;
     if (!finalTargetRole) {
         finalTargetRole = isAuto ? jdText : 'Custom Job Description';
@@ -288,7 +319,7 @@ export const scoreResumeService = async (resumeId, userId, jdText, isAuto = fals
     // ── Step 5: Return score + optionally the generated JD text ──────────
     return {
         score: result.rows[0],
-        generatedJD,   // null for manual mode; full text for auto mode
+        generatedJD,
     };
 };
 

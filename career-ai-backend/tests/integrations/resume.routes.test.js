@@ -9,6 +9,7 @@ const controller = {
   scoreResume: jest.fn((req, res) => res.status(200).json({ success: true })),
   serveResumeFile: jest.fn((req, res) => res.status(200).json({ success: true })),
   deleteResumeController: jest.fn((req, res) => res.status(200).json({ success: true })),
+  getResumeStatus: jest.fn((req, res) => res.status(200).json({ success: true, data: { status: 'completed' } })),
 };
 
 jest.unstable_mockModule('../../src/middleware/auth.js', () => ({
@@ -57,6 +58,11 @@ describe('Resume routes - HTTP integration', () => {
   test('DELETE /:id reaches controller', async () => {
     await request(app).delete('/api/v1/resumes/r1').expect(200);
     expect(controller.deleteResumeController).toHaveBeenCalled();
+  });
+
+  test('GET /:id/status reaches controller', async () => {
+    await request(app).get('/api/v1/resumes/r1/status').expect(200);
+    expect(controller.getResumeStatus).toHaveBeenCalled();
   });
 
   test('POST /upload reaches controller through multer middleware', async () => {

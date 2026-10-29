@@ -24,7 +24,7 @@ const config = {
         ssl: process.env.DB_SSL === 'true',
         max: 10,
         idleTimeoutMillis: 30000,
-        connectionTimeoutMillis: 10000, // ✅ 2000 → 10000
+        connectionTimeoutMillis: 10000,
     },
 
     // JWT
@@ -111,6 +111,13 @@ const config = {
         from: process.env.EMAIL_FROM,
     },
 
+    // Processing mode:
+    // 'direct' = synchronous in-process analysis without BullMQ background worker (production)
+    // 'queue'  = asynchronous BullMQ background worker (development)
+    processing: {
+        resumeMode: process.env.RESUME_PROCESSING_MODE || 'queue',
+        emailMode: process.env.EMAIL_PROCESSING_MODE || 'queue',
+    },
 };
 
 // Validation
